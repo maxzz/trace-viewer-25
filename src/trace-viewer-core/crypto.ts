@@ -1,4 +1,4 @@
-import { TraceLineDescriptor } from './types';
+import type { TraceLineDescriptor } from './types';
 
 export class TraceCrypto {
     private static readonly FT_KEY_LEN = 16;

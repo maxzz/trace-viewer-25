@@ -1,18 +1,20 @@
 
 // Corresponds to LINECODE::type_t in atl_trace_media.h
-export enum LineCode {
-    Unknown = 0,
-    Entry = 62,         // '>' - Function entry
-    Exit = 60,          // '<' - Function exit
-    Group = 71,         // 'G' - Thread group
-    Data = 68,          // 'D' - Ansi text string
-    Error = 69,         // 'E' - Error, as ansi text string
-    Time = 84,          // 'T' - Time = HMSM
-    Day = 116,          // 't' - Day = MDY
-    DayRestarted = 78,  // 'N' - Day_restarted = MDY
-    Utf8 = 85,          // 'U' - The same as obsolete 'D', but utf8.
-    Key = 75,           // 'K' - encryption key for the following lines, encrypted with out Public key.
-}
+export const LineCode = {
+    Unknown: 0,
+    Entry: 62,         // '>' - Function entry
+    Exit: 60,          // '<' - Function exit
+    Group: 71,         // 'G' - Thread group
+    Data: 68,          // 'D' - Ansi text string
+    Error: 69,         // 'E' - Error, as ansi text string
+    Time: 84,          // 'T' - Time = HMSM
+    Day: 116,          // 't' - Day = MDY
+    DayRestarted: 78,  // 'N' - Day_restarted = MDY
+    Utf8: 85,          // 'U' - The same as obsolete 'D', but utf8.
+    Key: 75,           // 'K' - encryption key for the following lines, encrypted with out Public key.
+} as const;
+
+export type LineCode = typeof LineCode[keyof typeof LineCode];
 
 // Corresponds to SLineHeader in Structures.h
 // struct SLineHeader //HEADER_STRUCT
@@ -66,4 +68,3 @@ export interface TraceLineDescriptor {
     code: LineCode;
     strLength: number;
 }
-

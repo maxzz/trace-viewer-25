@@ -1,4 +1,4 @@
-import { LineCode, TraceLine, TraceHeader, TraceLineDescriptor } from './types';
+import { LineCode, type TraceLine, type TraceHeader, type TraceLineDescriptor } from './types';
 import { TraceCrypto } from './crypto';
 
 export class ThreadFlow {
@@ -95,7 +95,7 @@ export class TraceParser {
 
             // Read content
             const rawContent = new Uint8Array(this.buffer, contentOffset, length);
-            let decryptedContent = rawContent;
+            let decryptedContent: Uint8Array = rawContent;
 
             // Handle Key
             if (code === LineCode.Key) {

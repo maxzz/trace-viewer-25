@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useSnapshot } from 'valtio';
 import { traceStore } from '../../store/trace-store';
-import { TraceLine, LineCode } from '../../trace-viewer-core/types';
+import { LineCode, type TraceLine } from '../../trace-viewer-core/types';
 import { ScrollArea } from '../ui/shadcn/scroll-area';
 import { cn } from '../../lib/utils';
 
