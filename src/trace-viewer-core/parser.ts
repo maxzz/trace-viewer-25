@@ -13,11 +13,6 @@ export class ThreadFlow {
 
 export class TimeFlow {
     public lines: TraceLineDescriptor[] = [];
-    // Lookup array mapping file line index to TimeFlow line index?
-    // In C++: m_timelookuparray[uLine] -> index in m_lineptrs.
-    // We might just store the linear list of lines sorted by time/occurrence.
-    // The C++ TimeFlow seems to contain ALL lines that have timestamps or are relevant to time?
-    // Actually C++ PopulateStructures adds most lines to TimeFlow.
 }
 
 export class TraceParser {
@@ -32,6 +27,9 @@ export class TraceParser {
     public threadFlows: Map<number, ThreadFlow> = new Map();
     public timeFlow: TimeFlow = new TimeFlow();
 
+    private currentTime: string = "";
+    private currentDate: string = "";
+
     constructor(buffer: ArrayBuffer) {
         this.buffer = buffer;
         this.dataView = new DataView(buffer);
@@ -42,19 +40,12 @@ export class TraceParser {
         let offset = 0;
         
         // 1. Parse Header
-        // Header ends with "\n.\r\n" or just ".\r\n" after metadata lines?
-        // C++: Writes ".\r\n" as termination dot.
-        // It loops reading lines until it finds ".\r\n" (actually checks *pFileMem == '\n' && *(pFileMem+1) == '.').
-        
-        // Find start of data
         const uint8Array = new Uint8Array(this.buffer);
         let dataStart = 0;
         
-        // Scan for "\n.\r\n" pattern to find end of header
-        for (let i = 0; i < Math.min(4096, uint8Array.length); i++) { // Header shouldn't be huge
+        for (let i = 0; i < Math.min(4096, uint8Array.length); i++) {
              if (uint8Array[i] === 0x0A && uint8Array[i+1] === 0x2E) {
-                 // Found "\n." - usually followed by "\r\n" (0D 0A)
-                 dataStart = i + 2; // Skip \n.
+                 dataStart = i + 2;
                  if (uint8Array[dataStart] === 0x0D) dataStart++;
                  if (uint8Array[dataStart] === 0x0A) dataStart++;
                  break;
@@ -75,13 +66,10 @@ export class TraceParser {
         let lineIndex = 0;
         const fileSize = this.buffer.byteLength;
 
-        // struct SLineHeader { ULONG m_ThreadId; char m_Code; WORD m_StrLength; BYTE m_String[1]; }
-        // Size: 4 + 1 + 2 = 7 bytes + content
-        
         while (offset < fileSize) {
             if (offset + 7 > fileSize) break;
 
-            const threadId = this.dataView.getUint32(offset, true); // Little endian
+            const threadId = this.dataView.getUint32(offset, true);
             const code = this.dataView.getUint8(offset + 4) as LineCode;
             const length = this.dataView.getUint16(offset + 5, true);
             
@@ -93,13 +81,10 @@ export class TraceParser {
                 break;
             }
 
-            // Read content
             const rawContent = new Uint8Array(this.buffer, contentOffset, length);
             let decryptedContent: Uint8Array = rawContent;
 
-            // Handle Key
             if (code === LineCode.Key) {
-                // Add key to crypto stack
                 this.crypto.addKey({ 
                     headerOffset: offset,
                     lineFileNumber: lineIndex,
@@ -109,37 +94,34 @@ export class TraceParser {
                     strLength: length
                 }, rawContent);
             } else {
-                // Decrypt if needed
-                // C++: g_CryptKeys.Decrypt(m_headerOffset, ...)
-                // Note: We pass the offset of the HEADER, not content.
                 if (length > 0) {
                     decryptedContent = this.crypto.decrypt(offset, rawContent);
                 }
             }
 
-            // Decode string
             let text = "";
             if (length > 0) {
-                // Code D (Data) is ANSI, U (Utf8) is UTF8. 
-                // Others (Entry, Exit, Error, etc) usually default to ANSI in C++ or UTF8? 
-                // C++ TraceLineTextW converts using `utf8(buffer)`. 
-                // The `utf8` helper in C++ (Utilities.cpp/h usually) converts FROM utf8 to wide char? 
-                // Or is `utf8(...)` a constructor that takes ANSI?
-                // `utf8string_t u8 = utf8(v_);` in appendcodeline.
-                // `LINECODE::utf8` = 'U'. `LINECODE::data` = 'D'.
-                
-                // Let's assume 'U' is UTF-8, others are ANSI (Windows-1252).
                 if (code === LineCode.Utf8) {
                     text = this.decoderUtf8.decode(decryptedContent);
                 } else {
                     text = this.decoderAnsi.decode(decryptedContent);
                 }
+            }
+
+            // Update Time/Date context
+            if (code === LineCode.Time) {
+                this.currentTime = text;
                 
-                // Remove null terminator if present? C++ length usually excludes it in structure, 
-                // but sometimes includes it in buffer? 
-                // SLineHeader: "WORD m_StrLength; //not including last zero"
-                // So we shouldn't see nulls, but just in case.
-                // text = text.replace(/\0/g, '');
+                // Do NOT add time line to main list (as per user request to move it to a column)
+                // We still update offset and lineIndex
+                offset = nextOffset;
+                lineIndex++;
+                continue;
+            }
+            
+            // We can optionally handle Date here too, but keeping it in list for now as separator is often useful.
+            if (code === LineCode.Day || code === LineCode.DayRestarted) {
+                this.currentDate = text;
             }
 
             // Process Flow
@@ -148,17 +130,12 @@ export class TraceParser {
             }
             const threadFlow = this.threadFlows.get(threadId)!;
 
-            // Indentation Logic
             let indent = threadFlow.indent;
             if (code === LineCode.Entry) {
                 threadFlow.indent++;
             } else if (code === LineCode.Exit) {
                 if (threadFlow.indent > 0) threadFlow.indent--;
-                indent = threadFlow.indent; // Exit lines use the OUTER indent? Or inner?
-                // C++: Exit uses indent--.
-                // "currentlineptr.SetLineIndent(--nIns);"
-            } else {
-                // Data, Error etc. use current indent
+                indent = threadFlow.indent; 
             }
 
             const line: TraceLine = {
@@ -168,14 +145,12 @@ export class TraceParser {
                 code,
                 length,
                 content: text,
-                indent
+                indent,
+                timestamp: this.currentTime,
+                date: this.currentDate
             };
 
             this.lines.push(line);
-            
-            // Add to flows
-            // Note: C++ has complex flow logic (TimeFlow, ThreadFlow).
-            // We will keep it simple: All lines go to lines[]. ThreadFlow tracks indents.
             
             offset = nextOffset;
             lineIndex++;
@@ -189,8 +164,6 @@ export class TraceParser {
             else if (line.startsWith("Compiled:")) this.header.compiled = line.substring(10).trim();
             else if (line.startsWith("OS:")) this.header.os = line.substring(4).trim();
             else if (line.startsWith("Machine name:")) this.header.machineName = line.substring(14).trim();
-            // ... add others as needed
         });
     }
 }
-

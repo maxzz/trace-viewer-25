@@ -26,7 +26,7 @@ export const TraceUploader: React.FC = () => {
             <div className="flex items-center gap-2">
                 <Input 
                     type="file" 
-                    accept=".trace,.txt" 
+                    accept=".trc3,.txt" 
                     onChange={handleFileChange} 
                     className="hidden" 
                     id="trace-upload"

@@ -2,8 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useSnapshot } from 'valtio';
 import { traceStore } from '../../store/trace-store';
 import { LineCode, type TraceLine } from '../../trace-viewer-core/types';
-import { ScrollArea } from '../ui/shadcn/scroll-area';
-import { cn } from '../../lib/utils';
+import { cn } from '@/utils';
 
 const ITEM_HEIGHT = 24; // Fixed height for simplicity
 const BUFFER = 20;
@@ -75,12 +74,17 @@ export const TraceList: React.FC = () => {
                             style={{ height: ITEM_HEIGHT }}
                         >
                             {/* Line Number */}
-                            <span className="w-16 text-gray-400 shrink-0 select-none">
+                            <span className="w-16 text-gray-400 shrink-0 select-none text-right pr-2 border-r border-gray-200 dark:border-gray-800 mr-2">
                                 {line.lineIndex + 1}
                             </span>
 
+                            {/* Time Column */}
+                            <span className="w-24 text-gray-500 shrink-0 select-none tabular-nums border-r border-gray-200 dark:border-gray-800 mr-2 truncate" title={line.timestamp}>
+                                {line.timestamp || ""}
+                            </span>
+
                             {/* Thread ID */}
-                            <span className="w-20 text-yellow-600 dark:text-yellow-500 shrink-0 select-none" title={`Thread ${line.threadId}`}>
+                            <span className="w-16 text-yellow-600 dark:text-yellow-500 shrink-0 select-none border-r border-gray-200 dark:border-gray-800 mr-2" title={`Thread ${line.threadId}`}>
                                 {line.threadId.toString(16).toUpperCase().padStart(4, '0')}
                             </span>
 
@@ -98,4 +102,3 @@ export const TraceList: React.FC = () => {
         </div>
     );
 };
-
