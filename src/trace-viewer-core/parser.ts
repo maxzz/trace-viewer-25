@@ -103,39 +103,9 @@ export class TraceParser {
             let textColor: string | undefined;
 
             if (length > 0) {
-                if (code === LineCode.Utf8) {
-                    text = this.decoderUtf8.decode(decryptedContent);
-                } else {
-                    text = this.decoderAnsi.decode(decryptedContent);
-                }
-
-                // Check for Color Prefix: '`Ixx`'
-                // Prefix: '`I (3 chars)
-                // Suffix: `' (2 chars)
-                const prefix = "'`I";
-                const suffix = "`'";
-                
-                const prefixIndex = text.indexOf(prefix);
-                if (prefixIndex !== -1) {
-                    // Ensure there is enough room for prefix + 2 hex + suffix
-                    if (text.length >= prefixIndex + prefix.length + 2 + suffix.length) {
-                        const hexStart = prefixIndex + prefix.length;
-                        const hexStr = text.substring(hexStart, hexStart + 2);
-                        
-                        // Verify suffix matches
-                        const suffixStart = hexStart + 2;
-                        if (text.substring(suffixStart, suffixStart + suffix.length) === suffix) {
-                            const colorIndex = parseInt(hexStr, 16);
-                            if (!isNaN(colorIndex) && colorIndex >= 0 && colorIndex <= 15) {
-                                textColor = this.getColorFromIndex(colorIndex);
-                                
-                                // Remove the tag from text
-                                const tagLength = prefix.length + 2 + suffix.length;
-                                text = text.substring(0, prefixIndex) + text.substring(prefixIndex + tagLength);
-                            }
-                        }
-                    }
-                }
+                const result = this.processTextContent(length, code, decryptedContent);
+                text = result.text;
+                textColor = result.textColor;
             }
 
             // Update Time/Date context
@@ -196,6 +166,47 @@ export class TraceParser {
             else if (line.startsWith("OS:")) this.header.os = line.substring(4).trim();
             else if (line.startsWith("Machine name:")) this.header.machineName = line.substring(14).trim();
         });
+    }
+
+    private processTextContent(length: number, code: LineCode, decryptedContent: Uint8Array): { text: string, textColor?: string } {
+        let text = "";
+        let textColor: string | undefined;
+
+        if (code === LineCode.Utf8) {
+            text = this.decoderUtf8.decode(decryptedContent);
+        } else {
+            text = this.decoderAnsi.decode(decryptedContent);
+        }
+
+        // Check for Color Prefix: '`Ixx`'
+        // Prefix: '`I (3 chars)
+        // Suffix: `' (2 chars)
+        const prefix = "'`I";
+        const suffix = "`'";
+        
+        const prefixIndex = text.indexOf(prefix);
+        if (prefixIndex !== -1) {
+            // Ensure there is enough room for prefix + 2 hex + suffix
+            if (text.length >= prefixIndex + prefix.length + 2 + suffix.length) {
+                const hexStart = prefixIndex + prefix.length;
+                const hexStr = text.substring(hexStart, hexStart + 2);
+                
+                // Verify suffix matches
+                const suffixStart = hexStart + 2;
+                if (text.substring(suffixStart, suffixStart + suffix.length) === suffix) {
+                    const colorIndex = parseInt(hexStr, 16);
+                    if (!isNaN(colorIndex) && colorIndex >= 0 && colorIndex <= 15) {
+                        textColor = this.getColorFromIndex(colorIndex);
+                        
+                        // Remove the tag from text
+                        const tagLength = prefix.length + 2 + suffix.length;
+                        text = text.substring(0, prefixIndex) + text.substring(prefixIndex + tagLength);
+                    }
+                }
+            }
+        }
+
+        return { text, textColor };
     }
 
     private getColorFromIndex(index: number): string {
