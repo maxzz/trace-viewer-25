@@ -100,11 +100,41 @@ export class TraceParser {
             }
 
             let text = "";
+            let textColor: string | undefined;
+
             if (length > 0) {
                 if (code === LineCode.Utf8) {
                     text = this.decoderUtf8.decode(decryptedContent);
                 } else {
                     text = this.decoderAnsi.decode(decryptedContent);
+                }
+
+                // Check for Color Prefix: '`Ixx`'
+                // Prefix: '`I (3 chars)
+                // Suffix: `' (2 chars)
+                const prefix = "'`I";
+                const suffix = "`'";
+                
+                const prefixIndex = text.indexOf(prefix);
+                if (prefixIndex !== -1) {
+                    // Ensure there is enough room for prefix + 2 hex + suffix
+                    if (text.length >= prefixIndex + prefix.length + 2 + suffix.length) {
+                        const hexStart = prefixIndex + prefix.length;
+                        const hexStr = text.substring(hexStart, hexStart + 2);
+                        
+                        // Verify suffix matches
+                        const suffixStart = hexStart + 2;
+                        if (text.substring(suffixStart, suffixStart + suffix.length) === suffix) {
+                            const colorIndex = parseInt(hexStr, 16);
+                            if (!isNaN(colorIndex) && colorIndex >= 0 && colorIndex <= 15) {
+                                textColor = this.getColorFromIndex(colorIndex);
+                                
+                                // Remove the tag from text
+                                const tagLength = prefix.length + 2 + suffix.length;
+                                text = text.substring(0, prefixIndex) + text.substring(prefixIndex + tagLength);
+                            }
+                        }
+                    }
                 }
             }
 
@@ -147,7 +177,8 @@ export class TraceParser {
                 content: text,
                 indent,
                 timestamp: this.currentTime,
-                date: this.currentDate
+                date: this.currentDate,
+                textColor
             };
 
             this.lines.push(line);
@@ -165,5 +196,27 @@ export class TraceParser {
             else if (line.startsWith("OS:")) this.header.os = line.substring(4).trim();
             else if (line.startsWith("Machine name:")) this.header.machineName = line.substring(14).trim();
         });
+    }
+
+    private getColorFromIndex(index: number): string {
+        const colors = [
+            "#000000", // 00 Black
+            "#000080", // 01 Navy
+            "#008000", // 02 Green
+            "#008080", // 03 Teal
+            "#800000", // 04 Maroon
+            "#800080", // 05 Purple
+            "#808000", // 06 Olive
+            "#C0C0C0", // 07 Silver
+            "#808080", // 08 Gray
+            "#0000FF", // 09 Blue
+            "#00FF00", // 10 Lime
+            "#00FFFF", // 11 Cyan
+            "#FF0000", // 12 Red
+            "#FF00FF", // 13 Magenta
+            "#FFFF00", // 14 Yellow
+            "#FFFFFF", // 15 White
+        ];
+        return colors[index] || "";
     }
 }

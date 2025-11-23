@@ -44,6 +44,7 @@ export interface TraceLine {
     timestamp?: string; // HMSM
     date?: string;      // MDY
     threadName?: string; // From Group lines
+    textColor?: string; // Hex color override (e.g. "#FF0000")
 }
 
 export interface TraceHeader {

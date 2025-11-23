@@ -39,8 +39,13 @@ export const TraceList: React.FC = () => {
     const visibleLines = lines.slice(startIndex, endIndex);
     const offsetY = startIndex * ITEM_HEIGHT;
 
-    const getLineColor = (code: LineCode) => {
-        switch (code) {
+    const getLineColor = (line: TraceLine) => {
+        // Priority: Override Color > LineCode Color > Default
+        if (line.textColor) {
+            return undefined; // Handled by inline style
+        }
+
+        switch (line.code) {
             case LineCode.Error: return 'text-red-500 dark:text-red-400 font-bold';
             case LineCode.Entry: return 'text-blue-600 dark:text-blue-400';
             case LineCode.Exit: return 'text-blue-600 dark:text-blue-400';
@@ -90,8 +95,11 @@ export const TraceList: React.FC = () => {
 
                             {/* Content with Indent */}
                             <span 
-                                className={cn("flex-1 truncate", getLineColor(line.code))}
-                                style={{ paddingLeft: `${line.indent * 12}px` }}
+                                className={cn("flex-1 truncate", getLineColor(line))}
+                                style={{ 
+                                    paddingLeft: `${line.indent * 12}px`,
+                                    color: line.textColor 
+                                }}
                             >
                                 {formatContent(line)}
                             </span>
