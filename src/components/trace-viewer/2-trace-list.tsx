@@ -7,7 +7,7 @@ import { cn } from '@/utils';
 const ITEM_HEIGHT = 24; // Fixed height for simplicity
 const BUFFER = 20;
 
-export const TraceList: React.FC = () => {
+export function TraceList() {
     const { lines } = useSnapshot(traceStore);
     const scrollRef = useRef<HTMLDivElement>(null);
     const [scrollTop, setScrollTop] = useState(0);
@@ -20,7 +20,7 @@ export const TraceList: React.FC = () => {
                     setContainerHeight(scrollRef.current.clientHeight);
                 }
             };
-            
+
             updateHeight();
             window.addEventListener('resize', updateHeight);
             return () => window.removeEventListener('resize', updateHeight);
@@ -35,7 +35,7 @@ export const TraceList: React.FC = () => {
     const totalHeight = lines.length * ITEM_HEIGHT;
     const startIndex = Math.max(0, Math.floor(scrollTop / ITEM_HEIGHT) - BUFFER);
     const endIndex = Math.min(lines.length, Math.floor((scrollTop + containerHeight) / ITEM_HEIGHT) + BUFFER);
-    
+
     const visibleLines = lines.slice(startIndex, endIndex);
     const offsetY = startIndex * ITEM_HEIGHT;
 
@@ -62,16 +62,16 @@ export const TraceList: React.FC = () => {
     };
 
     return (
-        <div 
-            ref={scrollRef} 
+        <div
+            ref={scrollRef}
             className="h-full w-full overflow-auto relative"
             onScroll={onScroll}
         >
             <div style={{ height: totalHeight, position: 'relative' }}>
                 <div style={{ transform: `translateY(${offsetY}px)` }}>
                     {visibleLines.map((line) => (
-                        <div 
-                            key={line.lineIndex} 
+                        <div
+                            key={line.lineIndex}
                             className={cn(
                                 "flex items-center text-xs font-mono hover:bg-gray-100 dark:hover:bg-gray-800 px-2 whitespace-pre",
                                 line.code === LineCode.Error && "bg-red-50 dark:bg-red-900/20"
@@ -94,11 +94,11 @@ export const TraceList: React.FC = () => {
                             </span>
 
                             {/* Content with Indent */}
-                            <span 
+                            <span
                                 className={cn("flex-1 truncate", getLineColor(line))}
-                                style={{ 
+                                style={{
                                     paddingLeft: `${line.indent * 12}px`,
-                                    color: line.textColor 
+                                    color: line.textColor
                                 }}
                             >
                                 {formatContent(line)}
@@ -109,4 +109,4 @@ export const TraceList: React.FC = () => {
             </div>
         </div>
     );
-};
+}

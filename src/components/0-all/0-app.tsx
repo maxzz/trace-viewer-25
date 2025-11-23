@@ -1,4 +1,4 @@
-import { TraceViewerApp } from "../trace-viewer/TraceViewerApp";
+import { TraceViewerApp } from "./1-trace-viewer-app";
 
 export function App() {
     return (

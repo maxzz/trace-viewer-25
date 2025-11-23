@@ -1,11 +1,11 @@
 import React from 'react';
 import { useSnapshot } from 'valtio';
 import { traceStore } from '../../store/trace-store';
-import { TraceUploader } from './TraceUploader';
-import { TraceList } from './TraceList';
+import { TraceUploader } from '../trace-viewer/1-trace-uploader';
+import { TraceList } from '../trace-viewer/2-trace-list';
 import { FileText, Cpu, Clock } from 'lucide-react';
 
-export const TraceViewerApp: React.FC = () => {
+export function TraceViewerApp() {
     const { lines, header, error } = useSnapshot(traceStore);
 
     if (lines.length === 0 && !error) {
@@ -24,7 +24,7 @@ export const TraceViewerApp: React.FC = () => {
                     <FileText className="w-5 h-5 text-blue-500" />
                     <h1 className="font-semibold">{header.machineName || "Trace Viewer"}</h1>
                 </div>
-                
+
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                     {header.os && <span>{header.os}</span>}
                     {header.compiled && (
@@ -40,7 +40,7 @@ export const TraceViewerApp: React.FC = () => {
                 </div>
 
                 <div className="ml-auto">
-                    <TraceUploader /> 
+                    <TraceUploader />
                 </div>
             </div>
 
@@ -58,5 +58,4 @@ export const TraceViewerApp: React.FC = () => {
             </div>
         </div>
     );
-};
-
+}
