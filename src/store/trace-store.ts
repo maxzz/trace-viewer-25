@@ -7,6 +7,7 @@ export interface TraceState {
     header: TraceHeader;
     isLoading: boolean;
     error: string | null;
+    currentLineIndex: number;
     loadTrace: (file: File) => Promise<void>;
 }
 
@@ -15,6 +16,7 @@ export const traceStore = proxy<TraceState>({
     header: { magic: '' },
     isLoading: false,
     error: null,
+    currentLineIndex: -1,
     loadTrace: async (file: File) => {
         traceStore.isLoading = true;
         traceStore.error = null;

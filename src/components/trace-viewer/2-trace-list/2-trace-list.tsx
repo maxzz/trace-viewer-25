@@ -8,7 +8,7 @@ const ITEM_HEIGHT = 24; // Fixed height for simplicity
 const BUFFER = 20;
 
 export function TraceList() {
-    const { lines } = useSnapshot(traceStore);
+    const { lines, currentLineIndex } = useSnapshot(traceStore);
     const scrollRef = useRef<HTMLDivElement>(null);
     const [scrollTop, setScrollTop] = useState(0);
     const [containerHeight, setContainerHeight] = useState(800); // Default
@@ -26,6 +26,71 @@ export function TraceList() {
             return () => window.removeEventListener('resize', updateHeight);
         }
     }, []);
+
+    // Keyboard navigation
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            // Ignore if focus is in an input/textarea
+            if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') {
+                return;
+            }
+
+            const totalLines = traceStore.lines.length;
+            if (totalLines === 0) return;
+
+            const currentIndex = traceStore.currentLineIndex;
+            const linesPerPage = Math.floor(containerHeight / ITEM_HEIGHT);
+            let newIndex = currentIndex;
+
+            switch (e.key) {
+                case 'ArrowUp':
+                    newIndex = Math.max(0, currentIndex - 1);
+                    break;
+                case 'ArrowDown':
+                    newIndex = currentIndex === -1 ? 0 : Math.min(totalLines - 1, currentIndex + 1);
+                    break;
+                case 'PageUp':
+                    newIndex = Math.max(0, currentIndex - linesPerPage);
+                    break;
+                case 'PageDown':
+                    const start = currentIndex === -1 ? 0 : currentIndex;
+                    newIndex = Math.min(totalLines - 1, start + linesPerPage);
+                    break;
+                case 'Home':
+                    newIndex = 0;
+                    break;
+                case 'End':
+                    newIndex = totalLines - 1;
+                    break;
+                default:
+                    return;
+            }
+
+            e.preventDefault();
+            if (newIndex !== currentIndex) {
+                traceStore.currentLineIndex = newIndex;
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [containerHeight]);
+
+    // Scroll to selection
+    useEffect(() => {
+        if (currentLineIndex >= 0 && scrollRef.current) {
+            const targetTop = currentLineIndex * ITEM_HEIGHT;
+            const targetBottom = targetTop + ITEM_HEIGHT;
+            const viewTop = scrollRef.current.scrollTop;
+            const viewBottom = viewTop + containerHeight;
+
+            if (targetTop < viewTop) {
+                scrollRef.current.scrollTop = targetTop;
+            } else if (targetBottom > viewBottom) {
+                scrollRef.current.scrollTop = targetBottom - containerHeight;
+            }
+        }
+    }, [currentLineIndex, containerHeight]);
 
     const onScroll = (e: React.UIEvent<HTMLDivElement>) => {
         setScrollTop(e.currentTarget.scrollTop);
@@ -73,9 +138,13 @@ export function TraceList() {
                         (line) => (
                             <div
                                 key={line.lineIndex}
+                                onClick={() => (traceStore.currentLineIndex = line.lineIndex)}
                                 className={cn(
-                                    "flex items-center text-xs font-mono hover:bg-gray-100 dark:hover:bg-gray-800 px-2 whitespace-pre",
-                                    line.code === LineCode.Error && "bg-red-50 dark:bg-red-900/20"
+                                    "flex items-center text-xs font-mono cursor-pointer px-2 whitespace-pre border-l-4",
+                                    line.lineIndex === currentLineIndex 
+                                        ? "bg-blue-100 dark:bg-blue-900 border-blue-500"
+                                        : "hover:bg-gray-100 dark:hover:bg-gray-800 border-transparent",
+                                    line.code === LineCode.Error && line.lineIndex !== currentLineIndex && "bg-red-50 dark:bg-red-900/20"
                                 )}
                                 style={{ height: ITEM_HEIGHT }}
                             >
