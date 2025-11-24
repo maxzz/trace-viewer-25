@@ -69,42 +69,43 @@ export function TraceList() {
         >
             <div style={{ height: totalHeight, position: 'relative' }}>
                 <div style={{ transform: `translateY(${offsetY}px)` }}>
-                    {visibleLines.map((line) => (
-                        <div
-                            key={line.lineIndex}
-                            className={cn(
-                                "flex items-center text-xs font-mono hover:bg-gray-100 dark:hover:bg-gray-800 px-2 whitespace-pre",
-                                line.code === LineCode.Error && "bg-red-50 dark:bg-red-900/20"
-                            )}
-                            style={{ height: ITEM_HEIGHT }}
-                        >
-                            {/* Line Number */}
-                            <span className="w-16 text-gray-400 shrink-0 select-none text-right pr-2 border-r border-gray-200 dark:border-gray-800 mr-2">
-                                {line.lineIndex + 1}
-                            </span>
-
-                            {/* Time Column */}
-                            <span className="w-24 text-gray-500 shrink-0 select-none tabular-nums border-r border-gray-200 dark:border-gray-800 mr-2 truncate" title={line.timestamp}>
-                                {line.timestamp || ""}
-                            </span>
-
-                            {/* Thread ID */}
-                            <span className="w-16 text-yellow-600 dark:text-yellow-500 shrink-0 select-none border-r border-gray-200 dark:border-gray-800 mr-2" title={`Thread ${line.threadId}`}>
-                                {line.threadId.toString(16).toUpperCase().padStart(4, '0')}
-                            </span>
-
-                            {/* Content with Indent */}
-                            <span
-                                className={cn("flex-1 truncate", getLineColor(line))}
-                                style={{
-                                    paddingLeft: `${line.indent * 12}px`,
-                                    color: line.textColor
-                                }}
+                    {visibleLines.map(
+                        (line) => (
+                            <div
+                                key={line.lineIndex}
+                                className={cn(
+                                    "flex items-center text-xs font-mono hover:bg-gray-100 dark:hover:bg-gray-800 px-2 whitespace-pre",
+                                    line.code === LineCode.Error && "bg-red-50 dark:bg-red-900/20"
+                                )}
+                                style={{ height: ITEM_HEIGHT }}
                             >
-                                {formatContent(line)}
-                            </span>
-                        </div>
-                    ))}
+                                {/* Line Number */}
+                                <span className="w-16 text-gray-400 shrink-0 select-none text-right pr-2 border-r border-gray-200 dark:border-gray-800 mr-2">
+                                    {line.lineIndex + 1}
+                                </span>
+
+                                {/* Time Column */}
+                                <span className="w-24 text-gray-500 shrink-0 select-none tabular-nums border-r border-gray-200 dark:border-gray-800 mr-2 truncate" title={line.timestamp}>
+                                    {line.timestamp || ""}
+                                </span>
+
+                                {/* Thread ID */}
+                                <span className="w-16 text-yellow-600 dark:text-yellow-500 shrink-0 select-none border-r border-gray-200 dark:border-gray-800 mr-2" title={`Thread ${line.threadId}`}>
+                                    {line.threadId.toString(16).toUpperCase().padStart(4, '0')}
+                                </span>
+
+                                {/* Content with Indent */}
+                                <span
+                                    className={cn("flex-1 truncate", line.textColor, getLineColor(line))}
+                                    style={{
+                                        paddingLeft: `${line.indent * 12}px`,
+                                    }}
+                                >
+                                    {formatContent(line)}
+                                </span>
+                            </div>
+                        )
+                    )}
                 </div>
             </div>
         </div>

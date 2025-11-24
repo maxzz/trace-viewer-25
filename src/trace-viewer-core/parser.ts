@@ -210,24 +210,24 @@ export class TraceParser {
     }
 
     private getColorFromIndex(index: number): string {
-        const colors = [
-            "#000000", // 00 Black
-            "#000080", // 01 Navy
-            "#008000", // 02 Green
-            "#008080", // 03 Teal
-            "#800000", // 04 Maroon
-            "#800080", // 05 Purple
-            "#808000", // 06 Olive
-            "#C0C0C0", // 07 Silver
-            "#808080", // 08 Gray
-            "#0000FF", // 09 Blue
-            "#00FF00", // 10 Lime
-            "#00FFFF", // 11 Cyan
-            "#FF0000", // 12 Red
-            "#FF00FF", // 13 Magenta
-            "#FFFF00", // 14 Yellow
-            "#FFFFFF", // 15 White
+        const colorsClasses = [
+            "text-black",          // 00 Black
+            "text-blue-900",       // 01 Navy
+            "text-green-700",      // 02 Green
+            "text-teal-700",       // 03 Teal
+            "text-red-900",        // 04 Maroon
+            "text-purple-800",     // 05 Purple
+            "text-yellow-700",     // 06 Olive
+            "text-gray-400",       // 07 Silver
+            "text-gray-500",       // 08 Gray
+            "text-blue-600",       // 09 Blue
+            "text-lime-500",       // 10 Lime
+            "text-cyan-500",       // 11 Cyan
+            "text-red-600",        // 12 Red
+            "text-fuchsia-500",    // 13 Magenta
+            "text-yellow-400",     // 14 Yellow
+            "text-white",          // 15 White
         ];
-        return colors[index] || "";
+        return colorsClasses[index] || "";
     }
 }
