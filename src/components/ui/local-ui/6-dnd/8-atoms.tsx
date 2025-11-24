@@ -25,16 +25,12 @@ export const doSetFilesFrom_Dnd_Atom = atom(                    // used by DropI
         }
 
         if (files.length !== 1) {
-            notice.warning("Please drop a single trace file.");
-            return;
+            notice.warning("Only first file will be loaded for now.");
         }
 
         const file = files[0];
         if (file) {
             traceStore.loadTrace(file);
-            console.log('traceStore.loadTrace(file)', file);
         }
-
-        //set(files);
     }
 ); 
