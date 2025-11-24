@@ -31,7 +31,9 @@ export const traceStore = proxy<TraceState>({
             // For now, sync. Ideally use Web Worker.
             parser.parse();
 
-            traceStore.lines = parser.lines;
+            // Filter out Time lines for display but keep them in data structure if needed later
+            // Ideally, we should have a "viewLines" separate from "rawLines"
+            traceStore.lines = parser.lines.filter(l => l.code !== 84); // 84 is LineCode.Time
             traceStore.header = parser.header;
         } catch (e: any) {
             console.error("Failed to load trace", e);

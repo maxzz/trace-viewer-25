@@ -111,12 +111,6 @@ export class TraceParser {
             // Update Time/Date context
             if (code === LineCode.Time) {
                 this.currentTime = text;
-                
-                // Do NOT add time line to main list (as per user request to move it to a column)
-                // We still update offset and lineIndex
-                offset = nextOffset;
-                lineIndex++;
-                continue;
             }
             
             // We can optionally handle Date here too, but keeping it in list for now as separator is often useful.
