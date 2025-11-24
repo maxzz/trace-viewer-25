@@ -1,6 +1,6 @@
 import { toast, type ToastT } from "sonner";
-import { Button } from "@/ui";
-import { IconStopCircle, SymbolCross, SymbolInfo, SymbolWarning } from "@/ui/icons";
+import { Button } from "@/components/ui/shadcn/button";
+import { IconStopCircle, SymbolCross, SymbolInfo, SymbolWarning } from "../../icons";
 
 //export { toast as toaster };
 
