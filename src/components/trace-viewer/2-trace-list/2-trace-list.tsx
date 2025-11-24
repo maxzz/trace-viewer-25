@@ -7,6 +7,65 @@ import { cn } from '@/utils';
 const ITEM_HEIGHT = 24; // Fixed height for simplicity
 const BUFFER = 20;
 
+const getLineColor = (line: TraceLine) => {
+    // Priority: Override Color > LineCode Color > Default
+    if (line.textColor) {
+        return undefined; // Handled by inline style
+    }
+
+    switch (line.code) {
+        case LineCode.Error: return 'text-red-500 dark:text-red-400 font-bold';
+        case LineCode.Entry: return 'text-blue-600 dark:text-blue-400';
+        case LineCode.Exit: return 'text-blue-600 dark:text-blue-400';
+        case LineCode.Time: return 'text-green-600 dark:text-green-400';
+        case LineCode.Day: return 'text-purple-600 dark:text-purple-400 font-bold bg-purple-100 dark:bg-purple-900/30 w-full block';
+        default: return 'text-foreground';
+    }
+};
+
+const handleTraceNavigation = (e: KeyboardEvent, containerHeight: number) => {
+    // Ignore if focus is in an input/textarea
+    if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') {
+        return;
+    }
+
+    const totalLines = traceStore.lines.length;
+    if (totalLines === 0) return;
+
+    const currentIndex = traceStore.currentLineIndex;
+    const linesPerPage = Math.floor(containerHeight / ITEM_HEIGHT);
+    let newIndex = currentIndex;
+
+    switch (e.key) {
+        case 'ArrowUp':
+            newIndex = Math.max(0, currentIndex - 1);
+            break;
+        case 'ArrowDown':
+            newIndex = currentIndex === -1 ? 0 : Math.min(totalLines - 1, currentIndex + 1);
+            break;
+        case 'PageUp':
+            newIndex = Math.max(0, currentIndex - linesPerPage);
+            break;
+        case 'PageDown':
+            const start = currentIndex === -1 ? 0 : currentIndex;
+            newIndex = Math.min(totalLines - 1, start + linesPerPage);
+            break;
+        case 'Home':
+            newIndex = 0;
+            break;
+        case 'End':
+            newIndex = totalLines - 1;
+            break;
+        default:
+            return;
+    }
+
+    e.preventDefault();
+    if (newIndex !== currentIndex) {
+        traceStore.currentLineIndex = newIndex;
+    }
+};
+
 export function TraceList() {
     const { lines, currentLineIndex } = useSnapshot(traceStore);
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -29,51 +88,13 @@ export function TraceList() {
 
     // Keyboard navigation
     useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            // Ignore if focus is in an input/textarea
-            if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') {
-                return;
-            }
-
-            const totalLines = traceStore.lines.length;
-            if (totalLines === 0) return;
-
-            const currentIndex = traceStore.currentLineIndex;
-            const linesPerPage = Math.floor(containerHeight / ITEM_HEIGHT);
-            let newIndex = currentIndex;
-
-            switch (e.key) {
-                case 'ArrowUp':
-                    newIndex = Math.max(0, currentIndex - 1);
-                    break;
-                case 'ArrowDown':
-                    newIndex = currentIndex === -1 ? 0 : Math.min(totalLines - 1, currentIndex + 1);
-                    break;
-                case 'PageUp':
-                    newIndex = Math.max(0, currentIndex - linesPerPage);
-                    break;
-                case 'PageDown':
-                    const start = currentIndex === -1 ? 0 : currentIndex;
-                    newIndex = Math.min(totalLines - 1, start + linesPerPage);
-                    break;
-                case 'Home':
-                    newIndex = 0;
-                    break;
-                case 'End':
-                    newIndex = totalLines - 1;
-                    break;
-                default:
-                    return;
-            }
-
-            e.preventDefault();
-            if (newIndex !== currentIndex) {
-                traceStore.currentLineIndex = newIndex;
-            }
-        };
-
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
+        const controller = new AbortController();
+        window.addEventListener(
+            'keydown', 
+            (e) => handleTraceNavigation(e, containerHeight), 
+            { signal: controller.signal }
+        );
+        return () => controller.abort();
     }, [containerHeight]);
 
     // Scroll to selection
@@ -103,22 +124,6 @@ export function TraceList() {
 
     const visibleLines = lines.slice(startIndex, endIndex);
     const offsetY = startIndex * ITEM_HEIGHT;
-
-    const getLineColor = (line: TraceLine) => {
-        // Priority: Override Color > LineCode Color > Default
-        if (line.textColor) {
-            return undefined; // Handled by inline style
-        }
-
-        switch (line.code) {
-            case LineCode.Error: return 'text-red-500 dark:text-red-400 font-bold';
-            case LineCode.Entry: return 'text-blue-600 dark:text-blue-400';
-            case LineCode.Exit: return 'text-blue-600 dark:text-blue-400';
-            case LineCode.Time: return 'text-green-600 dark:text-green-400';
-            case LineCode.Day: return 'text-purple-600 dark:text-purple-400 font-bold bg-purple-100 dark:bg-purple-900/30 w-full block';
-            default: return 'text-foreground';
-        }
-    };
 
     const formatContent = (line: TraceLine) => {
         if (line.code === LineCode.Entry) return `>>> ${line.content}`;
