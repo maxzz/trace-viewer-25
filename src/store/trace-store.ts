@@ -3,7 +3,9 @@ import { TraceParser } from '../trace-viewer-core/parser';
 import type { TraceLine, TraceHeader } from '../trace-viewer-core/types';
 
 export interface TraceState {
-    lines: TraceLine[];
+    lines: TraceLine[]; // Use this for display (alias for viewLines)
+    rawLines: TraceLine[]; // Contains all lines including Time, etc.
+    viewLines: TraceLine[]; // Filtered lines for display
     header: TraceHeader;
     isLoading: boolean;
     error: string | null;
@@ -13,6 +15,8 @@ export interface TraceState {
 
 export const traceStore = proxy<TraceState>({
     lines: [],
+    rawLines: [],
+    viewLines: [],
     header: { magic: '' },
     isLoading: false,
     error: null,
@@ -21,6 +25,8 @@ export const traceStore = proxy<TraceState>({
         traceStore.isLoading = true;
         traceStore.error = null;
         traceStore.lines = [];
+        traceStore.rawLines = [];
+        traceStore.viewLines = [];
         traceStore.header = { magic: '' };
 
         try {
@@ -31,9 +37,12 @@ export const traceStore = proxy<TraceState>({
             // For now, sync. Ideally use Web Worker.
             parser.parse();
 
-            // Filter out Time lines for display but keep them in data structure if needed later
-            // Ideally, we should have a "viewLines" separate from "rawLines"
-            traceStore.lines = parser.lines.filter(l => l.code !== 84); // 84 is LineCode.Time
+            traceStore.rawLines = parser.lines;
+            // Filter out Time lines (84) for default view
+            traceStore.viewLines = parser.lines.filter(l => l.code !== 84);
+            // Alias lines to viewLines for backward compatibility with components
+            traceStore.lines = traceStore.viewLines;
+            
             traceStore.header = parser.header;
         } catch (e: any) {
             console.error("Failed to load trace", e);
