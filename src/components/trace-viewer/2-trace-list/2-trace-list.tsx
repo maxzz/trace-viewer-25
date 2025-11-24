@@ -77,29 +77,27 @@ export function TraceList() {
                                     key={line.lineIndex}
                                     onClick={() => (traceStore.currentLineIndex = globalIndex)}
                                     className={cn(
-                                        "flex items-center text-xs font-mono cursor-pointer px-2 whitespace-pre border-l-4",
-                                        globalIndex === currentLineIndex 
-                                            ? "bg-blue-100 dark:bg-blue-900 border-blue-500"
-                                            : "hover:bg-gray-100 dark:hover:bg-gray-800 border-transparent",
+                                        lineClasses,
+                                        globalIndex === currentLineIndex ? lineCurrentClasses : lineNotCurrentClasses,
                                         line.code === LineCode.Error && globalIndex !== currentLineIndex && "bg-red-50 dark:bg-red-900/20"
                                     )}
                                     style={{ height: ITEM_HEIGHT }}
                                 >
                                     {/* Line Number */}
-                                    <span className="w-16 text-gray-400 shrink-0 select-none text-right pr-2 border-r border-gray-200 dark:border-gray-800 mr-2">
+                                    <span className={columnLineNumberClasses}>
                                         {line.lineIndex + 1}
                                     </span>
-    
+
                                     {/* Time Column */}
-                                    <span className="w-24 text-gray-500 shrink-0 select-none tabular-nums border-r border-gray-200 dark:border-gray-800 mr-2 truncate" title={line.timestamp}>
+                                    <span className={columnTimeClasses} title={line.timestamp}>
                                         {line.timestamp || ""}
                                     </span>
-    
+
                                     {/* Thread ID */}
-                                    <span className="w-16 text-yellow-600 dark:text-yellow-500 shrink-0 select-none border-r border-gray-200 dark:border-gray-800 mr-2" title={`Thread ${line.threadId}`}>
+                                    <span className={columnThreadIdClasses} title={`Thread ${line.threadId}`}>
                                         {line.threadId.toString(16).toUpperCase().padStart(4, '0')}
                                     </span>
-    
+
                                     {/* Content with Indent */}
                                     <span
                                         className={cn("flex-1 truncate", line.textColor, getLineColor(line))}
@@ -112,12 +110,21 @@ export function TraceList() {
                                 </div>
                             );
                         }
-                    )}
+                    )
+                    }
                 </div>
             </div>
         </div>
     );
 }
+
+const lineClasses = "flex items-center text-xs font-mono cursor-pointer px-2 whitespace-pre border-l-4";
+const lineCurrentClasses = "bg-blue-100 dark:bg-blue-900 border-blue-500";
+const lineNotCurrentClasses = "hover:bg-gray-100 dark:hover:bg-gray-800 border-transparent";
+
+const columnLineNumberClasses = "w-16 text-gray-400 shrink-0 select-none text-right pr-2 border-r border-gray-200 dark:border-gray-800 mr-2";
+const columnTimeClasses = "w-24 text-gray-500 shrink-0 select-none tabular-nums border-r border-gray-200 dark:border-gray-800 mr-2 truncate";
+const columnThreadIdClasses = "w-16 text-yellow-600 dark:text-yellow-500 shrink-0 select-none border-r border-gray-200 dark:border-gray-800 mr-2";
 
 const ITEM_HEIGHT = 24; // Fixed height for simplicity
 const BUFFER = 20;
