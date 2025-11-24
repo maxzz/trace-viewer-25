@@ -1,4 +1,6 @@
+import { traceStore } from "@/store/trace-store";
 import { atom } from "jotai";
+import { notice } from "../7-toaster";
 
 export type DoSetFilesFrom_Dnd_Atom = typeof doSetFilesFrom_Dnd_Atom;
 
@@ -22,7 +24,17 @@ export const doSetFilesFrom_Dnd_Atom = atom(                    // used by DropI
             }
         }
 
-        console.log('files', files);
+        if (files.length !== 1) {
+            notice.warning("Please drop a single trace file.");
+            return;
+        }
+
+        const file = files[0];
+        if (file) {
+            traceStore.loadTrace(file);
+            console.log('traceStore.loadTrace(file)', file);
+        }
+
         //set(files);
     }
 ); 
