@@ -4,6 +4,53 @@ import { traceStore } from '../../../store/trace-store';
 import { LineCode, type TraceLine } from '../../../trace-viewer-core/types';
 import { cn } from '@/utils';
 
+const formatContent = (line: TraceLine) => {
+    if (line.code === LineCode.Entry) return `>>> ${line.content}`;
+    if (line.code === LineCode.Exit) return `<<< ${line.content}`;
+    return line.content;
+};
+
+function renderRow(line: TraceLine, index: number, startIndex: number, currentLineIndex: number) {
+    const globalIndex = startIndex + index;
+    return (
+        <div
+            key={line.lineIndex}
+            onClick={() => (traceStore.currentLineIndex = globalIndex)}
+            className={cn(
+                lineClasses,
+                globalIndex === currentLineIndex ? lineCurrentClasses : lineNotCurrentClasses,
+                line.code === LineCode.Error && globalIndex !== currentLineIndex && "bg-red-50 dark:bg-red-900/20"
+            )}
+            style={{ height: ITEM_HEIGHT }}
+        >
+            {/* Line Number */}
+            <span className={columnLineNumberClasses}>
+                {line.lineIndex + 1}
+            </span>
+
+            {/* Time Column */}
+            <span className={columnTimeClasses} title={line.timestamp}>
+                {line.timestamp || ""}
+            </span>
+
+            {/* Thread ID */}
+            <span className={columnThreadIdClasses} title={`Thread ${line.threadId}`}>
+                {line.threadId.toString(16).toUpperCase().padStart(4, '0')}
+            </span>
+
+            {/* Content with Indent */}
+            <span
+                className={cn("flex-1 truncate", line.textColor, getLineColor(line))}
+                style={{
+                    paddingLeft: `${line.indent * 12}px`,
+                }}
+            >
+                {formatContent(line)}
+            </span>
+        </div>
+    );
+}
+
 export function TraceList() {
     const { viewLines, currentLineIndex } = useSnapshot(traceStore);
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -59,59 +106,11 @@ export function TraceList() {
     const visibleLines = viewLines.slice(startIndex, endIndex);
     const offsetY = startIndex * ITEM_HEIGHT;
 
-    const formatContent = (line: TraceLine) => {
-        if (line.code === LineCode.Entry) return `>>> ${line.content}`;
-        if (line.code === LineCode.Exit) return `<<< ${line.content}`;
-        return line.content;
-    };
-
     return (
         <div ref={scrollRef} className="h-full w-full overflow-auto relative" onScroll={onScroll}>
             <div style={{ height: totalHeight, position: 'relative' }}>
                 <div style={{ transform: `translateY(${offsetY}px)` }}>
-                    {visibleLines.map(
-                        (line, index) => {
-                            const globalIndex = startIndex + index;
-                            return (
-                                <div
-                                    key={line.lineIndex}
-                                    onClick={() => (traceStore.currentLineIndex = globalIndex)}
-                                    className={cn(
-                                        lineClasses,
-                                        globalIndex === currentLineIndex ? lineCurrentClasses : lineNotCurrentClasses,
-                                        line.code === LineCode.Error && globalIndex !== currentLineIndex && "bg-red-50 dark:bg-red-900/20"
-                                    )}
-                                    style={{ height: ITEM_HEIGHT }}
-                                >
-                                    {/* Line Number */}
-                                    <span className={columnLineNumberClasses}>
-                                        {line.lineIndex + 1}
-                                    </span>
-
-                                    {/* Time Column */}
-                                    <span className={columnTimeClasses} title={line.timestamp}>
-                                        {line.timestamp || ""}
-                                    </span>
-
-                                    {/* Thread ID */}
-                                    <span className={columnThreadIdClasses} title={`Thread ${line.threadId}`}>
-                                        {line.threadId.toString(16).toUpperCase().padStart(4, '0')}
-                                    </span>
-
-                                    {/* Content with Indent */}
-                                    <span
-                                        className={cn("flex-1 truncate", line.textColor, getLineColor(line))}
-                                        style={{
-                                            paddingLeft: `${line.indent * 12}px`,
-                                        }}
-                                    >
-                                        {formatContent(line)}
-                                    </span>
-                                </div>
-                            );
-                        }
-                    )
-                    }
+                    {visibleLines.map((line, index) => renderRow(line, index, startIndex, currentLineIndex))}
                 </div>
             </div>
         </div>
