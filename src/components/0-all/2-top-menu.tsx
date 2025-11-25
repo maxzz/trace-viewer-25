@@ -1,10 +1,10 @@
-import { useRef, useState } from 'react';
-import { TraceLoadInput, TraceOpenMenuItem } from '../trace-viewer/1-trace-uploader';
+import { useRef, useState } from "react";
+import { TraceLoadInput, TraceOpenMenuItem } from "../1-trace-viewer/1-trace-uploader";
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarShortcut, MenubarTrigger } from "../ui/shadcn/menubar";
-import { FileHeaderDialog } from '../dialog/file-header-dialog';
-import { AboutDialog } from '../dialog/about-dialog';
-import { useSnapshot } from 'valtio';
-import { traceStore } from '../../store/trace-store';
+import { FileHeaderDialog } from "../4-dialogs/file-header-dialog";
+import { AboutDialog } from "../4-dialogs/about-dialog";
+import { useSnapshot } from "valtio";
+import { traceStore } from "../../store/trace-store";
 
 export function TopMenu() {
     const fileInputRef = useRef<HTMLInputElement>(null);

@@ -1,8 +1,9 @@
-import React from 'react';
-import { useSnapshot } from 'valtio';
-import { traceStore } from '../../store/trace-store';
-import { TopMenu } from './2-top-menu';
-import { TraceMainView } from './3-trace-main-view';
+import React from "react";
+import { useSnapshot } from "valtio";
+import { traceStore } from "../../store/trace-store";
+import { TopMenu } from "./2-top-menu";
+import { TraceMainView } from "./3-trace-main-view";
+import { TraceFooter } from "./4-trace-footer";
 
 export function TraceViewerApp() {
     const { lines, error } = useSnapshot(traceStore);
@@ -26,6 +27,9 @@ export function TraceViewerApp() {
                     )
                 }
             </div>
+
+            {/* Footer - only shown when we have content */}
+            {hasFile && <TraceFooter />}
         </div>
     );
 }

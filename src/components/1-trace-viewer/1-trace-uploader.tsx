@@ -1,8 +1,8 @@
-import React, { useCallback } from 'react';
-import { useSnapshot } from 'valtio';
-import { traceStore } from '../../store/trace-store';
-import { Input } from '../ui/shadcn/input';
-import { MenubarItem, MenubarShortcut } from '../ui/shadcn/menubar';
+import React, { useCallback } from "react";
+import { useSnapshot } from "valtio";
+import { traceStore } from "../../store/trace-store";
+import { Input } from "../ui/shadcn/input";
+import { MenubarItem, MenubarShortcut } from "../ui/shadcn/menubar";
 
 export function TraceLoadInput({ inputRef }: { inputRef: React.RefObject<HTMLInputElement | null> }) {
     const { isLoading } = useSnapshot(traceStore);

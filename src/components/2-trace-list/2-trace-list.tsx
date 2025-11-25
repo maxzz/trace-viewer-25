@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useSnapshot } from "valtio";
-import { traceStore } from "../../../store/trace-store";
-import { LineCode, type TraceLine } from "../../../trace-viewer-core/types";
+import { traceStore } from "../../store/trace-store";
+import { LineCode, type TraceLine } from "../../trace-viewer-core/types";
 import { cn } from "@/utils";
 
 export function TraceList() {

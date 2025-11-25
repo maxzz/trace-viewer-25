@@ -1,16 +1,16 @@
-import React from 'react';
-import { useSnapshot } from 'valtio';
-import { traceStore } from '../../store/trace-store';
+import React from "react";
+import { useSnapshot } from "valtio";
+import { traceStore } from "../../store/trace-store";
 import {
     Dialog,
     DialogContent,
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from '../ui/shadcn/dialog';
-import { Button } from '../ui/shadcn/button';
-import { Input } from '../ui/shadcn/input';
-import { Textarea } from '../ui/shadcn/textarea';
+} from "../ui/shadcn/dialog";
+import { Button } from "../ui/shadcn/button";
+import { Input } from "../ui/shadcn/input";
+import { Textarea } from "../ui/shadcn/textarea";
 
 interface FileHeaderDialogProps {
     open: boolean;

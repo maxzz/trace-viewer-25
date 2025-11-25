@@ -1,12 +1,12 @@
-import React from 'react';
+import React from "react";
 import {
     Dialog,
     DialogContent,
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from '../ui/shadcn/dialog';
-import { Button } from '../ui/shadcn/button';
+} from "../ui/shadcn/dialog";
+import { Button } from "../ui/shadcn/button";
 
 interface AboutDialogProps {
     open: boolean;

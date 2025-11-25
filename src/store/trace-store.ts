@@ -1,6 +1,6 @@
-import { proxy } from 'valtio';
-import { TraceParser } from '../trace-viewer-core/parser';
-import type { TraceLine, TraceHeader } from '../trace-viewer-core/types';
+import { proxy } from "valtio";
+import { TraceParser } from "../trace-viewer-core/parser";
+import type { TraceLine, TraceHeader } from "../trace-viewer-core/types";
 
 export interface TraceState {
     lines: TraceLine[]; // Use this for display (alias for viewLines)
