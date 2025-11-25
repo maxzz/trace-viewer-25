@@ -58,6 +58,7 @@ export class TraceParser {
         }
 
         const headerText = this.decoderAnsi.decode(uint8Array.slice(0, dataStart));
+        this.header.rawText = headerText;
         this.parseHeaderLines(headerText);
 
         offset = dataStart;

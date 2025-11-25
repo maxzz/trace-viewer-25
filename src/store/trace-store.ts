@@ -7,6 +7,7 @@ export interface TraceState {
     rawLines: TraceLine[]; // Contains all lines including Time, etc.
     viewLines: TraceLine[]; // Filtered lines for display
     header: TraceHeader;
+    fileName: string | null;
     isLoading: boolean;
     error: string | null;
     currentLineIndex: number;
@@ -18,12 +19,14 @@ export const traceStore = proxy<TraceState>({
     rawLines: [],
     viewLines: [],
     header: { magic: '' },
+    fileName: null,
     isLoading: false,
     error: null,
     currentLineIndex: -1,
     loadTrace: async (file: File) => {
         traceStore.isLoading = true;
         traceStore.error = null;
+        traceStore.fileName = file.name;
         traceStore.lines = [];
         traceStore.rawLines = [];
         traceStore.viewLines = [];

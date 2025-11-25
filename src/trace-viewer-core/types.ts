@@ -58,6 +58,7 @@ export interface TraceHeader {
     products?: string[];
     installation?: string;
     dateTime?: string;
+    rawText?: string;
 }
 
 // For internal flow tracking

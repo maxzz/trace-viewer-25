@@ -1,50 +1,67 @@
-import React, { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { TraceLoadInput, TraceOpenMenuItem } from '../trace-viewer/1-trace-uploader';
-import {
-    Menubar,
-    MenubarContent,
-    MenubarItem,
-    MenubarMenu,
-    MenubarSeparator,
-    MenubarShortcut,
-    MenubarTrigger,
-} from "../ui/shadcn/menubar";
+import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarShortcut, MenubarTrigger } from "../ui/shadcn/menubar";
+import { FileHeaderDialog } from '../dialog/file-header-dialog';
+import { AboutDialog } from '../dialog/about-dialog';
+import { useSnapshot } from 'valtio';
+import { traceStore } from '../../store/trace-store';
 
 export function TopMenu() {
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [fileHeaderOpen, setFileHeaderOpen] = useState(false);
+    const [aboutOpen, setAboutOpen] = useState(false);
+    const { lines } = useSnapshot(traceStore);
+    const hasFile = lines.length > 0;
 
-    return (
-        <>
-            <TraceLoadInput inputRef={fileInputRef} />
-            
-            {/* Top Menu */}
-            <div className="border-b">
-                <Menubar className="border-none shadow-none rounded-none px-2">
-                    <MenubarMenu>
-                        <MenubarTrigger>File</MenubarTrigger>
-                        <MenubarContent>
-                            <TraceOpenMenuItem onClick={() => fileInputRef.current?.click()} />
-                            <MenubarSeparator />
-                            <MenubarItem disabled>
-                                Exit <MenubarShortcut>Ctrl+Q</MenubarShortcut>
-                            </MenubarItem>
-                        </MenubarContent>
-                    </MenubarMenu>
-                    <MenubarMenu>
-                        <MenubarTrigger>View</MenubarTrigger>
-                        <MenubarContent>
-                            <MenubarItem disabled>Filter...</MenubarItem>
-                        </MenubarContent>
-                    </MenubarMenu>
-                    <MenubarMenu>
-                        <MenubarTrigger>Help</MenubarTrigger>
-                        <MenubarContent>
-                            <MenubarItem disabled>About</MenubarItem>
-                        </MenubarContent>
-                    </MenubarMenu>
-                </Menubar>
-            </div>
-        </>
-    );
+    return (<>
+        <TraceLoadInput inputRef={fileInputRef} />
+        
+        <FileHeaderDialog open={fileHeaderOpen} onOpenChange={setFileHeaderOpen} />
+        <AboutDialog open={aboutOpen} onOpenChange={setAboutOpen} />
+
+        {/* Top Menu */}
+        <div className="border-b">
+            <Menubar className="border-none shadow-none rounded-none px-2">
+
+                <MenubarMenu>
+                    <MenubarTrigger>File</MenubarTrigger>
+                    <MenubarContent>
+                        <TraceOpenMenuItem onClick={() => fileInputRef.current?.click()} />
+
+                        <MenubarSeparator />
+                        <MenubarItem disabled>
+                            Exit <MenubarShortcut>Ctrl+Q</MenubarShortcut>
+                        </MenubarItem>
+                    </MenubarContent>
+                </MenubarMenu>
+
+                <MenubarMenu>
+                    <MenubarTrigger>
+                        View
+                    </MenubarTrigger>
+                    <MenubarContent>
+                        <MenubarItem disabled>
+                            Filter...
+                        </MenubarItem>
+                        <MenubarSeparator />
+                        <MenubarItem onClick={() => setFileHeaderOpen(true)} disabled={!hasFile}>
+                            Display File Header ...
+                        </MenubarItem>
+                    </MenubarContent>
+                </MenubarMenu>
+
+                <MenubarMenu>
+                    <MenubarTrigger>
+                        Help
+                    </MenubarTrigger>
+                    <MenubarContent>
+                        <MenubarItem onClick={() => setAboutOpen(true)}>
+                            About ViewTrace...
+                        </MenubarItem>
+                    </MenubarContent>
+                </MenubarMenu>
+
+            </Menubar>
+        </div>
+    </>);
 }
-
