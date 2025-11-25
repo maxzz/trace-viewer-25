@@ -117,13 +117,55 @@ export function TraceList() {
     );
 }
 
-const lineClasses = "flex items-center text-xs font-mono cursor-pointer px-2 whitespace-pre border-l-4";
-const lineCurrentClasses = "bg-blue-100 dark:bg-blue-900 border-blue-500";
-const lineNotCurrentClasses = "hover:bg-gray-100 dark:hover:bg-gray-800 border-transparent";
+const lineClasses = "\
+px-2 \
+text-xs \
+font-mono \
+whitespace-pre \
+border-l-4 \
+cursor-pointer \
+flex items-center \
+";
+const lineCurrentClasses = "\
+bg-blue-100 dark:bg-blue-900 \
+border-blue-500 \
+";
+const lineNotCurrentClasses = "\
+hover:bg-gray-100 dark:hover:bg-gray-800 \
+border-transparent \
+";
 
-const columnLineNumberClasses = "w-16 text-gray-400 shrink-0 select-none text-right pr-2 border-r border-gray-200 dark:border-gray-800 mr-2";
-const columnTimeClasses = "w-24 text-gray-500 shrink-0 select-none tabular-nums border-r border-gray-200 dark:border-gray-800 mr-2 truncate";
-const columnThreadIdClasses = "w-16 text-yellow-600 dark:text-yellow-500 shrink-0 select-none border-r border-gray-200 dark:border-gray-800 mr-2";
+const columnLineNumberClasses = "\
+shrink-0 \
+mr-2 \
+pr-2 \
+w-16 \
+text-right \
+text-gray-400 \
+border-gray-200 dark:border-gray-800 \
+border-r \
+select-none \
+";
+const columnTimeClasses = "\
+shrink-0 \
+mr-2 \
+w-24 \
+tabular-nums \
+text-gray-500 \
+border-gray-200 dark:border-gray-800 \
+truncate \
+border-r \
+select-none \
+";
+const columnThreadIdClasses = "\
+shrink-0 \
+mr-2 \
+w-16 \
+text-yellow-600 dark:text-yellow-500 \
+border-gray-200 dark:border-gray-800 \
+border-r \
+select-none \
+";
 
 const ITEM_HEIGHT = 24; // Fixed height for simplicity
 const BUFFER = 20;
