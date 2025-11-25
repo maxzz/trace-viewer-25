@@ -27,9 +27,9 @@ export function TraceList() {
     // Keyboard navigation
     useEffect(() => {
         const controller = new AbortController();
-        window.addEventListener('keydown', (e) => handleKeyboardNavigation(e, containerHeight), { signal: controller.signal });
+        window.addEventListener('keydown', (e) => handleKeyboardNavigation(e, containerHeight, scrollTop), { signal: controller.signal });
         return () => controller.abort();
-    }, [containerHeight]);
+    }, [containerHeight, scrollTop]);
 
     // Scroll to selection
     useEffect(() => {
@@ -91,7 +91,7 @@ function getLineColor(line: TraceLine) {
     }
 }
 
-function handleKeyboardNavigation(e: KeyboardEvent, containerHeight: number) {
+function handleKeyboardNavigation(e: KeyboardEvent, containerHeight: number, scrollTop: number) {
     // Ignore if focus is in an input/textarea
     if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') {
         return;
@@ -102,6 +102,11 @@ function handleKeyboardNavigation(e: KeyboardEvent, containerHeight: number) {
 
     const currentIndex = traceStore.currentLineIndex;
     const linesPerPage = Math.floor(containerHeight / ITEM_HEIGHT);
+    // Calculate current visible range based on scrollTop
+    // Note: This might be slightly off due to BUFFER but gives good approximation for visual jumps
+    const firstVisibleIndex = Math.floor(scrollTop / ITEM_HEIGHT);
+    const lastVisibleIndex = Math.min(totalLines - 1, firstVisibleIndex + linesPerPage - 1);
+
     let newIndex = currentIndex;
 
     switch (e.key) {
@@ -112,11 +117,19 @@ function handleKeyboardNavigation(e: KeyboardEvent, containerHeight: number) {
             newIndex = currentIndex === -1 ? 0 : Math.min(totalLines - 1, currentIndex + 1);
             break;
         case 'PageUp':
-            newIndex = Math.max(0, currentIndex - linesPerPage);
+            if (e.altKey) {  // Changed from e.ctrlKey to e.altKey
+                newIndex = firstVisibleIndex;
+            } else {
+                newIndex = Math.max(0, currentIndex - linesPerPage);
+            }
             break;
         case 'PageDown':
-            const start = currentIndex === -1 ? 0 : currentIndex;
-            newIndex = Math.min(totalLines - 1, start + linesPerPage);
+            if (e.altKey) {  // Changed from e.ctrlKey to e.altKey
+                newIndex = lastVisibleIndex;
+            } else {
+                const start = currentIndex === -1 ? 0 : currentIndex;
+                newIndex = Math.min(totalLines - 1, start + linesPerPage);
+            }
             break;
         case 'Home':
             newIndex = 0;
@@ -147,6 +160,8 @@ flex items-center \
 const lineCurrentClasses = "\
 bg-blue-100 dark:bg-blue-900 \
 border-blue-500 \
+outline-1 outline-blue-300 dark:outline-blue-700 \
+-outline-offset-1 \
 ";
 const lineNotCurrentClasses = "\
 hover:bg-gray-100 dark:hover:bg-gray-800 \
