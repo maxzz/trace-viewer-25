@@ -210,10 +210,11 @@ bg-red-50 dark:bg-red-900/20 \
 ";
 
 function getRowClasses(line: TraceLine, globalIndex: number, currentLineIndex: number) {
+    const isCurrent = globalIndex === currentLineIndex;
     return cn(
         lineClasses,
-        globalIndex === currentLineIndex ? lineCurrentClasses : lineNotCurrentClasses,
-        line.code === LineCode.Error && globalIndex !== currentLineIndex && lineErrorClasses
+        isCurrent ? lineCurrentClasses : lineNotCurrentClasses,
+        line.code === LineCode.Error && !isCurrent && lineErrorClasses
     );
 }
 
