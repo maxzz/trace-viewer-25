@@ -147,27 +147,6 @@ function handleKeyboardNavigation(e: KeyboardEvent, containerHeight: number, scr
     }
 }
 
-
-const lineClasses = "\
-px-2 \
-text-xs \
-font-mono \
-whitespace-pre \
-border-l-4 \
-cursor-pointer \
-flex items-center \
-";
-const lineCurrentClasses = "\
-bg-blue-100 dark:bg-blue-900 \
-border-blue-500 \
-outline-1 outline-blue-300 dark:outline-blue-700 \
--outline-offset-1 \
-";
-const lineNotCurrentClasses = "\
-hover:bg-gray-100 dark:hover:bg-gray-800 \
-border-transparent \
-";
-
 const columnLineNumberClasses = "\
 shrink-0 \
 mr-2 \
@@ -206,17 +185,45 @@ const formatContent = (line: TraceLine) => {
     return line.content;
 };
 
+const lineClasses = "\
+px-2 \
+text-xs \
+font-mono \
+whitespace-pre \
+border-l-4 \
+cursor-pointer \
+flex items-center \
+";
+const lineCurrentClasses = "\
+bg-blue-100 dark:bg-blue-900 \
+border-blue-500 \
+outline-1 outline-blue-300 dark:outline-blue-700 \
+-outline-offset-1 \
+";
+const lineNotCurrentClasses = "\
+hover:bg-gray-100 dark:hover:bg-gray-800 \
+border-transparent \
+";
+
+const lineErrorClasses = "\
+bg-red-50 dark:bg-red-900/20 \
+";
+
+function getRowClasses(line: TraceLine, globalIndex: number, currentLineIndex: number) {
+    return cn(
+        lineClasses,
+        globalIndex === currentLineIndex ? lineCurrentClasses : lineNotCurrentClasses,
+        line.code === LineCode.Error && globalIndex !== currentLineIndex && lineErrorClasses
+    );
+}
+
 function renderRow(line: TraceLine, index: number, startIndex: number, currentLineIndex: number) {
     const globalIndex = startIndex + index;
     return (
         <div
             key={line.lineIndex}
             onClick={() => (traceStore.currentLineIndex = globalIndex)}
-            className={cn(
-                lineClasses,
-                globalIndex === currentLineIndex ? lineCurrentClasses : lineNotCurrentClasses,
-                line.code === LineCode.Error && globalIndex !== currentLineIndex && "bg-red-50 dark:bg-red-900/20"
-            )}
+            className={getRowClasses(line, globalIndex, currentLineIndex)}
             style={{ height: ITEM_HEIGHT }}
         >
             {/* Line Number */}
@@ -237,9 +244,8 @@ function renderRow(line: TraceLine, index: number, startIndex: number, currentLi
             {/* Content with Indent */}
             <span
                 className={cn("flex-1 truncate", line.textColor, getLineColor(line))}
-                style={{
-                    paddingLeft: `${line.indent * 12}px`,
-                }}
+                title={line.content}
+                style={{ paddingLeft: `${line.indent * 12}px`, }}
             >
                 {formatContent(line)}
             </span>
