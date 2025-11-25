@@ -4,53 +4,6 @@ import { traceStore } from '../../../store/trace-store';
 import { LineCode, type TraceLine } from '../../../trace-viewer-core/types';
 import { cn } from '@/utils';
 
-const formatContent = (line: TraceLine) => {
-    if (line.code === LineCode.Entry) return `>>> ${line.content}`;
-    if (line.code === LineCode.Exit) return `<<< ${line.content}`;
-    return line.content;
-};
-
-function renderRow(line: TraceLine, index: number, startIndex: number, currentLineIndex: number) {
-    const globalIndex = startIndex + index;
-    return (
-        <div
-            key={line.lineIndex}
-            onClick={() => (traceStore.currentLineIndex = globalIndex)}
-            className={cn(
-                lineClasses,
-                globalIndex === currentLineIndex ? lineCurrentClasses : lineNotCurrentClasses,
-                line.code === LineCode.Error && globalIndex !== currentLineIndex && "bg-red-50 dark:bg-red-900/20"
-            )}
-            style={{ height: ITEM_HEIGHT }}
-        >
-            {/* Line Number */}
-            <span className={columnLineNumberClasses}>
-                {line.lineIndex + 1}
-            </span>
-
-            {/* Time Column */}
-            <span className={columnTimeClasses} title={line.timestamp}>
-                {line.timestamp || ""}
-            </span>
-
-            {/* Thread ID */}
-            <span className={columnThreadIdClasses} title={`Thread ${line.threadId}`}>
-                {line.threadId.toString(16).toUpperCase().padStart(4, '0')}
-            </span>
-
-            {/* Content with Indent */}
-            <span
-                className={cn("flex-1 truncate", line.textColor, getLineColor(line))}
-                style={{
-                    paddingLeft: `${line.indent * 12}px`,
-                }}
-            >
-                {formatContent(line)}
-            </span>
-        </div>
-    );
-}
-
 export function TraceList() {
     const { viewLines, currentLineIndex } = useSnapshot(traceStore);
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -107,65 +60,17 @@ export function TraceList() {
     const offsetY = startIndex * ITEM_HEIGHT;
 
     return (
-        <div ref={scrollRef} className="h-full w-full overflow-auto relative" onScroll={onScroll}>
+        <div ref={scrollRef} className="size-full overflow-auto relative" onScroll={onScroll}>
             <div style={{ height: totalHeight, position: 'relative' }}>
                 <div style={{ transform: `translateY(${offsetY}px)` }}>
-                    {visibleLines.map((line, index) => renderRow(line, index, startIndex, currentLineIndex))}
+                    {visibleLines.map(
+                        (line, index) => renderRow(line, index, startIndex, currentLineIndex)
+                    )}
                 </div>
             </div>
         </div>
     );
 }
-
-const lineClasses = "\
-px-2 \
-text-xs \
-font-mono \
-whitespace-pre \
-border-l-4 \
-cursor-pointer \
-flex items-center \
-";
-const lineCurrentClasses = "\
-bg-blue-100 dark:bg-blue-900 \
-border-blue-500 \
-";
-const lineNotCurrentClasses = "\
-hover:bg-gray-100 dark:hover:bg-gray-800 \
-border-transparent \
-";
-
-const columnLineNumberClasses = "\
-shrink-0 \
-mr-2 \
-pr-2 \
-w-16 \
-text-right \
-text-gray-400 \
-border-gray-200 dark:border-gray-800 \
-border-r \
-select-none \
-";
-const columnTimeClasses = "\
-shrink-0 \
-mr-2 \
-w-24 \
-tabular-nums \
-text-gray-500 \
-border-gray-200 dark:border-gray-800 \
-truncate \
-border-r \
-select-none \
-";
-const columnThreadIdClasses = "\
-shrink-0 \
-mr-2 \
-w-16 \
-text-yellow-600 dark:text-yellow-500 \
-border-gray-200 dark:border-gray-800 \
-border-r \
-select-none \
-";
 
 const ITEM_HEIGHT = 24; // Fixed height for simplicity
 const BUFFER = 20;
@@ -227,4 +132,102 @@ function handleKeyboardNavigation(e: KeyboardEvent, containerHeight: number) {
     if (newIndex !== currentIndex) {
         traceStore.currentLineIndex = newIndex;
     }
+}
+
+
+const lineClasses = "\
+px-2 \
+text-xs \
+font-mono \
+whitespace-pre \
+border-l-4 \
+cursor-pointer \
+flex items-center \
+";
+const lineCurrentClasses = "\
+bg-blue-100 dark:bg-blue-900 \
+border-blue-500 \
+";
+const lineNotCurrentClasses = "\
+hover:bg-gray-100 dark:hover:bg-gray-800 \
+border-transparent \
+";
+
+const columnLineNumberClasses = "\
+shrink-0 \
+mr-2 \
+pr-2 \
+w-16 \
+text-right \
+text-gray-400 \
+border-gray-200 dark:border-gray-800 \
+border-r \
+select-none \
+";
+const columnTimeClasses = "\
+shrink-0 \
+mr-2 \
+w-24 \
+tabular-nums \
+text-gray-500 \
+border-gray-200 dark:border-gray-800 \
+truncate \
+border-r \
+select-none \
+";
+const columnThreadIdClasses = "\
+shrink-0 \
+mr-2 \
+w-16 \
+text-yellow-600 dark:text-yellow-500 \
+border-gray-200 dark:border-gray-800 \
+border-r \
+select-none \
+";
+
+const formatContent = (line: TraceLine) => {
+    if (line.code === LineCode.Entry) return `>>> ${line.content}`;
+    if (line.code === LineCode.Exit) return `<<< ${line.content}`;
+    return line.content;
+};
+
+function renderRow(line: TraceLine, index: number, startIndex: number, currentLineIndex: number) {
+    const globalIndex = startIndex + index;
+    return (
+        <div
+            key={line.lineIndex}
+            onClick={() => (traceStore.currentLineIndex = globalIndex)}
+            className={cn(
+                lineClasses,
+                globalIndex === currentLineIndex ? lineCurrentClasses : lineNotCurrentClasses,
+                line.code === LineCode.Error && globalIndex !== currentLineIndex && "bg-red-50 dark:bg-red-900/20"
+            )}
+            style={{ height: ITEM_HEIGHT }}
+        >
+            {/* Line Number */}
+            <span className={columnLineNumberClasses}>
+                {line.lineIndex + 1}
+            </span>
+
+            {/* Time Column */}
+            <span className={columnTimeClasses} title={line.timestamp}>
+                {line.timestamp || ""}
+            </span>
+
+            {/* Thread ID */}
+            <span className={columnThreadIdClasses} title={`Thread ${line.threadId}`}>
+                {line.threadId.toString(16).toUpperCase().padStart(4, '0')}
+            </span>
+
+            {/* Content with Indent */}
+            <span
+                className={cn("flex-1 truncate", line.textColor, getLineColor(line))}
+                style={{
+                    paddingLeft: `${line.indent * 12}px`,
+                }}
+            >
+                {formatContent(line)}
+            </span>
+        </div>
+    );
 }
