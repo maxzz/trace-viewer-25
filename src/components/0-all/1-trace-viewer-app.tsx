@@ -1,12 +1,14 @@
 import React from "react";
 import { useSnapshot } from "valtio";
 import { traceStore } from "../../store/trace-store";
+import { appSettings } from "../../store/ui-settings";
 import { TopMenu } from "./2-top-menu";
 import { TraceMainView } from "./3-trace-main-view";
 import { TraceFooter } from "./4-trace-footer";
 
 export function TraceViewerApp() {
     const { lines, error } = useSnapshot(traceStore);
+    const { showFooter } = useSnapshot(appSettings);
     const hasFile = lines.length > 0 || !!error;
 
     return (
@@ -28,8 +30,8 @@ export function TraceViewerApp() {
                 }
             </div>
 
-            {/* Footer - only shown when we have content */}
-            {hasFile && <TraceFooter />}
+            {/* Footer - only shown when we have content and enabled in settings */}
+            {hasFile && showFooter && <TraceFooter />}
         </div>
     );
 }
