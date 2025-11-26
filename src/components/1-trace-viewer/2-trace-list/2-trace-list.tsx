@@ -196,7 +196,7 @@ function renderRow(line: TraceLine, index: number, startIndex: number, currentLi
             <span className={cn(columnThreadIdClasses, "w-auto flex px-1")}>
                 {uniqueThreadIds.map(tid => (
                     <div key={tid} className="relative w-3 h-full flex justify-center items-center" title={`Thread ${tid} (0x${tid.toString(16).toUpperCase()})`}>
-                        <div className="absolute top-0 bottom-0 w-px bg-gray-300 dark:bg-gray-700" />
+                        <div className="absolute -top-1/2 -bottom-1/2 w-px bg-gray-300 dark:bg-gray-700" />
                         {tid === line.threadId && (
                             <div className="z-10 size-2 rounded-full border border-yellow-600 dark:border-yellow-500 bg-transparent" />
                         )}
