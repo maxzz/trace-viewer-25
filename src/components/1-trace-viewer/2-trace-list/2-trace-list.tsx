@@ -1,10 +1,11 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useSnapshot } from "valtio";
+import { cn } from "@/utils";
 import { traceStore } from "../../../store/trace-store";
 import { appSettings } from "../../../store/ui-settings";
 import { LineCode, type TraceLine } from "../../../trace-viewer-core/types";
-import { cn } from "@/utils";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { columnLineNumberClasses, columnTimeClasses, columnThreadIdClasses, lineClasses, lineCurrentClasses, lineNotCurrentClasses, lineErrorClasses } from "./8-classes";
 
 export function TraceList() {
     const { viewLines, currentLineIndex } = useSnapshot(traceStore);
@@ -150,38 +151,6 @@ function handleKeyboardNavigation(e: KeyboardEvent, containerHeight: number, scr
     }
 }
 
-const columnLineNumberClasses = "\
-shrink-0 \
-mr-2 \
-pr-2 \
-w-16 \
-text-right \
-text-gray-400 \
-border-gray-200 dark:border-gray-800 \
-border-r \
-select-none \
-";
-const columnTimeClasses = "\
-shrink-0 \
-mr-2 \
-w-24 \
-tabular-nums \
-text-gray-500 \
-border-gray-200 dark:border-gray-800 \
-truncate \
-border-r \
-select-none \
-";
-const columnThreadIdClasses = "\
-shrink-0 \
-mr-2 \
-w-16 \
-text-yellow-600 dark:text-yellow-500 \
-border-gray-200 dark:border-gray-800 \
-border-r \
-select-none \
-";
-
 const formatContent = (line: TraceLine, useIconsForEntryExit: boolean) => {
     if (useIconsForEntryExit) {
         if (line.code === LineCode.Entry) return <span className="flex items-center gap-1"><ArrowRight className="size-2 opacity-30" /> <span className="">{line.content}</span></span>;
@@ -194,30 +163,6 @@ const formatContent = (line: TraceLine, useIconsForEntryExit: boolean) => {
     // if (line.code === LineCode.Exit) return `<<< ${line.content}`;
     return line.content;
 };
-
-const lineClasses = "\
-px-2 \
-text-xs \
-font-mono \
-whitespace-pre \
-border-l-4 \
-cursor-pointer \
-flex items-center \
-";
-const lineCurrentClasses = "\
-bg-blue-100 dark:bg-blue-900 \
-border-blue-500 \
-outline-1 outline-blue-300 dark:outline-blue-700 \
--outline-offset-1 \
-";
-const lineNotCurrentClasses = "\
-hover:bg-gray-100 dark:hover:bg-gray-800 \
-border-transparent \
-";
-
-const lineErrorClasses = "\
-bg-red-50 dark:bg-red-900/20 \
-";
 
 function getRowClasses(line: TraceLine, globalIndex: number, currentLineIndex: number) {
     const isCurrent = globalIndex === currentLineIndex;
