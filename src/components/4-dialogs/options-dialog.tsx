@@ -25,26 +25,19 @@ export function OptionsDialog({ open, onOpenChange }: OptionsDialogProps) {
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[400px]">
                 <DialogHeader>
-                    <DialogTitle>Options</DialogTitle>
+                    <DialogTitle className="text-sm">Options</DialogTitle>
                 </DialogHeader>
 
                 <div className="grid gap-4 py-4">
-                    <div className="flex items-center space-x-2">
-                        <Checkbox
-                            id="show-footer"
-                            checked={settings.showFooter}
-                            onCheckedChange={handleShowFooterChange}
-                        />
-                        <Label htmlFor="show-footer">Show Footer</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <Checkbox
-                            id="use-icons"
-                            checked={settings.useIconsForEntryExit}
-                            onCheckedChange={handleUseIconsChange}
-                        />
-                        <Label htmlFor="use-icons">Use Icons for Entry/Exit</Label>
-                    </div>
+                    <Label className="text-xs font-normal flex items-center space-x-1">
+                        <Checkbox className="size-5" checked={settings.showFooter} onCheckedChange={handleShowFooterChange} />
+                        Show Footer
+                    </Label>
+
+                    <Label className="text-xs font-normal flex items-center space-x-1">
+                        <Checkbox className="p-1 size-5" checked={settings.useIconsForEntryExit} onCheckedChange={handleUseIconsChange} />
+                        Use Icons for Entry/Exit lines
+                    </Label>
                 </div>
 
                 <DialogFooter>
@@ -54,4 +47,3 @@ export function OptionsDialog({ open, onOpenChange }: OptionsDialogProps) {
         </Dialog>
     );
 }
-
