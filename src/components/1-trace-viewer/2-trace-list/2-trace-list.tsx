@@ -173,6 +173,11 @@ function getRowClasses(line: TraceLine, globalIndex: number, currentLineIndex: n
     );
 }
 
+function getThreadColor(tid: number) {
+    const hue = (Math.abs(tid) * 137.508) % 360;
+    return `hsl(${hue}, 75%, 50%)`;
+}
+
 function renderRow(line: TraceLine, index: number, startIndex: number, currentLineIndex: number, useIconsForEntryExit: boolean, uniqueThreadIds: readonly number[]) {
     const globalIndex = startIndex + index;
     return (
@@ -193,15 +198,24 @@ function renderRow(line: TraceLine, index: number, startIndex: number, currentLi
             </div>
 
             {/* Thread ID */}
-            <div className={cn(columnThreadIdClasses, "w-auto h-full flex px-1", index === currentLineIndex ? "" : "bg-muted/40")}>
-                {uniqueThreadIds.map(tid => (
-                    <div key={tid} className="relative w-3 h-full flex justify-center items-center" title={`Thread ${tid} (0x${tid.toString(16).toUpperCase()})`}>
-                        <div className="absolute w-px -top-1/2 -bottom-1/2 border-l border-foreground/5" />
-                        {tid === line.threadId && (
-                            <div className="size-2 1bg-transparent bg-muted/50 border-foreground/30 border rounded-full z-10" />
-                        )}
-                    </div>
-                ))}
+            <div className={cn(columnThreadIdClasses, "w-auto h-full flex px-1", globalIndex === currentLineIndex ? "" : "bg-muted/40")}>
+                {uniqueThreadIds.map((tid) => {
+                    const color = getThreadColor(tid);
+                    return (
+                        <div key={tid} className="relative w-3 h-full flex justify-center items-center" title={`Thread ${tid} (0x${tid.toString(16).toUpperCase()})`}>
+                            <div 
+                                className="absolute w-px -top-1/2 -bottom-1/2 border-l"
+                                style={{ borderLeftColor: color, opacity: 0.5 }} 
+                            />
+                            {tid === line.threadId && (
+                                <div 
+                                    className="size-2 bg-transparent border rounded-full z-10" 
+                                    style={{ borderColor: color }}
+                                />
+                            )}
+                        </div>
+                    );
+                })}
             </div>
 
             {/* Content with Indent */}
