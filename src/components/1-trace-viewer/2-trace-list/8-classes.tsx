@@ -16,7 +16,6 @@ flex items-center justify-end \
 
 export const columnTimeClasses = "\
 shrink-0 \
-mr-2 \
 w-24 \
 h-full \
 tabular-nums \
