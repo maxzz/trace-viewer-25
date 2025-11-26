@@ -1,11 +1,14 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useSnapshot } from "valtio";
 import { traceStore } from "../../../store/trace-store";
+import { appSettings } from "../../../store/ui-settings";
 import { LineCode, type TraceLine } from "../../../trace-viewer-core/types";
 import { cn } from "@/utils";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 export function TraceList() {
     const { viewLines, currentLineIndex } = useSnapshot(traceStore);
+    const { useIconsForEntryExit } = useSnapshot(appSettings);
     const scrollRef = useRef<HTMLDivElement>(null);
     const [scrollTop, setScrollTop] = useState(0);
     const [containerHeight, setContainerHeight] = useState(800); // Default
@@ -64,7 +67,7 @@ export function TraceList() {
             <div style={{ height: totalHeight, position: 'relative' }}>
                 <div style={{ transform: `translateY(${offsetY}px)` }}>
                     {visibleLines.map(
-                        (line, index) => renderRow(line, index, startIndex, currentLineIndex)
+                        (line, index) => renderRow(line, index, startIndex, currentLineIndex, useIconsForEntryExit)
                     )}
                 </div>
             </div>
@@ -179,9 +182,16 @@ border-r \
 select-none \
 ";
 
-const formatContent = (line: TraceLine) => {
-    if (line.code === LineCode.Entry) return `>>> ${line.content}`;
-    if (line.code === LineCode.Exit) return `<<< ${line.content}`;
+const formatContent = (line: TraceLine, useIconsForEntryExit: boolean) => {
+    if (useIconsForEntryExit) {
+        if (line.code === LineCode.Entry) return <span className="flex items-center gap-1"><ArrowRight className="size-2 opacity-30" /> <span className="">{line.content}</span></span>;
+        if (line.code === LineCode.Exit) return <span className="flex items-center gap-1"><ArrowLeft className="size-2 opacity-30" /> <span className="">{line.content}</span></span>;
+    } else {
+        if (line.code === LineCode.Entry) return `>>> ${line.content}`;
+        if (line.code === LineCode.Exit) return `<<< ${line.content}`;
+    }
+    // if (line.code === LineCode.Entry) return `>>> ${line.content}`;
+    // if (line.code === LineCode.Exit) return `<<< ${line.content}`;
     return line.content;
 };
 
@@ -218,7 +228,7 @@ function getRowClasses(line: TraceLine, globalIndex: number, currentLineIndex: n
     );
 }
 
-function renderRow(line: TraceLine, index: number, startIndex: number, currentLineIndex: number) {
+function renderRow(line: TraceLine, index: number, startIndex: number, currentLineIndex: number, useIconsForEntryExit: boolean) {
     const globalIndex = startIndex + index;
     return (
         <div
@@ -248,7 +258,7 @@ function renderRow(line: TraceLine, index: number, startIndex: number, currentLi
                 title={line.content}
                 style={{ paddingLeft: `${line.indent * 12}px`, }}
             >
-                {formatContent(line)}
+                {formatContent(line, useIconsForEntryExit)}
             </span>
         </div>
     );

@@ -6,11 +6,13 @@ const STORAGE_ID = `${STORE_KEY}::${STORE_VER}`;
 
 export interface AppSettings {
     showFooter: boolean;
+    useIconsForEntryExit: boolean;
     // Future options can be added here
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
     showFooter: true,
+    useIconsForEntryExit: true,
 };
 
 const loadSettings = (): AppSettings => {

@@ -17,6 +17,10 @@ export function OptionsDialog({ open, onOpenChange }: OptionsDialogProps) {
         appSettings.showFooter = checked;
     };
 
+    const handleUseIconsChange = (checked: boolean) => {
+        appSettings.useIconsForEntryExit = checked;
+    };
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[400px]">
@@ -32,6 +36,14 @@ export function OptionsDialog({ open, onOpenChange }: OptionsDialogProps) {
                             onCheckedChange={handleShowFooterChange}
                         />
                         <Label htmlFor="show-footer">Show Footer</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <Checkbox
+                            id="use-icons"
+                            checked={settings.useIconsForEntryExit}
+                            onCheckedChange={handleUseIconsChange}
+                        />
+                        <Label htmlFor="use-icons">Use Icons for Entry/Exit</Label>
                     </div>
                 </div>
 
