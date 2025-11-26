@@ -35,3 +35,11 @@ export function TraceViewerApp() {
         </div>
     );
 }
+
+//TODO: electron build
+//TODO: dark mode and switch
+//TODO: fix lines vertical padding
+//TODO: thread column as line with dots. separate line for each thread and tooltip to show thread ID.
+//TODO: filter by thread ID, errors, etc.
+//TODO: PageUp/PageDown should preserve current line position on page if possible.
+//TODO: add help dialog with keyboard shortcuts and other information.
