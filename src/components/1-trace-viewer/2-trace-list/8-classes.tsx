@@ -5,23 +5,27 @@ shrink-0 \
 mr-2 \
 pr-2 \
 w-16 \
+h-full \
 text-right \
 text-gray-400 \
 border-gray-200 dark:border-gray-800 \
 border-r \
 select-none \
+flex items-center justify-end \
 ";
 
 export const columnTimeClasses = "\
 shrink-0 \
 mr-2 \
 w-24 \
+h-full \
 tabular-nums \
 text-gray-500 \
 border-gray-200 dark:border-gray-800 \
 truncate \
 border-r \
 select-none \
+flex items-center \
 ";
 
 export const columnThreadIdClasses = "\

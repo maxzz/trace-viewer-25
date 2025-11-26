@@ -76,7 +76,7 @@ export function TraceList() {
     );
 }
 
-const ITEM_HEIGHT = 24; // Fixed height for simplicity
+const ITEM_HEIGHT = 20; // Fixed height for simplicity. was 24
 const BUFFER = 20;
 
 function getLineColor(line: TraceLine) {
@@ -183,17 +183,17 @@ function renderRow(line: TraceLine, index: number, startIndex: number, currentLi
             style={{ height: ITEM_HEIGHT }}
         >
             {/* Line Number */}
-            <span className={columnLineNumberClasses}>
+            <div className={columnLineNumberClasses}>
                 {line.lineIndex + 1}
-            </span>
+            </div>
 
             {/* Time Column */}
-            <span className={columnTimeClasses} title={line.timestamp}>
+            <div className={columnTimeClasses} title={line.timestamp}>
                 {line.timestamp || ""}
-            </span>
+            </div>
 
             {/* Thread ID */}
-            <span className={cn(columnThreadIdClasses, "w-auto flex px-1")}>
+            <div className={cn(columnThreadIdClasses, "w-auto h-full flex px-1")}>
                 {uniqueThreadIds.map(tid => (
                     <div key={tid} className="relative w-3 h-full flex justify-center items-center" title={`Thread ${tid} (0x${tid.toString(16).toUpperCase()})`}>
                         <div className="absolute -top-1/2 -bottom-1/2 w-px bg-gray-300 dark:bg-gray-700" />
@@ -202,16 +202,16 @@ function renderRow(line: TraceLine, index: number, startIndex: number, currentLi
                         )}
                     </div>
                 ))}
-            </span>
+            </div>
 
             {/* Content with Indent */}
-            <span
-                className={cn("flex-1 truncate", line.textColor, getLineColor(line))}
+            <div
+                className={cn("flex-1 h-full truncate flex items-center", line.textColor, getLineColor(line))}
                 title={line.content}
                 style={{ paddingLeft: `${line.indent * 12}px`, }}
             >
                 {formatContent(line, useIconsForEntryExit)}
-            </span>
+            </div>
         </div>
     );
 }
