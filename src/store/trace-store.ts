@@ -6,6 +6,7 @@ export interface TraceState {
     lines: TraceLine[]; // Use this for display (alias for viewLines)
     rawLines: TraceLine[]; // Contains all lines including Time, etc.
     viewLines: TraceLine[]; // Filtered lines for display
+    uniqueThreadIds: number[];
     header: TraceHeader;
     fileName: string | null;
     isLoading: boolean;
@@ -18,6 +19,7 @@ export const traceStore = proxy<TraceState>({
     lines: [],
     rawLines: [],
     viewLines: [],
+    uniqueThreadIds: [],
     header: { magic: '' },
     fileName: null,
     isLoading: false,
@@ -46,6 +48,8 @@ export const traceStore = proxy<TraceState>({
             // Alias lines to viewLines for backward compatibility with components
             traceStore.lines = traceStore.viewLines;
             
+            traceStore.uniqueThreadIds = Array.from(new Set(parser.lines.map(l => l.threadId))).sort((a, b) => a - b);
+
             traceStore.header = parser.header;
         } catch (e: any) {
             console.error("Failed to load trace", e);

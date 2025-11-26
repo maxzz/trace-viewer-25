@@ -8,7 +8,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { columnLineNumberClasses, columnTimeClasses, columnThreadIdClasses, lineClasses, lineCurrentClasses, lineNotCurrentClasses, lineErrorClasses } from "./8-classes";
 
 export function TraceList() {
-    const { viewLines, currentLineIndex } = useSnapshot(traceStore);
+    const { viewLines, currentLineIndex, uniqueThreadIds } = useSnapshot(traceStore);
     const { useIconsForEntryExit } = useSnapshot(appSettings);
     const scrollRef = useRef<HTMLDivElement>(null);
     const [scrollTop, setScrollTop] = useState(0);
@@ -68,7 +68,7 @@ export function TraceList() {
             <div style={{ height: totalHeight, position: 'relative' }}>
                 <div style={{ transform: `translateY(${offsetY}px)` }}>
                     {visibleLines.map(
-                        (line, index) => renderRow(line, index, startIndex, currentLineIndex, useIconsForEntryExit)
+                        (line, index) => renderRow(line, index, startIndex, currentLineIndex, useIconsForEntryExit, uniqueThreadIds)
                     )}
                 </div>
             </div>
@@ -173,7 +173,7 @@ function getRowClasses(line: TraceLine, globalIndex: number, currentLineIndex: n
     );
 }
 
-function renderRow(line: TraceLine, index: number, startIndex: number, currentLineIndex: number, useIconsForEntryExit: boolean) {
+function renderRow(line: TraceLine, index: number, startIndex: number, currentLineIndex: number, useIconsForEntryExit: boolean, uniqueThreadIds: readonly number[]) {
     const globalIndex = startIndex + index;
     return (
         <div
@@ -193,8 +193,15 @@ function renderRow(line: TraceLine, index: number, startIndex: number, currentLi
             </span>
 
             {/* Thread ID */}
-            <span className={columnThreadIdClasses} title={`Thread ${line.threadId}`}>
-                {line.threadId.toString(16).toUpperCase().padStart(4, '0')}
+            <span className={cn(columnThreadIdClasses, "w-auto flex px-1")}>
+                {uniqueThreadIds.map(tid => (
+                    <div key={tid} className="relative w-3 h-full flex justify-center items-center" title={`Thread ${tid} (0x${tid.toString(16).toUpperCase()})`}>
+                        <div className="absolute top-0 bottom-0 w-px bg-gray-300 dark:bg-gray-700" />
+                        {tid === line.threadId && (
+                            <div className="z-10 size-2 rounded-full border border-yellow-600 dark:border-yellow-500 bg-transparent" />
+                        )}
+                    </div>
+                ))}
             </span>
 
             {/* Content with Indent */}
