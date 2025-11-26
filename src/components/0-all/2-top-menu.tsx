@@ -17,7 +17,7 @@ export function TopMenu() {
 
     return (<>
         <TraceLoadInput inputRef={fileInputRef} />
-        
+
         <FileHeaderDialog open={fileHeaderOpen} onOpenChange={setFileHeaderOpen} />
         <AboutDialog open={aboutOpen} onOpenChange={setAboutOpen} />
         <OptionsDialog open={optionsOpen} onOpenChange={setOptionsOpen} />
@@ -27,17 +27,20 @@ export function TopMenu() {
             <Menubar className="border-none shadow-none rounded-none px-2">
 
                 <MenubarMenu>
-                    <MenubarTrigger>File</MenubarTrigger>
+                    <MenubarTrigger>
+                        File
+                    </MenubarTrigger>
                     <MenubarContent>
                         <TraceOpenMenuItem onClick={() => fileInputRef.current?.click()} />
                         <MenubarItem onClick={() => setOptionsOpen(true)}>
                             Options...
                         </MenubarItem>
 
-                        <MenubarSeparator />
+                        {/* Exit Menu Item - not implemented yet */}
+                        {/* <MenubarSeparator />
                         <MenubarItem disabled>
                             Exit <MenubarShortcut>Ctrl+Q</MenubarShortcut>
-                        </MenubarItem>
+                        </MenubarItem> */}
                     </MenubarContent>
                 </MenubarMenu>
 

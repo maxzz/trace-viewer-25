@@ -30,10 +30,11 @@ export function TraceLoadInput({ inputRef }: { inputRef: React.RefObject<HTMLInp
 
 export function TraceOpenMenuItem({ onClick }: { onClick: () => void }) {
     const { isLoading } = useSnapshot(traceStore);
-    
+
     return (
         <MenubarItem onClick={onClick} disabled={isLoading}>
-            Open Trace... <MenubarShortcut>Ctrl+O</MenubarShortcut>
+            Open Trace File...
+            <MenubarShortcut>Ctrl+O</MenubarShortcut>
         </MenubarItem>
     );
 }
