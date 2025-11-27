@@ -13,13 +13,13 @@ export function AboutDialog({ open, onOpenChange }: AboutDialogProps) {
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[400px]">
                 <DialogHeader>
-                    <DialogTitle>About ViewTrace</DialogTitle>
+                    <DialogTitle>About</DialogTitle>
                 </DialogHeader>
 
                 <div className="grid gap-4 py-4">
                     <div className="flex items-start gap-4">
                         {/* Icon placeholder - using a simple div or generic icon if actual icon not available */}
-                        <div className="size-12 text-blue-500 bg-blue-500/50 border-blue-500 border rounded-lg shadow flex items-center justify-center">
+                        <div className="size-12 text-sky-500 bg-sky-500/10 border-sky-500 border rounded-lg shadow flex items-center justify-center">
                             <IconAppLogo className="p-2" />
                         </div>
 
