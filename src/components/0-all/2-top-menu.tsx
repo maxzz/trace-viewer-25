@@ -1,9 +1,9 @@
 import { useRef, useState } from "react";
 import { TraceLoadInput, TraceOpenMenuItem } from "../1-trace-viewer/1-trace-uploader";
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarShortcut, MenubarTrigger } from "../ui/shadcn/menubar";
-import { FileHeaderDialog } from "../4-dialogs/file-header-dialog";
-import { AboutDialog } from "../4-dialogs/about-dialog";
-import { OptionsDialog } from "../4-dialogs/options-dialog";
+import { FileHeaderDialog } from "../4-dialogs/2-file-header-dialog";
+import { AboutDialog } from "../4-dialogs/3-about-dialog";
+import { OptionsDialog } from "../4-dialogs/1-options-dialog";
 import { useSnapshot } from "valtio";
 import { traceStore } from "../../store/trace-store";
 
