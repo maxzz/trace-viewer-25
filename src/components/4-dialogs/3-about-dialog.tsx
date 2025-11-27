@@ -26,9 +26,8 @@ export function AboutDialog({ open, onOpenChange }: AboutDialogProps) {
                 <div className="grid gap-4 py-4">
                     <div className="flex items-start gap-4">
                         {/* Icon placeholder - using a simple div or generic icon if actual icon not available */}
-                        <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-xl">
-                            V
-                            <IconAppLogo className="w-6 h-6" />
+                        <div className="size-12 text-blue-500 bg-blue-500/50 border-blue-500 border rounded-lg shadow flex items-center justify-center">
+                            <IconAppLogo className="p-2" />
                         </div>
                         
                         <div className="space-y-1 text-sm">
