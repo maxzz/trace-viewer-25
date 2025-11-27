@@ -7,6 +7,7 @@ import {
     DialogTitle,
 } from "../ui/shadcn/dialog";
 import { Button } from "../ui/shadcn/button";
+import { IconAppLogo } from "../ui/icons";
 
 interface AboutDialogProps {
     open: boolean;
@@ -27,6 +28,7 @@ export function AboutDialog({ open, onOpenChange }: AboutDialogProps) {
                         {/* Icon placeholder - using a simple div or generic icon if actual icon not available */}
                         <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-xl">
                             V
+                            <IconAppLogo className="w-6 h-6" />
                         </div>
                         
                         <div className="space-y-1 text-sm">
