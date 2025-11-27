@@ -173,13 +173,15 @@ function getRowClasses(line: TraceLine, globalIndex: number, currentLineIndex: n
     );
 }
 
-function getThreadColor(tid: number) {
+function getThreadColor(tid: number, alpha = 1) {
     const hue = (Math.abs(tid) * 137.508) % 360;
-    return `hsl(${hue}, 75%, 50%)`;
+    return `hsla(${hue}, 75%, 50%, ${alpha})`;
 }
 
 function renderRow(line: TraceLine, index: number, startIndex: number, currentLineIndex: number, useIconsForEntryExit: boolean, uniqueThreadIds: readonly number[]) {
     const globalIndex = startIndex + index;
+    const showThreadBackground = uniqueThreadIds.length > 0 && uniqueThreadIds[0] !== line.threadId;
+    
     return (
         <div
             key={line.lineIndex}
@@ -222,7 +224,10 @@ function renderRow(line: TraceLine, index: number, startIndex: number, currentLi
             <div
                 className={cn("flex-1 h-full truncate flex items-center", line.textColor, getLineColor(line))}
                 title={line.content}
-                style={{ paddingLeft: `${line.indent * 12}px`, }}
+                style={{ 
+                    paddingLeft: `${line.indent * 12}px`, 
+                    backgroundColor: showThreadBackground ? getThreadColor(line.threadId, 0.1) : undefined 
+                }}
             >
                 {formatContent(line, useIconsForEntryExit)}
             </div>
