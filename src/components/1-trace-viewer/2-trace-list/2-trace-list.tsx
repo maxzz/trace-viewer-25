@@ -226,7 +226,7 @@ function renderRow(line: TraceLine, index: number, startIndex: number, currentLi
                 title={line.content}
                 style={{ 
                     paddingLeft: `${line.indent * 12}px`, 
-                    backgroundColor: showThreadBackground ? getThreadColor(line.threadId, 0.05) : undefined 
+                    backgroundColor: showThreadBackground ? getThreadColor(line.threadId, 0.1) : undefined  //0.05
                 }}
             >
                 {formatContent(line, useIconsForEntryExit)}
