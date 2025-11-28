@@ -19,7 +19,7 @@ export function TraceLoadInput({ inputRef }: { inputRef: React.RefObject<HTMLInp
     return (
         <Input
             type="file"
-            accept=".trc3,.txt"
+            accept=".trc3"
             onChange={handleFileChange}
             className="hidden"
             ref={inputRef}
