@@ -1,3 +1,4 @@
+import { envBuildVersion, envModifiedDate } from "@/utils";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/shadcn/dialog";
 import { Button } from "../ui/shadcn/button";
 import { IconAppLogo, IconBinocular } from "../ui/icons";
@@ -26,8 +27,9 @@ export function AboutDialog({ open, onOpenChange }: AboutDialogProps) {
                     <div className="space-y-1 text-xs">
                         <p className="font-semibold">Trace Viewer</p>
                         <p>Digital Persona, Inc.</p>
-                        <p className="text-muted-foreground">All Rights Reserved. Copyright (c) 2003-2022</p>
-                        <p className="mt-2">Version: 0.2.1</p>
+                        <p>Version: {envBuildVersion()}</p>
+                        <p>Build Date: {envModifiedDate()}</p>
+                        <p className="mt-2 text-[.5rem] text-muted-foreground">All Rights Reserved. Copyright (c) 2003-2022</p>
                     </div>
                 </div>
 
@@ -38,4 +40,3 @@ export function AboutDialog({ open, onOpenChange }: AboutDialogProps) {
         </Dialog>
     );
 }
-
