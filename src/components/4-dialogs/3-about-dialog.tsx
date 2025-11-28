@@ -11,27 +11,23 @@ export function AboutDialog({ open, onOpenChange }: AboutDialogProps) {
     // Using hardcoded values matching the C++ resource request
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[400px]">
+            <DialogContent className="sm:max-w-[400px] text-xs">
                 <DialogHeader>
-                    <DialogTitle>About</DialogTitle>
+                    <DialogTitle className="text-sm">About</DialogTitle>
                 </DialogHeader>
 
-                <div className="grid gap-4 py-4">
-                    <div className="flex items-start gap-4">
-                        {/* Icon placeholder - using a simple div or generic icon if actual icon not available */}
-                        {/* <div className="size-12 text-sky-500 bg-sky-500/10 border-sky-500 border rounded-lg shadow flex items-center justify-center">
-                            <IconAppLogo className="p-2" />
-                        </div> */}
-                        <div className="">
-                            <IconBinocular className="p-1 size-12 bg-sky-500/5 border-sky-500 border rounded shadow" />
-                        </div>
+                <div className="grid grid-cols-[auto_1fr] gap-4">
 
-                        <div className="space-y-1 text-sm">
-                            <p className="font-semibold">Trace Viewer</p>
-                            <p>Digital Persona, Inc.</p>
-                            <p className="text-muted-foreground">All Rights Reserved. Copyright (c) 2003-2022</p>
-                            <p className="mt-2">Version: 0.2.1</p>
-                        </div>
+                    <div className="bg-sky-500/5 flex items-center justify-center">
+                        <IconBinocular className="p-1 size-12 border-sky-500 border rounded shadow" />
+                        {/* <IconAppLogo className="p-2" /> */}
+                    </div>
+
+                    <div className="space-y-1 text-xs">
+                        <p className="font-semibold">Trace Viewer</p>
+                        <p>Digital Persona, Inc.</p>
+                        <p className="text-muted-foreground">All Rights Reserved. Copyright (c) 2003-2022</p>
+                        <p className="mt-2">Version: 0.2.1</p>
                     </div>
                 </div>
 
