@@ -1,9 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useSnapshot } from "valtio";
-import { cn } from "@/utils";
 import { traceStore } from "../../../store/trace-store";
 import { appSettings } from "../../../store/ui-settings";
-import { type TraceLine } from "../../../trace-viewer-core/types";
 import { ITEM_HEIGHT, renderRow } from "./3-trace-row";
 
 export function TraceList() {

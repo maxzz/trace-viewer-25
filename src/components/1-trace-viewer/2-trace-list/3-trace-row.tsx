@@ -1,4 +1,3 @@
-import React from "react";
 import { traceStore } from "../../../store/trace-store";
 import { LineCode, type TraceLine } from "../../../trace-viewer-core/types";
 import { ArrowLeft, ArrowRight } from "lucide-react";
@@ -14,49 +13,6 @@ import {
 } from "./8-classes";
 
 export const ITEM_HEIGHT = 20; // Fixed height for simplicity. was 24
-
-function getLineColor(line: TraceLine) {
-    // Priority: Override Color > LineCode Color > Default
-    if (line.textColor) {
-        return undefined; // Handled by inline style
-    }
-
-    switch (line.code) {
-        case LineCode.Error: return 'text-red-500 dark:text-red-400 font-bold';
-        case LineCode.Entry: return 'text-blue-600 dark:text-blue-400';
-        case LineCode.Exit: return 'text-blue-600 dark:text-blue-400';
-        case LineCode.Time: return 'text-green-600 dark:text-green-400';
-        case LineCode.Day: return 'text-purple-600 dark:text-purple-400 font-bold bg-purple-100 dark:bg-purple-900/30 w-full block';
-        default: return 'text-foreground';
-    }
-}
-
-const formatContent = (line: TraceLine, useIconsForEntryExit: boolean) => {
-    if (useIconsForEntryExit) {
-        if (line.code === LineCode.Entry) return <span className="flex items-center gap-1"><ArrowRight className="size-2 opacity-30" /> <span className="">{line.content}</span></span>;
-        if (line.code === LineCode.Exit) return <span className="flex items-center gap-1"><ArrowLeft className="size-2 opacity-30" /> <span className="">{line.content}</span></span>;
-    } else {
-        if (line.code === LineCode.Entry) return `>>> ${line.content}`;
-        if (line.code === LineCode.Exit) return `<<< ${line.content}`;
-    }
-    // if (line.code === LineCode.Entry) return `>>> ${line.content}`;
-    // if (line.code === LineCode.Exit) return `<<< ${line.content}`;
-    return line.content;
-};
-
-function getRowClasses(line: TraceLine, globalIndex: number, currentLineIndex: number) {
-    const isCurrent = globalIndex === currentLineIndex;
-    return cn(
-        lineClasses,
-        isCurrent ? lineCurrentClasses : lineNotCurrentClasses,
-        line.code === LineCode.Error && !isCurrent && lineErrorClasses
-    );
-}
-
-function getThreadColor(tid: number, alpha = 1) {
-    const hue = (Math.abs(tid) * 137.508) % 360;
-    return `hsla(${hue}, 75%, 50%, ${alpha})`;
-}
 
 export function renderRow(line: TraceLine, index: number, startIndex: number, currentLineIndex: number, useIconsForEntryExit: boolean, uniqueThreadIds: readonly number[]) {
     const globalIndex = startIndex + index;
@@ -115,3 +71,45 @@ export function renderRow(line: TraceLine, index: number, startIndex: number, cu
     );
 }
 
+function getLineColor(line: TraceLine) {
+    // Priority: Override Color > LineCode Color > Default
+    if (line.textColor) {
+        return undefined; // Handled by inline style
+    }
+
+    switch (line.code) {
+        case LineCode.Error: return 'text-red-500 dark:text-red-400 font-bold';
+        case LineCode.Entry: return 'text-blue-600 dark:text-blue-400';
+        case LineCode.Exit: return 'text-blue-600 dark:text-blue-400';
+        case LineCode.Time: return 'text-green-600 dark:text-green-400';
+        case LineCode.Day: return 'text-purple-600 dark:text-purple-400 font-bold bg-purple-100 dark:bg-purple-900/30 w-full block';
+        default: return 'text-foreground';
+    }
+}
+
+const formatContent = (line: TraceLine, useIconsForEntryExit: boolean) => {
+    if (useIconsForEntryExit) {
+        if (line.code === LineCode.Entry) return <span className="flex items-center gap-1"><ArrowRight className="size-2 opacity-30" /> <span className="">{line.content}</span></span>;
+        if (line.code === LineCode.Exit) return <span className="flex items-center gap-1"><ArrowLeft className="size-2 opacity-30" /> <span className="">{line.content}</span></span>;
+    } else {
+        if (line.code === LineCode.Entry) return `>>> ${line.content}`;
+        if (line.code === LineCode.Exit) return `<<< ${line.content}`;
+    }
+    // if (line.code === LineCode.Entry) return `>>> ${line.content}`;
+    // if (line.code === LineCode.Exit) return `<<< ${line.content}`;
+    return line.content;
+};
+
+function getRowClasses(line: TraceLine, globalIndex: number, currentLineIndex: number) {
+    const isCurrent = globalIndex === currentLineIndex;
+    return cn(
+        lineClasses,
+        isCurrent ? lineCurrentClasses : lineNotCurrentClasses,
+        line.code === LineCode.Error && !isCurrent && lineErrorClasses
+    );
+}
+
+function getThreadColor(tid: number, alpha = 1) {
+    const hue = (Math.abs(tid) * 137.508) % 360;
+    return `hsla(${hue}, 75%, 50%, ${alpha})`;
+}
