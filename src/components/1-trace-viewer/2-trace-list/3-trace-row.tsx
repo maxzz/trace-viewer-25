@@ -88,17 +88,16 @@ function getLineColor(line: TraceLine) {
 }
 
 const formatContent = (line: TraceLine, useIconsForEntryExit: boolean) => {
+    // ↳ ↲
     if (useIconsForEntryExit) {
-        // if (line.code === LineCode.Entry) return <span className="flex items-center gap-1"><ArrowRight className="size-2 opacity-30" /> <span className="">{line.content}</span></span>; ↳
-        // if (line.code === LineCode.Exit) return <span className="flex items-center gap-1"><ArrowLeft className="size-2 opacity-30" /> <span className="">{line.content}</span></span>; ↲
-        if (line.code === LineCode.Entry) return <span className="">→ {line.content}</span>;
-        if (line.code === LineCode.Exit) return <span className="">← {line.content}</span>;
+        // if (line.code === LineCode.Entry) return <span className="flex items-center gap-1"><ArrowRight className="size-2 opacity-30" /> <span className="">{line.content}</span></span>;
+        // if (line.code === LineCode.Exit) return <span className="flex items-center gap-1"><ArrowLeft className="size-2 opacity-30" /> <span className="">{line.content}</span></span>;
+        if (line.code === LineCode.Entry) return <span><span className="opacity-30">→ </span>{line.content}</span>;
+        if (line.code === LineCode.Exit) return <span><span className="opacity-30">← </span>{line.content}</span>;
     } else {
         if (line.code === LineCode.Entry) return `>>> ${line.content}`;
         if (line.code === LineCode.Exit) return `<<< ${line.content}`;
     }
-    // if (line.code === LineCode.Entry) return `>>> ${line.content}`;
-    // if (line.code === LineCode.Exit) return `<<< ${line.content}`;
     return line.content;
 };
 
