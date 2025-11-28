@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/shadcn/dialog";
 import { Button } from "../ui/shadcn/button";
-import { IconAppLogo } from "../ui/icons";
+import { IconAppLogo, IconBinocular } from "../ui/icons";
 
 interface AboutDialogProps {
     open: boolean;
@@ -19,8 +19,11 @@ export function AboutDialog({ open, onOpenChange }: AboutDialogProps) {
                 <div className="grid gap-4 py-4">
                     <div className="flex items-start gap-4">
                         {/* Icon placeholder - using a simple div or generic icon if actual icon not available */}
-                        <div className="size-12 text-sky-500 bg-sky-500/10 border-sky-500 border rounded-lg shadow flex items-center justify-center">
+                        {/* <div className="size-12 text-sky-500 bg-sky-500/10 border-sky-500 border rounded-lg shadow flex items-center justify-center">
                             <IconAppLogo className="p-2" />
+                        </div> */}
+                        <div className="">
+                            <IconBinocular className="p-1 size-12 bg-sky-500/5 border-sky-500 border rounded shadow" />
                         </div>
 
                         <div className="space-y-1 text-sm">
