@@ -28,7 +28,7 @@ export function TraceList() {
     // Keyboard navigation
     useEffect(() => {
         const controller = new AbortController();
-        window.addEventListener('keydown', (e) => handleKeyboardNavigation(e, containerHeight, scrollTop), { signal: controller.signal });
+        window.addEventListener('keydown', (e) => handleKeyboardNavigation(e, containerHeight, scrollTop, scrollRef), { signal: controller.signal });
         return () => controller.abort();
     }, [containerHeight, scrollTop]);
 
@@ -75,9 +75,9 @@ export function TraceList() {
 
 const BUFFER = 20;
 
-function handleKeyboardNavigation(e: KeyboardEvent, containerHeight: number, scrollTop: number) {
-    // Ignore if focus is in an input/textarea
-    if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') {
+function handleKeyboardNavigation(e: KeyboardEvent, containerHeight: number, scrollTop: number, scrollRef: React.RefObject<HTMLDivElement | null>) {
+    // Ignore if focus is not in the scroll container
+    if (scrollRef.current && !scrollRef.current.contains(document.activeElement)) {
         return;
     }
 
