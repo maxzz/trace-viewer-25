@@ -3,9 +3,9 @@ import { Toaster } from "../ui/local-ui/7-toaster";
 import { doSetFilesFrom_Dnd_Atom } from "../ui/local-ui/6-dnd/8-atoms";
 import { TraceViewerApp } from "./1-trace-viewer-app";
 import { UISymbolDefs } from "../ui/icons";
-import { AboutDialog } from "../4-dialogs/3-about-dialog";
-import { OptionsDialog } from "../4-dialogs/1-options-dialog";
-import { FileHeaderDialog } from "../4-dialogs/2-file-header-dialog";
+import { DialogAbout } from "../4-dialogs/3-dialog-about";
+import { DialogOptions } from "../4-dialogs/1-dialog-options";
+import { DialogFileHeader } from "../4-dialogs/2-dialog-file-header";
 
 export function App() {
     return (
@@ -22,8 +22,8 @@ export function App() {
 
 function Dialogs() {
     return (<>
-        <FileHeaderDialog />
-        <AboutDialog />
-        <OptionsDialog />
+        <DialogFileHeader />
+        <DialogAbout />
+        <DialogOptions />
     </>);
 }

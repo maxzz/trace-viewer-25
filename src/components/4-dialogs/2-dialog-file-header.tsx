@@ -1,14 +1,14 @@
 import { useSnapshot } from "valtio";
 import { useAtom } from "jotai";
 import { traceStore } from "@/store/trace-store";
-import { fileHeaderOpenAtom } from "@/store/ui-atoms";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, } from "../ui/shadcn/dialog";
-import { Button } from "../ui/shadcn/button";
-import { Input } from "../ui/shadcn/input";
-import { Textarea } from "../ui/shadcn/textarea";
+import { dialogFileHeaderOpenAtom } from "@/store/ui-atoms";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, } from "@/components/ui/shadcn/dialog";
+import { Button } from "@/components/ui/shadcn/button";
+import { Input } from "@/components/ui/shadcn/input";
+import { Textarea } from "@/components/ui/shadcn/textarea";
 
-export function FileHeaderDialog() {
-    const [open, onOpenChange] = useAtom(fileHeaderOpenAtom);
+export function DialogFileHeader() {
+    const [open, onOpenChange] = useAtom(dialogFileHeaderOpenAtom);
 
     const { header, fileName } = useSnapshot(traceStore);
 

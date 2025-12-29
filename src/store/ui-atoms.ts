@@ -1,5 +1,5 @@
 import { atom } from 'jotai';
 
-export const optionsOpenAtom = atom(false);
-export const aboutOpenAtom = atom(false);
-export const fileHeaderOpenAtom = atom(false);
+export const dialogOptionsOpenAtom = atom(false);
+export const dialogAboutOpenAtom = atom(false);
+export const dialogFileHeaderOpenAtom = atom(false);

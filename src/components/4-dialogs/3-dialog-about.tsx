@@ -1,17 +1,12 @@
 import { useAtom } from "jotai";
 import { envBuildVersion, envModifiedDate } from "@/utils";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/shadcn/dialog";
-import { Button } from "../ui/shadcn/button";
-import { IconAppLogo, IconBinocular } from "../ui/icons";
-import { aboutOpenAtom } from "@/store/ui-atoms";
+import { dialogAboutOpenAtom } from "@/store/ui-atoms";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/shadcn/dialog";
+import { Button } from "@/components/ui/shadcn/button";
+import { IconAppLogo, IconBinocular } from "@/components/ui/icons";
 
-interface AboutDialogProps {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-}
-
-export function AboutDialog() {
-    const [open, onOpenChange] = useAtom(aboutOpenAtom);
+export function DialogAbout() {
+    const [open, onOpenChange] = useAtom(dialogAboutOpenAtom);
     // Using hardcoded values matching the C++ resource request
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>

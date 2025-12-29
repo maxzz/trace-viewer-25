@@ -4,16 +4,16 @@ import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, Me
 import { useSnapshot } from "valtio";
 import { traceStore } from "../../store/trace-store";
 import { useSetAtom } from "jotai";
-import { fileHeaderOpenAtom, aboutOpenAtom, optionsOpenAtom } from "../../store/ui-atoms";
+import { dialogFileHeaderOpenAtom, dialogAboutOpenAtom, dialogOptionsOpenAtom } from "../../store/ui-atoms";
 
 export function TopMenu() {
+    const setOptionsOpen = useSetAtom(dialogOptionsOpenAtom);
+    const setAboutOpen = useSetAtom(dialogAboutOpenAtom);
+    const setFileHeaderOpen = useSetAtom(dialogFileHeaderOpenAtom);
+
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { lines } = useSnapshot(traceStore);
     const hasFile = lines.length > 0;
-
-    const setOptionsOpen = useSetAtom(optionsOpenAtom);
-    const setAboutOpen = useSetAtom(aboutOpenAtom);
-    const setFileHeaderOpen = useSetAtom(fileHeaderOpenAtom);
 
     return (<>
         <TraceLoadInput inputRef={fileInputRef} />

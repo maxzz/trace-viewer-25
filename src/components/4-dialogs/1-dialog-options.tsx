@@ -1,14 +1,14 @@
 import { useAtom } from 'jotai';
 import { useSnapshot } from 'valtio';
 import { appSettings } from '@/store/ui-settings';
-import { optionsOpenAtom } from '@/store/ui-atoms';
+import { dialogOptionsOpenAtom } from '@/store/ui-atoms';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, } from '@/components/ui/shadcn/dialog';
 import { Button } from '@/components/ui/shadcn/button';
 import { Checkbox } from '@/components/ui/shadcn/checkbox';
 import { Label } from '@/components/ui/shadcn/label';
 
-export function OptionsDialog() {
-    const [open, onOpenChange] = useAtom(optionsOpenAtom);
+export function DialogOptions() {
+    const [open, onOpenChange] = useAtom(dialogOptionsOpenAtom);
     const settings = useSnapshot(appSettings);
 
     const handleShowFooterChange = (checked: boolean) => {
