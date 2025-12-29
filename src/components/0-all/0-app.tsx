@@ -6,8 +6,6 @@ import { UISymbolDefs } from "../ui/icons";
 import { AboutDialog } from "../4-dialogs/3-about-dialog";
 import { OptionsDialog } from "../4-dialogs/1-options-dialog";
 import { FileHeaderDialog } from "../4-dialogs/2-file-header-dialog";
-import { useAtom } from "jotai";
-import { fileHeaderOpenAtom, aboutOpenAtom, optionsOpenAtom } from "../../store/ui-atoms";
 
 export function App() {
     return (
@@ -23,13 +21,9 @@ export function App() {
 }
 
 function Dialogs() {
-    const [optionsOpen, setOptionsOpen] = useAtom(optionsOpenAtom);
-    const [aboutOpen, setAboutOpen] = useAtom(aboutOpenAtom);
-    const [fileHeaderOpen, setFileHeaderOpen] = useAtom(fileHeaderOpenAtom);
-
     return (<>
-        <FileHeaderDialog open={fileHeaderOpen} onOpenChange={setFileHeaderOpen} />
-        <AboutDialog open={aboutOpen} onOpenChange={setAboutOpen} />
-        <OptionsDialog open={optionsOpen} onOpenChange={setOptionsOpen} />
+        <FileHeaderDialog />
+        <AboutDialog />
+        <OptionsDialog />
     </>);
 }
