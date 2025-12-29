@@ -1,26 +1,22 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { TraceLoadInput, TraceOpenMenuItem } from "../1-trace-viewer/1-trace-uploader";
-import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarShortcut, MenubarTrigger } from "../ui/shadcn/menubar";
-import { FileHeaderDialog } from "../4-dialogs/2-file-header-dialog";
-import { AboutDialog } from "../4-dialogs/3-about-dialog";
-import { OptionsDialog } from "../4-dialogs/1-options-dialog";
+import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarTrigger } from "../ui/shadcn/menubar";
 import { useSnapshot } from "valtio";
 import { traceStore } from "../../store/trace-store";
+import { useSetAtom } from "jotai";
+import { fileHeaderOpenAtom, aboutOpenAtom, optionsOpenAtom } from "../../store/ui-atoms";
 
 export function TopMenu() {
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const [fileHeaderOpen, setFileHeaderOpen] = useState(false);
-    const [aboutOpen, setAboutOpen] = useState(false);
-    const [optionsOpen, setOptionsOpen] = useState(false);
     const { lines } = useSnapshot(traceStore);
     const hasFile = lines.length > 0;
 
+    const setOptionsOpen = useSetAtom(optionsOpenAtom);
+    const setAboutOpen = useSetAtom(aboutOpenAtom);
+    const setFileHeaderOpen = useSetAtom(fileHeaderOpenAtom);
+
     return (<>
         <TraceLoadInput inputRef={fileInputRef} />
-
-        <FileHeaderDialog open={fileHeaderOpen} onOpenChange={setFileHeaderOpen} />
-        <AboutDialog open={aboutOpen} onOpenChange={setAboutOpen} />
-        <OptionsDialog open={optionsOpen} onOpenChange={setOptionsOpen} />
 
         {/* Top Menu */}
         <div className="border-b">
