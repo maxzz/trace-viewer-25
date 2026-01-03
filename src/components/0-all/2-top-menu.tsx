@@ -21,7 +21,7 @@ export function TopMenu() {
 
         {/* Top Menu */}
         <div className="border-b">
-            <Menubar className="border-none shadow-none rounded-none px-2">
+            <Menubar className="px-2 border-none shadow-none rounded-none">
 
                 <MenubarMenu>
                     <MenubarTrigger>

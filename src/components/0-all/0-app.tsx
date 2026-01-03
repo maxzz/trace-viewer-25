@@ -9,7 +9,7 @@ import { DialogFileHeader } from "../4-dialogs/2-dialog-file-header";
 
 export function App() {
     return (
-        <div className="h-screen w-screen overflow-hidden bg-background">
+        <div className="h-screen w-screen bg-background overflow-hidden">
             <UISymbolDefs />
             <Toaster />
             <DropItDoc doSetFilesFromDropAtom={doSetFilesFrom_Dnd_Atom} />

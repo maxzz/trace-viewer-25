@@ -1,8 +1,8 @@
-import React from "react";
 import { useSnapshot } from "valtio";
-import { traceStore } from "../../store/traces-store/0-state";
 import { appSettings } from "../../store/ui-settings";
+import { traceStore } from "../../store/traces-store/0-state";
 import { TopMenu } from "./2-top-menu";
+import { TopMenuToolbar } from "./2-top-menu-toolbar";
 import { TraceMainView } from "./3-trace-main-view";
 import { TraceEmptyState } from "./5-trace-empty-state";
 import { TraceFooter } from "./4-trace-footer";
@@ -13,8 +13,11 @@ export function TraceViewerApp() {
     const hasFile = files.length > 0;
 
     return (
-        <div className="h-full flex flex-col overflow-hidden">
-            <TopMenu />
+        <div className="h-full text-xs flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between">
+                <TopMenu />
+                <TopMenuToolbar />
+            </div>
 
             {/* Main Content Area */}
             <div className="flex-1 flex flex-col overflow-hidden relative">

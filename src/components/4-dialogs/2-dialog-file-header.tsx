@@ -1,15 +1,14 @@
-import { useSnapshot } from "valtio";
 import { useAtom } from "jotai";
-import { traceStore } from "@/store/traces-store/0-state";
-import { dialogFileHeaderOpenAtom } from "@/store/ui-atoms";
+import { useSnapshot } from "valtio";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, } from "@/components/ui/shadcn/dialog";
 import { Button } from "@/components/ui/shadcn/button";
 import { Input } from "@/components/ui/shadcn/input";
 import { Textarea } from "@/components/ui/shadcn/textarea";
+import { dialogFileHeaderOpenAtom } from "@/store/ui-atoms";
+import { traceStore } from "@/store/traces-store/0-state";
 
 export function DialogFileHeader() {
     const [open, onOpenChange] = useAtom(dialogFileHeaderOpenAtom);
-
     const { header, fileName } = useSnapshot(traceStore);
 
     return (
@@ -20,13 +19,13 @@ export function DialogFileHeader() {
                     <DialogTitle>Trace File Header</DialogTitle>
                 </DialogHeader>
 
-                <div className="grid gap-4 py-4">
+                <div className="py-4 grid gap-4">
                     <div className="grid gap-2">
                         <Input className="bg-muted" value={fileName || ''} readOnly />
                     </div>
 
                     <div className="grid gap-2">
-                        <Textarea className="font-mono text-sm min-h-[300px] bg-muted resize-none" value={header.rawText || ''} readOnly />
+                        <Textarea className="min-h-[300px] text-sm font-mono bg-muted resize-none" value={header.rawText || ''} readOnly />
                     </div>
                 </div>
 
