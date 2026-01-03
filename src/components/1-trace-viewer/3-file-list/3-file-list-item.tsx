@@ -1,6 +1,6 @@
 import React from "react";
 import { type TraceFile, traceStore } from "../../../store/traces-store/0-state";
-import { cn } from "@/utils/index";
+import { classNames, cn } from "@/utils/index";
 import { AlertCircle, FileText } from "lucide-react";
 import {
     ContextMenu,
@@ -25,32 +25,70 @@ export function FileListItem({ file, isSelected, onClick }: FileListItemProps) {
                 <div
                     className={cn(
                         "flex items-center gap-2 px-3 py-0.5 text-xs cursor-pointer transition-colors border-l-2 select-none group",
-                        isSelected 
-                            ? "bg-background border-primary text-foreground font-medium shadow-sm" 
-                            : "border-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground",
-                        hasError && !isSelected ? "text-red-600 dark:text-red-400" : ""
+                        isSelected
+                            ? "bg-muted-foreground/20 border-primary outline -outline-offset-1 outline-primary"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted-foreground/10 border-transparent",
+                        hasError
+                            ? !isSelected
+                                ? "text-red-600 dark:text-red-400"
+                                : "text-red-600 dark:text-red-400"
+                            : ""
                     )}
                     onClick={onClick}
                 >
+                    {/* File icon */}
                     <div className="relative shrink-0">
-                        <FileText className={cn("size-4", isSelected ? "text-primary" : "opacity-70")} />
-                        {hasError && (
+                        <FileText className={cn("size-4", isSelected ? "text-primary" : "opacity-70", hasError && "text-red-600 dark:text-red-400")} />
+
+                        {file.errorCount === 0 && !!file.error && (
                             <div className="absolute -top-1 -right-1 bg-background rounded-full">
                                 <AlertCircle className="size-3 text-red-500 fill-background" />
                             </div>
                         )}
+
+                        {file.errorCount > 0 && (
+                            <span className={cn("\
+                            absolute -top-1 -right-1 \
+                            px-1 py-px \
+                            text-[0.5rem] \
+                            font-mono \
+                            text-red-700 \
+                            bg-red-100 \
+                            dark:text-red-300 \
+                            dark:bg-red-900/30 \
+                            border-[1.5px] border-red-500/50 \
+                            rounded-full \
+                            ")}>
+                                {file.errorCount}
+                            </span>
+                        )}
+
                     </div>
-                    
-                    <span className="truncate flex-1 leading-none" title={file.fileName}>
+
+                    <span className="flex-1 truncate" title={file.fileName}>
                         {file.fileName}
                     </span>
 
-                    {file.errorCount > 0 && (
-                        <span className="text-[10px] bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300 px-1.5 py-0.5 rounded-full font-mono shrink-0">
+                    {/* Error count badge */}
+                    {/* {file.errorCount > 0 && (
+                        <span className={cn("\
+                            shrink-0 \
+                            px-1 \
+                            py-px \
+                            text-[0.5rem] \
+                            font-mono \
+                            text-red-700 \
+                            bg-red-100 \
+                            dark:text-red-300 \
+                            dark:bg-red-900/30 \
+                            border border-red-500/30 \
+                            rounded-full \
+                            ")}>
                             {file.errorCount}
                         </span>
-                    )}
-                    
+                    )} */}
+
+                    {/* Loading indicator */}
                     {file.isLoading && (
                         <span className="size-2 rounded-full bg-blue-500 animate-pulse shrink-0" />
                     )}
