@@ -10,6 +10,9 @@ export function TraceLoadInput({ inputRef }: { inputRef: React.RefObject<HTMLInp
     const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (files && files.length > 0) {
+            // Clear previously uploaded files
+            traceStore.closeAllFiles();
+            // Load new files
             Array.from(files).forEach(file => {
                 traceStore.loadTrace(file);
             });

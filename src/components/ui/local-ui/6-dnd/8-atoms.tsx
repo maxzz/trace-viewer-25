@@ -28,6 +28,9 @@ export const doSetFilesFrom_Dnd_Atom = atom(                    // used by DropI
             return;
         }
 
+        // Clear previously uploaded files
+        traceStore.closeAllFiles();
+        // Load new files
         files.forEach(file => {
             traceStore.loadTrace(file);
         });

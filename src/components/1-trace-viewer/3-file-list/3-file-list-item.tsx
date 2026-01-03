@@ -1,5 +1,5 @@
 import React from "react";
-import { TraceFile, traceStore } from "../../../store/traces-store/0-state";
+import { type TraceFile, traceStore } from "../../../store/traces-store/0-state";
 import { cn } from "@/utils/index";
 import { AlertCircle, FileText } from "lucide-react";
 import {
@@ -24,7 +24,7 @@ export function FileListItem({ file, isSelected, onClick }: FileListItemProps) {
             <ContextMenuTrigger>
                 <div
                     className={cn(
-                        "flex items-center gap-2 px-3 py-2 text-sm cursor-pointer transition-colors border-l-2 select-none group",
+                        "flex items-center gap-2 px-3 py-0.5 text-xs cursor-pointer transition-colors border-l-2 select-none group",
                         isSelected 
                             ? "bg-background border-primary text-foreground font-medium shadow-sm" 
                             : "border-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground",
@@ -56,6 +56,7 @@ export function FileListItem({ file, isSelected, onClick }: FileListItemProps) {
                     )}
                 </div>
             </ContextMenuTrigger>
+
             <ContextMenuContent>
                 <ContextMenuItem onClick={() => traceStore.closeFile(file.id)} className="text-red-600 focus:text-red-600 focus:bg-red-100 dark:focus:bg-red-900/20">
                     Close
