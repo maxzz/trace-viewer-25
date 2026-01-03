@@ -24,13 +24,12 @@ export const doSetFilesFrom_Dnd_Atom = atom(                    // used by DropI
             }
         }
 
-        if (files.length !== 1) {
-            notice.warning("Only first file will be loaded for now.");
+        if (files.length === 0) {
+            return;
         }
 
-        const file = files[0];
-        if (file) {
+        files.forEach(file => {
             traceStore.loadTrace(file);
-        }
+        });
     }
 ); 

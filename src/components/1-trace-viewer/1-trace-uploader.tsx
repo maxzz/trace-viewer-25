@@ -8,9 +8,11 @@ export function TraceLoadInput({ inputRef }: { inputRef: React.RefObject<HTMLInp
     const { isLoading } = useSnapshot(traceStore);
 
     const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            traceStore.loadTrace(file);
+        const files = e.target.files;
+        if (files && files.length > 0) {
+            Array.from(files).forEach(file => {
+                traceStore.loadTrace(file);
+            });
         }
         // Reset input so same file can be selected again if needed
         e.target.value = '';
@@ -20,10 +22,10 @@ export function TraceLoadInput({ inputRef }: { inputRef: React.RefObject<HTMLInp
         <Input
             type="file"
             accept=".trc3"
+            multiple
             onChange={handleFileChange}
             className="hidden"
             ref={inputRef}
-            disabled={isLoading}
         />
     );
 }
@@ -32,7 +34,7 @@ export function TraceOpenMenuItem({ onClick }: { onClick: () => void }) {
     const { isLoading } = useSnapshot(traceStore);
 
     return (
-        <MenubarItem onClick={onClick} disabled={isLoading}>
+        <MenubarItem onClick={onClick}>
             Open Trace File...
             <MenubarShortcut>Ctrl+O</MenubarShortcut>
         </MenubarItem>

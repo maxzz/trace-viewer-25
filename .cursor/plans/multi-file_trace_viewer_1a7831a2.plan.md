@@ -4,39 +4,39 @@ overview: Refactor the trace viewer to support multiple open files with a file l
 todos:
   - id: refactor-store
     content: Refactor TraceState to support multiple files with files array, selectedFileId, and computed getters
-    status: pending
+    status: completed
   - id: update-parser
     content: Add errorCount calculation to parseTraceFile function and ParsedTraceData interface
-    status: pending
+    status: completed
   - id: create-file-list
     content: Create file list component with ScrollArea, keyboard navigation, and file item rendering
-    status: pending
+    status: completed
     dependencies:
       - refactor-store
   - id: create-file-item
     content: Create file list item component with error indicators, selection state, and context menu
-    status: pending
+    status: completed
     dependencies:
       - refactor-store
       - update-parser
   - id: update-layout
     content: Update TraceMainView to two-column layout with file list on left and trace content on right
-    status: pending
+    status: completed
     dependencies:
       - create-file-list
   - id: update-file-loading
     content: Update file uploader and drag-drop handlers to support multiple file selection
-    status: pending
+    status: completed
     dependencies:
       - refactor-store
   - id: update-components
     content: Update all components (TraceList, TraceFooter, DialogFileHeader) to use selectedFile from store
-    status: pending
+    status: completed
     dependencies:
       - refactor-store
   - id: add-keyboard-nav
     content: Implement ArrowUp/Down/Enter/Delete keyboard navigation in file list component
-    status: pending
+    status: completed
     dependencies:
       - create-file-list
 ---

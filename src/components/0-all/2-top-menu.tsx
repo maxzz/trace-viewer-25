@@ -12,8 +12,9 @@ export function TopMenu() {
     const setFileHeaderOpen = useSetAtom(dialogFileHeaderOpenAtom);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const { lines } = useSnapshot(traceStore);
-    const hasFile = lines.length > 0;
+    const { files, selectedFileId } = useSnapshot(traceStore);
+    const hasFile = files.length > 0;
+    const hasActiveFile = !!selectedFileId;
 
     return (<>
         <TraceLoadInput inputRef={fileInputRef} />
@@ -49,7 +50,7 @@ export function TopMenu() {
                             Filter...
                         </MenubarItem>
                         <MenubarSeparator />
-                        <MenubarItem onClick={() => setFileHeaderOpen(true)} disabled={!hasFile}>
+                        <MenubarItem onClick={() => setFileHeaderOpen(true)} disabled={!hasActiveFile}>
                             Display File Header ...
                         </MenubarItem>
                     </MenubarContent>

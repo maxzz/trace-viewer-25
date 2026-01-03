@@ -8,9 +8,9 @@ import { TraceEmptyState } from "./5-trace-empty-state";
 import { TraceFooter } from "./4-trace-footer";
 
 export function TraceViewerApp() {
-    const { lines, error } = useSnapshot(traceStore);
+    const { files, error } = useSnapshot(traceStore);
     const { showFooter } = useSnapshot(appSettings);
-    const hasFile = lines.length > 0 || !!error;
+    const hasFile = files.length > 0;
 
     return (
         <div className="h-full flex flex-col overflow-hidden">

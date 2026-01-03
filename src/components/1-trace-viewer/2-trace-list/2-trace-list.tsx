@@ -5,7 +5,7 @@ import { appSettings } from "../../../store/ui-settings";
 import { ITEM_HEIGHT, renderRow } from "./3-trace-row";
 
 export function TraceList() {
-    const { viewLines, currentLineIndex, uniqueThreadIds } = useSnapshot(traceStore);
+    const { viewLines, currentLineIndex, uniqueThreadIds, selectedFileId } = useSnapshot(traceStore);
     const { useIconsForEntryExit } = useSnapshot(appSettings);
     const scrollRef = useRef<HTMLDivElement>(null);
     const [scrollTop, setScrollTop] = useState(0);
@@ -25,10 +25,26 @@ export function TraceList() {
         }
     }, []);
 
+    // Reset scroll on file change
+    useEffect(() => {
+        setScrollTop(0);
+        if (scrollRef.current) {
+            scrollRef.current.scrollTop = 0;
+        }
+    }, [selectedFileId]);
+
     // Keyboard navigation
     useEffect(() => {
         const controller = new AbortController();
-        window.addEventListener('keydown', (e) => handleKeyboardNavigation(e, containerHeight, scrollTop), { signal: controller.signal });
+        window.addEventListener('keydown', (e) => {
+            // Check focus: allow if body is focused OR focus is within this component
+            // This prevents conflict with FileList navigation
+            const isFocused = document.activeElement === document.body || scrollRef.current?.contains(document.activeElement);
+            
+            if (isFocused) {
+                handleKeyboardNavigation(e, containerHeight, scrollTop);
+            }
+        }, { signal: controller.signal });
         return () => controller.abort();
     }, [containerHeight, scrollTop]);
 
@@ -61,7 +77,12 @@ export function TraceList() {
     const offsetY = startIndex * ITEM_HEIGHT;
 
     return (
-        <div ref={scrollRef} className="size-full overflow-auto relative" onScroll={onScroll}>
+        <div 
+            ref={scrollRef} 
+            className="size-full overflow-auto relative outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-ring" 
+            onScroll={onScroll}
+            tabIndex={0}
+        >
             <div style={{ height: totalHeight, position: 'relative' }}>
                 <div style={{ transform: `translateY(${offsetY}px)` }}>
                     {visibleLines.map(
@@ -87,7 +108,6 @@ function handleKeyboardNavigation(e: KeyboardEvent, containerHeight: number, scr
     const currentIndex = traceStore.currentLineIndex;
     const linesPerPage = Math.floor(containerHeight / ITEM_HEIGHT);
     // Calculate current visible range based on scrollTop
-    // Note: This might be slightly off due to BUFFER but gives good approximation for visual jumps
     const firstVisibleIndex = Math.floor(scrollTop / ITEM_HEIGHT);
     const lastVisibleIndex = Math.min(totalLines - 1, firstVisibleIndex + linesPerPage - 1);
 
@@ -101,14 +121,14 @@ function handleKeyboardNavigation(e: KeyboardEvent, containerHeight: number, scr
             newIndex = currentIndex === -1 ? 0 : Math.min(totalLines - 1, currentIndex + 1);
             break;
         case 'PageUp':
-            if (e.altKey) {  // Changed from e.ctrlKey to e.altKey
+            if (e.altKey) { 
                 newIndex = firstVisibleIndex;
             } else {
                 newIndex = Math.max(0, currentIndex - linesPerPage);
             }
             break;
         case 'PageDown':
-            if (e.altKey) {  // Changed from e.ctrlKey to e.altKey
+            if (e.altKey) { 
                 newIndex = lastVisibleIndex;
             } else {
                 const start = currentIndex === -1 ? 0 : currentIndex;

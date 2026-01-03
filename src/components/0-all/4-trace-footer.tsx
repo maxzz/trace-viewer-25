@@ -1,9 +1,11 @@
 import { useSnapshot } from "valtio";
 import { traceStore } from "../../store/traces-store/0-state";
-import { Cpu, Clock } from "lucide-react";
+import { Cpu, Clock, AlertCircle } from "lucide-react";
 
 export function TraceFooter() {
-    const { lines, header, error } = useSnapshot(traceStore);
+    const { lines, header, error, files, selectedFileId } = useSnapshot(traceStore);
+    const selectedFile = selectedFileId ? files.find(f => f.id === selectedFileId) : null;
+    const errorCount = selectedFile?.errorCount || 0;
 
     return (
         <div className="text-xs text-muted-foreground bg-background border-t">
@@ -43,6 +45,14 @@ export function TraceFooter() {
                         <span className="font-semibold">Lines:</span>
                         <span>{lines.length.toLocaleString()}</span>
                     </div>
+
+                    {errorCount > 0 && (
+                        <div className="ml-4 flex items-center gap-1 text-red-600 dark:text-red-400">
+                            <AlertCircle className="size-3" />
+                            <span className="font-semibold">Errors:</span>
+                            <span>{errorCount.toLocaleString()}</span>
+                        </div>
+                    )}
                 </div>
 
             </div>
