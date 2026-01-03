@@ -53,13 +53,18 @@ function DialogOverlay({
   )
 }
 
+const preventClose = (e: Event) => e.preventDefault();
+
 function DialogContent({
   className,
   children,
   showCloseButton = true,
+  onPointerDownOutside,
+  modal = false,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
-  showCloseButton?: boolean
+  showCloseButton?: boolean;
+  modal?: boolean;
 }) {
   return (
     <DialogPortal data-slot="dialog-portal">
@@ -94,6 +99,7 @@ function DialogContent({
           dark:shadow-foreground/30",
           className
         )}
+        onPointerDownOutside={modal ? preventClose : onPointerDownOutside}
         {...props}
       >
         {children}

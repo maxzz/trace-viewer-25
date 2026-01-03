@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { useSnapshot } from "valtio";
-import { traceStore } from "../../store/trace-store";
+import { traceStore } from "../../store/traces-store/0-state";
 import { Input } from "../ui/shadcn/input";
 import { MenubarItem, MenubarShortcut } from "../ui/shadcn/menubar";
 

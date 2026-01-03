@@ -1,6 +1,6 @@
 import { proxy } from "valtio";
-import { TraceParser } from "../trace-viewer-core/parser";
-import type { TraceLine, TraceHeader } from "../trace-viewer-core/types";
+import type { TraceLine, TraceHeader } from "../../trace-viewer-core/types";
+import { parseTraceFile } from "./1-parse-trace";
 
 export interface TraceState {
     lines: TraceLine[]; // Use this for display (alias for viewLines)
@@ -35,22 +35,14 @@ export const traceStore = proxy<TraceState>({
         traceStore.header = { magic: '' };
 
         try {
-            const arrayBuffer = await file.arrayBuffer();
-            const parser = new TraceParser(arrayBuffer);
+            const parsedData = await parseTraceFile(file);
             
-            // Offload parsing to avoid blocking UI? 
-            // For now, sync. Ideally use Web Worker.
-            parser.parse();
-
-            traceStore.rawLines = parser.lines;
-            // Filter out Time lines (84) for default view
-            traceStore.viewLines = parser.lines.filter(l => l.code !== 84);
+            traceStore.rawLines = parsedData.rawLines;
+            traceStore.viewLines = parsedData.viewLines;
             // Alias lines to viewLines for backward compatibility with components
-            traceStore.lines = traceStore.viewLines;
-            
-            traceStore.uniqueThreadIds = Array.from(new Set(parser.lines.map(l => l.threadId))).sort((a, b) => a - b);
-
-            traceStore.header = parser.header;
+            traceStore.lines = parsedData.viewLines;
+            traceStore.uniqueThreadIds = parsedData.uniqueThreadIds;
+            traceStore.header = parsedData.header;
         } catch (e: any) {
             console.error("Failed to load trace", e);
             traceStore.error = e.message || "Unknown error";

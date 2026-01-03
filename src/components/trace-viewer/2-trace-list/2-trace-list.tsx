@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useSnapshot } from "valtio";
-import { traceStore } from "../../../store/trace-store";
+import { traceStore } from "../../../store/traces-store/0-state";
 import { LineCode, type TraceLine } from "../../../trace-viewer-core/types";
 import { cn } from "@/utils";
 

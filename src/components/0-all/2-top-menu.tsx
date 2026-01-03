@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { TraceLoadInput, TraceOpenMenuItem } from "../1-trace-viewer/1-trace-uploader";
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarTrigger } from "../ui/shadcn/menubar";
 import { useSnapshot } from "valtio";
-import { traceStore } from "../../store/trace-store";
+import { traceStore } from "../../store/traces-store/0-state";
 import { useSetAtom } from "jotai";
 import { dialogFileHeaderOpenAtom, dialogAboutOpenAtom, dialogOptionsOpenAtom } from "../../store/ui-atoms";
 

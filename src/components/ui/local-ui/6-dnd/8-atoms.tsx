@@ -1,4 +1,4 @@
-import { traceStore } from "@/store/trace-store";
+import { traceStore } from "@/store/traces-store/0-state";
 import { atom } from "jotai";
 import { notice } from "../7-toaster";
 

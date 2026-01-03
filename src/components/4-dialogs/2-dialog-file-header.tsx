@@ -1,6 +1,6 @@
 import { useSnapshot } from "valtio";
 import { useAtom } from "jotai";
-import { traceStore } from "@/store/trace-store";
+import { traceStore } from "@/store/traces-store/0-state";
 import { dialogFileHeaderOpenAtom } from "@/store/ui-atoms";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, } from "@/components/ui/shadcn/dialog";
 import { Button } from "@/components/ui/shadcn/button";

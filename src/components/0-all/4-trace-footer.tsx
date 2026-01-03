@@ -1,5 +1,5 @@
 import { useSnapshot } from "valtio";
-import { traceStore } from "../../store/trace-store";
+import { traceStore } from "../../store/traces-store/0-state";
 import { Cpu, Clock } from "lucide-react";
 
 export function TraceFooter() {
