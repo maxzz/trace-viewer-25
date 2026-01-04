@@ -1,9 +1,9 @@
 import { useRef } from "react";
-import { TraceLoadInput, TraceOpenMenuItem } from "../1-trace-viewer/1-trace-uploader";
-import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarTrigger } from "../ui/shadcn/menubar";
-import { useSnapshot } from "valtio";
-import { traceStore } from "../../store/traces-store/0-state";
 import { useSetAtom } from "jotai";
+import { useSnapshot } from "valtio";
+import { TraceLoadInput, TraceOpenMenuItem } from "./2-top-menu-input-file";
+import { traceStore } from "../../store/traces-store/0-state";
+import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarTrigger } from "../ui/shadcn/menubar";
 import { dialogFileHeaderOpenAtom, dialogAboutOpenAtom, dialogOptionsOpenAtom, dialogEditFiltersOpenAtom } from "../../store/ui-atoms";
 
 export function TopMenu() {
@@ -20,7 +20,6 @@ export function TopMenu() {
     return (<>
         <TraceLoadInput inputRef={fileInputRef} />
 
-        {/* Top Menu */}
         <div className="border-b">
             <Menubar className="px-2 border-none shadow-none rounded-none">
 
