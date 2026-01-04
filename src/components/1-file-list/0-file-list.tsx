@@ -3,7 +3,7 @@ import { useSnapshot } from "valtio";
 import { traceStore } from "../../store/traces-store/0-state";
 import { appSettings } from "../../store/ui-settings";
 import { ScrollArea } from "../ui/shadcn/scroll-area";
-import { FileListItem } from "./3-file-list-item";
+import { FileListRow } from "./1-file-list-row";
 
 export function FileList() {
     const { files, selectedFileId } = useSnapshot(traceStore);
@@ -112,7 +112,7 @@ export function FileList() {
                 <div className="flex flex-col py-1">
                     {filteredFiles.map(
                         (file) => (
-                            <FileListItem
+                            <FileListRow
                                 key={file.id}
                                 file={file as any}
                                 isSelected={file.id === selectedFileId}

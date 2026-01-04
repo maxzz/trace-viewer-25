@@ -1,1 +1,1 @@
-export * from "./2-trace-list";
+export * from "./0-trace-view-list";

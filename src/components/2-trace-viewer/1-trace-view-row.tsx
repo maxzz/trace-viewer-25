@@ -10,7 +10,7 @@ import {
     lineCurrentClasses,
     lineNotCurrentClasses,
     lineErrorClasses
-} from "./8-classes";
+} from "./8-trace-view-classes";
 
 export const ITEM_HEIGHT = 20; // Fixed height for simplicity. was 24
 

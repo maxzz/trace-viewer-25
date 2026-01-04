@@ -9,7 +9,7 @@ interface FileListItemProps {
     onClick: () => void;
 }
 
-export function FileListItem({ file, isSelected, onClick }: FileListItemProps) {
+export function FileListRow({ file, isSelected, onClick }: FileListItemProps) {
     const hasError = file.errorCount > 0 || !!file.error;
 
     return (
