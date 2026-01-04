@@ -1,11 +1,12 @@
 import { useSnapshot } from "valtio";
 import { appSettings } from "../../store/ui-settings";
 import { traceStore } from "../../store/traces-store/0-state";
-import { TopMenu } from "./2-top-menu-all";
-import { TopMenuToolbar } from "./2-top-menu-toolbar";
-import { TraceMainView } from "./3-trace-main-view";
-import { TraceEmptyState } from "./5-trace-empty-state";
-import { TraceFooter } from "./4-trace-footer";
+import { TopMenu } from "./2-top-menu";
+import { TraceMainView } from "./6-resizable-panels";
+import { TraceEmptyState } from "../2-trace-viewer/7-trace-empty-state";
+import { TraceFooter } from "./7-app-footer";
+import { FileFilterDropdown } from "./3-btn-filters";
+import { ButtonThemeToggle } from "./3-btn-theme-toggle";
 
 export function TraceViewerApp() {
     const { files, error } = useSnapshot(traceStore);
@@ -19,7 +20,6 @@ export function TraceViewerApp() {
                 <TopMenuToolbar />
             </div>
 
-            {/* Main Content Area */}
             <div className="flex-1 flex flex-col overflow-hidden relative">
                 {hasFile
                     ? <TraceMainView />
@@ -27,16 +27,16 @@ export function TraceViewerApp() {
                 }
             </div>
 
-            {/* Footer - only shown when we have content and enabled in settings */}
-            {hasFile && showFooter && <TraceFooter />}
+            {showFooter && hasFile && <TraceFooter />}
         </div>
     );
 }
 
-//TODO: electron build
-//TODO: dark mode and switch
-//TODO: fix lines vertical padding
-//TODO: thread column as line with dots. separate line for each thread and tooltip to show thread ID.
-//TODO: filter by thread ID, errors, etc.
-//TODO: PageUp/PageDown should preserve current line position on page if possible.
-//TODO: add help dialog with keyboard shortcuts and other information.
+function TopMenuToolbar() {
+    return (
+        <div className="px-2 flex items-center gap-2">
+            <FileFilterDropdown />
+            <ButtonThemeToggle />
+        </div>
+    );
+}
