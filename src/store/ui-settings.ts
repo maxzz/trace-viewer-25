@@ -9,6 +9,7 @@ export interface AppSettings {
     showFooter: boolean;
     useIconsForEntryExit: boolean;
     theme: ThemeMode;
+    panelSizes?: number[]; // ResizablePanelGroup panel sizes (percentages)
     // Future options can be added here
 }
 

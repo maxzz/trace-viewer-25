@@ -21,43 +21,43 @@ export function TraceFooter() {
             <div className="p-2 pt-1 flex items-center gap-6">
 
                 <div className="flex items-center gap-1">
-                    <span className="text-foreground">💻</span>
-                    <span className="font-semibold">Computer:</span>
-                    <span className="">
-                        {header.machineName || "Trace Viewer"}
-                    </span>
+                    <div className="ml-4 flex items-center gap-1">
+                        <span>Loaded:</span>
+                        <span className="py-0.5 rounded text-[10px]">{files.length}</span>
+                    </div>
 
-                    {header.os && <>
-                        <span className="font-semibold">OS:</span>
-                        <span>{header.os}</span></>
-                    }
+                    <div className="ml-4 flex items-center gap-1">
+                        <span className="pt-0.5 text-[0.6rem]">💻 Computer:</span>
+                        <span className="pt-0.5 text-[0.6rem]">
+                            {header.machineName || "Trace Viewer"}
+                        </span>
+                    </div>
 
-                    {header.compiled && (
-                        <div className="ml-4 flex items-center gap-1">
-                            <Clock className="size-3" />
-                            <span className="font-semibold">Compiled:</span>
-                            <span>{header.compiled}</span>
-                        </div>
-                    )}
+                    <div className="1ml-4 flex items-center gap-1">
+                        {header.os && (<>
+                            <span className="pt-0.5 text-[0.6rem]">OS:</span>
+                            <span className="pt-0.5 text-[0.6rem]">{header.os}</span>
+                        </>)
+                        }
+
+                        {header.compiled && (<>
+                            <span className="pt-0.5 text-[0.6rem]">Compiled:</span>
+                            <span className="pt-0.5 text-[0.6rem]">{header.compiled}</span>
+                        </>)}
+                    </div>
 
                     <div className="ml-4 flex items-center gap-1">
                         <Cpu className="size-3" />
-                        <span className="font-semibold">Lines:</span>
+                        <span className="font-semibold">File:</span>
+                        <span>lines:</span>
                         <span>{lines.length.toLocaleString()}</span>
-                    </div>
 
-                    {errorCount > 0 && (
-                        <div className="ml-4 flex items-center gap-1 text-red-600 dark:text-red-400">
-                            <AlertCircle className="size-3" />
-                            <span className="font-semibold">Errors:</span>
+                        {errorCount > 0 && (<>
+                            <span>errors:</span>
                             <span>{errorCount.toLocaleString()}</span>
-                        </div>
-                    )}
-
-                    <div className="ml-4 flex items-center gap-1">
-                        <span className="font-semibold tracking-wide">OPEN FILES</span>
-                        <span className="bg-muted-foreground/10 px-1.5 py-0.5 rounded text-[10px]">{files.length}</span>
+                        </>)}
                     </div>
+
                 </div>
 
             </div>
