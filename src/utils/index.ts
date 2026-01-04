@@ -8,6 +8,7 @@ export * from "./disable-hidden-children";
 export * from "./env-date-formatter";
 export * from "./numbers";
 export * from "./theme-apply";
+export * from "./theme-utils";
 export * from "./merge-options";
 export * from "./valtio-array";
 
