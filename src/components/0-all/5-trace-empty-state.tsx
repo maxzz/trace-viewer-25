@@ -10,4 +10,3 @@ export function TraceEmptyState() {
         </div>
     );
 }
-
