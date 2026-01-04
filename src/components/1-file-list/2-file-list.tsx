@@ -1,8 +1,8 @@
 import { useEffect, useRef, useMemo } from "react";
 import { useSnapshot } from "valtio";
-import { traceStore } from "../../../store/traces-store/0-state";
-import { appSettings } from "../../../store/ui-settings";
-import { ScrollArea } from "../../ui/shadcn/scroll-area";
+import { traceStore } from "../../store/traces-store/0-state";
+import { appSettings } from "../../store/ui-settings";
+import { ScrollArea } from "../ui/shadcn/scroll-area";
 import { FileListItem } from "./3-file-list-item";
 
 export function FileList() {

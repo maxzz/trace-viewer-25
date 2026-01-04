@@ -1,8 +1,8 @@
 import { useCallback } from "react";
 import { appSettings } from "../../store/ui-settings";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../ui/shadcn/resizable";
-import { FileList } from "../1-trace-viewer/3-file-list/2-file-list";
-import { TraceList } from "../1-trace-viewer/2-trace-list";
+import { FileList } from "../1-file-list/2-file-list";
+import { TraceList } from "../2-trace-viewer";
 
 export function TraceMainView() {
     const savedSizes = appSettings.panelSizes;

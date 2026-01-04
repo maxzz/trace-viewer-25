@@ -1,14 +1,7 @@
-import React from "react";
-import { type TraceFile, traceStore } from "../../../store/traces-store/0-state";
-import { classNames, cn } from "@/utils/index";
+import { type TraceFile, traceStore } from "../../store/traces-store/0-state";
+import { cn } from "@/utils/index";
 import { AlertCircle, FileText } from "lucide-react";
-import {
-    ContextMenu,
-    ContextMenuContent,
-    ContextMenuItem,
-    ContextMenuSeparator,
-    ContextMenuTrigger,
-} from "../../ui/shadcn/context-menu";
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger, } from "../ui/shadcn/context-menu";
 
 interface FileListItemProps {
     file: TraceFile;
