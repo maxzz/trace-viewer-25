@@ -98,6 +98,22 @@ const formatContent = (line: TraceLine, useIconsForEntryExit: boolean) => {
         if (line.code === LineCode.Entry) return `>>> ${line.content}`;
         if (line.code === LineCode.Exit) return `<<< ${line.content}`;
     }
+
+    if (line.code === LineCode.Error) {
+        // Try to find hResult pattern (e.g. hResult=2147500037) and convert to hex
+        // 2147500037 -> 0x80004005
+        return line.content.replace(/hResult=(-?\d+)/g, (match, p1) => {
+             try {
+                const dec = parseInt(p1, 10);
+                // Handle signed integer to unsigned hex conversion
+                const hex = (dec >>> 0).toString(16).toUpperCase();
+                return `hResult=0x${hex}`;
+             } catch {
+                 return match;
+             }
+        });
+    }
+
     return line.content;
 };
 
