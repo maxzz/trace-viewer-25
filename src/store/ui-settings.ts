@@ -10,6 +10,7 @@ export interface AppSettings {
     useIconsForEntryExit: boolean;
     theme: ThemeMode;
     panelSizes?: number[]; // ResizablePanelGroup panel sizes (percentages)
+    extraInFooter: boolean; // Show header info (Computer, OS, Compiled) in footer
     // Future options can be added here
 }
 
@@ -17,6 +18,7 @@ const DEFAULT_SETTINGS: AppSettings = {
     showFooter: true,
     useIconsForEntryExit: true,
     theme: 'light',
+    extraInFooter: false,
 };
 
 const loadSettings = (): AppSettings => {

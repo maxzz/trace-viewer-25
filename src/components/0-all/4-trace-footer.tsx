@@ -1,9 +1,11 @@
 import { useSnapshot } from "valtio";
 import { traceStore } from "../../store/traces-store/0-state";
+import { appSettings } from "../../store/ui-settings";
 import { Cpu, Clock, AlertCircle } from "lucide-react";
 
 export function TraceFooter() {
     const { lines, header, error, files, selectedFileId } = useSnapshot(traceStore);
+    const { extraInFooter } = useSnapshot(appSettings);
     const selectedFile = selectedFileId ? files.find(f => f.id === selectedFileId) : null;
     const errorCount = selectedFile?.errorCount || 0;
 
@@ -26,25 +28,29 @@ export function TraceFooter() {
                         <span className="py-0.5 rounded text-[10px]">{files.length}</span>
                     </div>
 
-                    <div className="ml-4 flex items-center gap-1">
-                        <span className="pt-0.5 text-[0.6rem]">💻 Computer:</span>
-                        <span className="pt-0.5 text-[0.6rem]">
-                            {header.machineName || "Trace Viewer"}
-                        </span>
-                    </div>
+                    {extraInFooter && (
+                        <>
+                            <div className="ml-4 flex items-center gap-1">
+                                <span className="pt-0.5 text-[0.6rem]">💻 Computer:</span>
+                                <span className="pt-0.5 text-[0.6rem]">
+                                    {header.machineName || "Trace Viewer"}
+                                </span>
+                            </div>
 
-                    <div className="1ml-4 flex items-center gap-1">
-                        {header.os && (<>
-                            <span className="pt-0.5 text-[0.6rem]">OS:</span>
-                            <span className="pt-0.5 text-[0.6rem]">{header.os}</span>
-                        </>)
-                        }
+                            <div className="1ml-4 flex items-center gap-1">
+                                {header.os && (<>
+                                    <span className="pt-0.5 text-[0.6rem]">OS:</span>
+                                    <span className="pt-0.5 text-[0.6rem]">{header.os}</span>
+                                </>)
+                                }
 
-                        {header.compiled && (<>
-                            <span className="pt-0.5 text-[0.6rem]">Compiled:</span>
-                            <span className="pt-0.5 text-[0.6rem]">{header.compiled}</span>
-                        </>)}
-                    </div>
+                                {header.compiled && (<>
+                                    <span className="pt-0.5 text-[0.6rem]">Compiled:</span>
+                                    <span className="pt-0.5 text-[0.6rem]">{header.compiled}</span>
+                                </>)}
+                            </div>
+                        </>
+                    )}
 
                     <div className="ml-4 flex items-center gap-1">
                         <Cpu className="size-3" />

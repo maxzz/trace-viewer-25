@@ -19,6 +19,10 @@ export function DialogOptions() {
         appSettings.useIconsForEntryExit = checked;
     };
 
+    const handleExtraInFooterChange = (checked: boolean) => {
+        appSettings.extraInFooter = checked;
+    };
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[400px]">
@@ -35,6 +39,11 @@ export function DialogOptions() {
                     <Label className="text-xs font-normal flex items-center space-x-1">
                         <Checkbox className="p-1 size-5" checked={settings.useIconsForEntryExit} onCheckedChange={handleUseIconsChange} />
                         Use Icons for Entry/Exit lines
+                    </Label>
+
+                    <Label className="text-xs font-normal flex items-center space-x-1">
+                        <Checkbox className="size-5" checked={settings.extraInFooter} onCheckedChange={handleExtraInFooterChange} />
+                        Show header info in footer
                     </Label>
                 </div>
 
