@@ -55,11 +55,6 @@ export function FileList() {
             className="h-full flex flex-col bg-muted/10 select-none outline-none focus-visible:ring-1 focus-visible:ring-ring"
             tabIndex={0}
         >
-            <div className="h-10 px-3 border-b flex items-center justify-between text-xs font-semibold text-muted-foreground">
-                <span className="tracking-wide">OPEN FILES</span>
-                <span className="bg-muted-foreground/10 px-1.5 py-0.5 rounded text-[10px]">{files.length}</span>
-            </div>
-
             <ScrollArea className="flex-1">
                 <div className="flex flex-col py-1">
                     {files.map(

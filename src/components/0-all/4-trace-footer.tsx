@@ -53,6 +53,11 @@ export function TraceFooter() {
                             <span>{errorCount.toLocaleString()}</span>
                         </div>
                     )}
+
+                    <div className="ml-4 flex items-center gap-1">
+                        <span className="font-semibold tracking-wide">OPEN FILES</span>
+                        <span className="bg-muted-foreground/10 px-1.5 py-0.5 rounded text-[10px]">{files.length}</span>
+                    </div>
                 </div>
 
             </div>
