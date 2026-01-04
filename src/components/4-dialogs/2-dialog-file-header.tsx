@@ -21,7 +21,7 @@ export function DialogFileHeader() {
 
                 <div className="py-4 grid gap-4">
                     <div className="grid gap-2">
-                        <Input className="bg-muted" value={fileName || ''} readOnly />
+                        <Input className="bg-muted" value={fileName || ''} readOnly tabIndex={-1} />
                     </div>
 
                     <div className="grid gap-2">
