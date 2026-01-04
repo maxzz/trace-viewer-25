@@ -33,6 +33,24 @@ export function FileList() {
         return files.filter(file => file.fileName.toLowerCase().includes(pattern));
     }, [files, selectedFilterId, fileFilters]);
 
+    // Effect to handle selection change when filter results change
+    useEffect(() => {
+        if (files.length === 0) return;
+
+        // Check if currently selected file is in the filtered list
+        const isSelectedInFiltered = filteredFiles.some(f => f.id === selectedFileId);
+
+        if (!isSelectedInFiltered) {
+            if (filteredFiles.length > 0) {
+                // Select first file if current selection is hidden
+                traceStore.selectFile(filteredFiles[0].id);
+            } else if (selectedFileId) {
+                 // Deselect if no files match filter
+                 traceStore.selectFile(null);
+            }
+        }
+    }, [filteredFiles, selectedFileId, files.length]);
+
     // Keyboard navigation
     useEffect(
         () => {
