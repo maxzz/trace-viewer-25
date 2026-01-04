@@ -1,12 +1,37 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import { useSnapshot } from "valtio";
 import { traceStore } from "../../../store/traces-store/0-state";
+import { appSettings } from "../../../store/ui-settings";
 import { ScrollArea } from "../../ui/shadcn/scroll-area";
 import { FileListItem } from "./3-file-list-item";
 
 export function FileList() {
     const { files, selectedFileId } = useSnapshot(traceStore);
+    const { fileFilters, selectedFilterId } = useSnapshot(appSettings);
     const containerRef = useRef<HTMLDivElement>(null);
+
+    // Compute filtered files
+    const filteredFiles = useMemo(() => {
+        if (!selectedFilterId) return files;
+        const filter = fileFilters.find(f => f.id === selectedFilterId);
+        if (!filter) return files;
+
+        const pattern = filter.pattern.toLowerCase();
+        
+        // Convert glob to regex if contains *
+        if (pattern.includes('*')) {
+             try {
+                const regexStr = "^" + pattern.split('*').map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('.*') + "$";
+                const regex = new RegExp(regexStr, 'i');
+                return files.filter(file => regex.test(file.fileName));
+             } catch (e) {
+                // fallback to contains
+                return files.filter(file => file.fileName.toLowerCase().includes(pattern.replace(/\*/g, '')));
+             }
+        }
+        
+        return files.filter(file => file.fileName.toLowerCase().includes(pattern));
+    }, [files, selectedFilterId, fileFilters]);
 
     // Keyboard navigation
     useEffect(
@@ -17,19 +42,29 @@ export function FileList() {
                     return;
                 }
 
-                if (files.length === 0) return;
+                if (filteredFiles.length === 0) return;
 
-                const selectedIndex = files.findIndex(f => f.id === selectedFileId);
+                const selectedIndex = filteredFiles.findIndex(f => f.id === selectedFileId);
 
                 if (e.key === 'ArrowUp') {
                     e.preventDefault();
-                    const newIndex = Math.max(0, selectedIndex - 1);
-                    traceStore.selectFile(files[newIndex].id);
+                    if (selectedIndex === -1) {
+                         // If current selection not in list, select last visible
+                         traceStore.selectFile(filteredFiles[filteredFiles.length - 1].id);
+                    } else {
+                        const newIndex = Math.max(0, selectedIndex - 1);
+                        traceStore.selectFile(filteredFiles[newIndex].id);
+                    }
                 }
                 else if (e.key === 'ArrowDown') {
                     e.preventDefault();
-                    const newIndex = selectedIndex === -1 ? 0 : Math.min(files.length - 1, selectedIndex + 1);
-                    traceStore.selectFile(files[newIndex].id);
+                    if (selectedIndex === -1) {
+                        // If current selection not in list, select first visible
+                        traceStore.selectFile(filteredFiles[0].id);
+                    } else {
+                        const newIndex = Math.min(filteredFiles.length - 1, selectedIndex + 1);
+                        traceStore.selectFile(filteredFiles[newIndex].id);
+                    }
                 }
                 else if (e.key === 'Delete') { // Backspace can be dangerous in browsers (nav back)
                     if (selectedFileId) {
@@ -46,7 +81,7 @@ export function FileList() {
             const controller = new AbortController();
             window.addEventListener('keydown', handleKeyDown, { signal: controller.signal });
             return () => controller.abort();
-        }, [files, selectedFileId]
+        }, [filteredFiles, selectedFileId]
     );
 
     return (
@@ -57,7 +92,7 @@ export function FileList() {
         >
             <ScrollArea className="flex-1" fixedWidth>
                 <div className="flex flex-col py-1">
-                    {files.map(
+                    {filteredFiles.map(
                         (file) => (
                             <FileListItem
                                 key={file.id}

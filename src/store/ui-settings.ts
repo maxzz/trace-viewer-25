@@ -5,13 +5,22 @@ const STORE_KEY = "viewer-25";
 const STORE_VER = "v1.0";
 const STORAGE_ID = `${STORE_KEY}::${STORE_VER}`;
 
+export interface FileFilter {
+    id: string;
+    name: string;
+    pattern: string;
+}
+
 export interface AppSettings {
     showFooter: boolean;
     useIconsForEntryExit: boolean;
     theme: ThemeMode;
     panelSizes?: number[]; // ResizablePanelGroup panel sizes (percentages)
     extraInFooter: boolean; // Show header info (Computer, OS, Compiled) in footer
-    // Future options can be added here
+    
+    // File Filters
+    fileFilters: FileFilter[];
+    selectedFilterId: string | null;
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
@@ -19,12 +28,15 @@ const DEFAULT_SETTINGS: AppSettings = {
     useIconsForEntryExit: true,
     theme: 'light',
     extraInFooter: false,
+    fileFilters: [],
+    selectedFilterId: null,
 };
 
 const loadSettings = (): AppSettings => {
     try {
         const stored = localStorage.getItem(STORAGE_ID);
         if (stored) {
+            // merge stored settings with defaults to ensure new fields are present
             return { ...DEFAULT_SETTINGS, ...JSON.parse(stored) };
         }
     } catch (e) {
@@ -45,4 +57,3 @@ subscribe(appSettings, () => {
         console.error("Failed to save settings", e);
     }
 });
-

@@ -4,12 +4,13 @@ import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, Me
 import { useSnapshot } from "valtio";
 import { traceStore } from "../../store/traces-store/0-state";
 import { useSetAtom } from "jotai";
-import { dialogFileHeaderOpenAtom, dialogAboutOpenAtom, dialogOptionsOpenAtom } from "../../store/ui-atoms";
+import { dialogFileHeaderOpenAtom, dialogAboutOpenAtom, dialogOptionsOpenAtom, dialogEditFiltersOpenAtom } from "../../store/ui-atoms";
 
 export function TopMenu() {
     const setOptionsOpen = useSetAtom(dialogOptionsOpenAtom);
     const setAboutOpen = useSetAtom(dialogAboutOpenAtom);
     const setFileHeaderOpen = useSetAtom(dialogFileHeaderOpenAtom);
+    const setEditFiltersOpen = useSetAtom(dialogEditFiltersOpenAtom);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { files, selectedFileId } = useSnapshot(traceStore);
@@ -46,7 +47,7 @@ export function TopMenu() {
                         View
                     </MenubarTrigger>
                     <MenubarContent>
-                        <MenubarItem disabled>
+                        <MenubarItem onClick={() => setEditFiltersOpen(true)}>
                             Filter...
                         </MenubarItem>
                         <MenubarSeparator />
