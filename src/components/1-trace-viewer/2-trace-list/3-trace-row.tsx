@@ -117,12 +117,11 @@ const formatContent = (line: TraceLine, useIconsForEntryExit: boolean) => {
 
         // If no hResult pattern was found, check if the line contains only a single integer
         if (result === line.content) {
-            const trimmed = line.content.trim();
             // Check if the entire line is just a single integer (possibly with leading/trailing whitespace)
-            const singleIntMatch = trimmed.match(/^-?\d+$/);
+            const singleIntMatch = line.content.match(/^\s*(-?\d+)\s*$/);
             if (singleIntMatch) {
                 try {
-                    const dec = parseInt(trimmed, 10);
+                    const dec = parseInt(singleIntMatch[1], 10);
                     const hex = (dec >>> 0).toString(16).toUpperCase();
                     return `0x${hex}`;
                 } catch {
