@@ -23,44 +23,40 @@ export function TraceFooter() {
             <div className="p-2 pt-1 flex items-center gap-6">
 
                 <div className="flex items-center gap-1">
-                    <div className="ml-4 flex items-center gap-1">
+                    <div className="ml-2 flex items-center gap-1">
                         <span>Loaded:</span>
                         <span className="py-0.5 rounded text-[10px]">{files.length}</span>
                     </div>
 
-                    {extraInFooter && (
-                        <>
-                            <div className="ml-4 flex items-center gap-1">
-                                <span className="pt-0.5 text-[0.6rem]">💻 Computer:</span>
-                                <span className="pt-0.5 text-[0.6rem]">
-                                    {header.machineName || "Trace Viewer"}
-                                </span>
-                            </div>
+                    {extraInFooter && (<>
+                        <div className="1ml-4 flex items-center gap-1">
+                            <span className="pt-0.5 text-[0.6rem]">💻 Computer:</span>
+                            <span className="pt-0.5 text-[0.6rem]">
+                                {header.machineName || "Trace Viewer"}
+                            </span>
+                        </div>
 
-                            <div className="1ml-4 flex items-center gap-1">
-                                {header.os && (<>
-                                    <span className="pt-0.5 text-[0.6rem]">OS:</span>
-                                    <span className="pt-0.5 text-[0.6rem]">{header.os}</span>
-                                </>)
-                                }
+                        <div className="flex items-center gap-1">
+                            {header.os && (<>
+                                <span className="pt-0.5 text-[0.6rem]">OS:</span>
+                                <span className="pt-0.5 text-[0.6rem]">{header.os}</span>
+                            </>)
+                            }
 
-                                {header.compiled && (<>
-                                    <span className="pt-0.5 text-[0.6rem]">Compiled:</span>
-                                    <span className="pt-0.5 text-[0.6rem]">{header.compiled}</span>
-                                </>)}
-                            </div>
-                        </>
-                    )}
+                            {header.compiled && (<>
+                                <span className="pt-0.5 text-[0.6rem]">Compiled:</span>
+                                <span className="pt-0.5 text-[0.6rem]">{header.compiled}</span>
+                            </>)}
+                        </div>
+                    </>)}
 
-                    <div className="ml-4 flex items-center gap-1">
-                        <Cpu className="size-3" />
-                        <span className="font-semibold">File:</span>
-                        <span>lines:</span>
-                        <span>{lines.length.toLocaleString()}</span>
+                    <div className="ml-2 flex items-center">
+                        <Cpu className="mr-1 size-3" />
+                        <span className="mr-1 font-semibold">File:</span>
+                        <span>{lines.length.toLocaleString()} {plural(lines.length, 'line')}</span>
 
                         {errorCount > 0 && (<>
-                            <span>errors:</span>
-                            <span>{errorCount.toLocaleString()}</span>
+                            <span>, {errorCount.toLocaleString()} {plural(errorCount, 'error')}</span>
                         </>)}
                     </div>
 
@@ -71,3 +67,6 @@ export function TraceFooter() {
     );
 }
 
+function plural(n: number, word: string) {
+    return n === 1 ? word : `${word}s`;
+}
