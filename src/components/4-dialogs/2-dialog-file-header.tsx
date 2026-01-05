@@ -16,7 +16,9 @@ export function DialogFileHeader() {
             <DialogContent className="sm:max-w-[600px]" aria-describedby={undefined}>
 
                 <DialogHeader>
-                    <DialogTitle>Trace File Header</DialogTitle>
+                    <DialogTitle>
+                        Trace File Header
+                    </DialogTitle>
                 </DialogHeader>
 
                 <div className="py-4 grid gap-4">

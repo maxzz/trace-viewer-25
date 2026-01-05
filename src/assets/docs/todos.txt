@@ -9,20 +9,20 @@
     TODO: error badge place on the left - done
     TODO: thread column as line with dots. separate line for each thread and tooltip to show thread ID. - done
 	TODO: show open folder name in the browser tab caption - done
-    TODO: put context menu items also into top menu
+	TODO: Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}. - done
 
 01.03.26
     TODO: `-2147024894` add explanation
 	TODO: viewer: 0x80070002 show well known codes
+    TODO: put context menu items also into top menu
     TODO: filter by thread ID, errors, etc.
     TODO: PageUp/PageDown should preserve current line position on page if possible.
     TODO: add help dialog with keyboard shortcuts and other information.
+	TODO: find all files with trace at the crrent line time
 
 01.04.26		
-	TODO: find all files with trace at the crrent line time
-	TODO: fix size of select component
+	TODO: fix size of select filter component
 	TODO: filter *Digital not working; debounce; cursor jumps to the end after each new character (use sync in atom or valtio).
-	TODO: Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
 	TODO: viewer: if string is truncated then show tooltip: Getting 'QuickActions\QA_Finger' from 'SOFTWARE\DigitalPersona\Policies\Default'...
 	TODO: buttons in footer to jump to the next/prev error and show current error index from errors in this file. (or on the error line show next prev error buttons)
 	TODO: add buttons to show only files with errors and show file content only error lines (and +- 3 lines around or corresponding function name)
