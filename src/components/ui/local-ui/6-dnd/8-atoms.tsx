@@ -11,6 +11,11 @@ export const doSetFilesFrom_Dnd_Atom = atom(                    // used by DropI
         const files: File[] = [];
         let droppedFolderName: string | undefined;
 
+        // IMPORTANT: webkitGetAsEntry() is only valid synchronously during the drop event.
+        // We must collect all entries BEFORE any async operations.
+        const entries: FileSystemEntry[] = [];
+        const fallbackFiles: File[] = [];
+
         if (dataTransfer.items) {
             // Check if single folder dropped
             if (dataTransfer.items.length === 1) {
@@ -21,27 +26,30 @@ export const doSetFilesFrom_Dnd_Atom = atom(                    // used by DropI
                  }
             }
 
-            // Use the modern DataTransferItem API which supports directories
+            // Collect all entries synchronously first
             for (let i = 0; i < dataTransfer.items.length; i++) {
                 const item = dataTransfer.items[i];
 
                 if (item.kind === 'file') {
-                    // Try to get as entry first (supports directories)
-                    // Type assertion for webkitGetAsEntry which may not be in all type definitions
                     const entry = (item as any).webkitGetAsEntry?.() as FileSystemEntry | null | undefined;
 
                     if (entry) {
-                        // Process entry (could be file or directory)
-                        await processEntry(entry, files);
+                        entries.push(entry);
                     } else {
                         // Fallback to direct file access
                         const file = item.getAsFile();
                         if (file && isTrc3File(file)) {
-                            files.push(file);
+                            fallbackFiles.push(file);
                         }
                     }
                 }
             }
+
+            // Now process entries asynchronously
+            for (const entry of entries) {
+                await processEntry(entry, files);
+            }
+            files.push(...fallbackFiles);
         } else {
             // Fallback for older browsers
             for (let i = 0; i < dataTransfer.files.length; i++) {
