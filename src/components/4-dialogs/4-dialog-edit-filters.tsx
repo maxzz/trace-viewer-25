@@ -9,6 +9,7 @@ import { GripVertical, Trash2, Plus } from "lucide-react";
 import { appSettings, type FileFilter } from "../../store/1-ui-settings";
 import { dialogEditFiltersOpenAtom } from "../../store/2-ui-atoms";
 import { filterActions } from "../../store/4-file-filters";
+import { turnOffAutoComplete } from "@/utils/disable-hidden-children";
 
 export function DialogEditFilters() {
     const [open, setOpen] = useAtom(dialogEditFiltersOpenAtom);
@@ -20,25 +21,37 @@ export function DialogEditFilters() {
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="max-w-[600px]!" aria-describedby={undefined}>
+            <DialogContent className="max-w-[500px]!" aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle>
                         Filters
                     </DialogTitle>
                 </DialogHeader>
 
-                <div className="py-2">
+                <div>
                     <div className="flex items-center justify-between mb-4">
-                        <Label>
-                            Filters
+                        <Label className="text-xs font-normal">
+                            Add or Edit Filters
                         </Label>
-                        <Button variant="ghost" size="xs" onClick={() => filterActions.addFilter("Filter name", "")}>
-                            <Plus className="size-3.5" />
-                            Add Filter
-                        </Button>
                     </div>
 
-                    <div className="max-h-[60vh] overflow-y-auto pr-2 -mr-2">
+                    {/* Show header line for the filters list with column names located over the filter name and pattern columns */}
+                    {fileFilters.length !== 0 && (
+                        <div className="mb-1 px-10 flex items-center justify-between">
+                            <div className="px-1 flex-1 text-center">
+                                <Label>
+                                    Name
+                                </Label>
+                            </div>
+                            <div className="flex-1 text-center">
+                                <Label>
+                                    Pattern
+                                </Label>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="-mr-2 pr-2 py-1 max-h-[60vh] overflow-y-auto">
                         <Reorder.Group className="list-none p-0 m-0" axis="y" values={fileFilters as unknown as FileFilter[]} onReorder={handleReorder}>
                             {fileFilters.map(
                                 (filter) => (
@@ -52,7 +65,8 @@ export function DialogEditFilters() {
                             )}
                         </Reorder.Group>
 
-                        <Button variant="ghost" size="xs" onClick={() => filterActions.addFilter("Filter name", "")}>
+                        <Button className="mt-1 mx-10" variant="outline" size="xs" onClick={() => filterActions.addFilter("Filter name", "")}>
+                            <Plus className="size-3.5" />
                             <div className="text-center text-muted-foreground text-xs border border-dashed rounded-md">
                                 Add Filter
                             </div>
@@ -74,6 +88,9 @@ export function DialogEditFilters() {
     );
 }
 
+//TODO: no scroll
+//TODO: delete confirmation
+
 function FilterItem({ filter, onUpdate, onDelete }: { filter: FileFilter, onUpdate: (id: string, data: Partial<FileFilter>) => void, onDelete: (id: string) => void; }) {
     const dragControls = useDragControls();
 
@@ -91,16 +108,18 @@ function FilterItem({ filter, onUpdate, onDelete }: { filter: FileFilter, onUpda
 
             <div className="flex-1 grid grid-cols-2 gap-1">
                 <Input
+                    className="h-8"
+                    placeholder="Filter Name"
                     value={filter.name}
                     onChange={(e) => onUpdate(filter.id, { name: e.target.value })}
-                    placeholder="Filter Name"
-                    className="h-8"
+                    {...turnOffAutoComplete}
                 />
                 <Input
+                    className="h-8"
+                    placeholder="Pattern (e.g. *.log)"
                     value={filter.pattern}
                     onChange={(e) => onUpdate(filter.id, { pattern: e.target.value })}
-                    placeholder="Pattern (e.g. *.log)"
-                    className="h-8"
+                    {...turnOffAutoComplete}
                 />
             </div>
 
@@ -110,7 +129,7 @@ function FilterItem({ filter, onUpdate, onDelete }: { filter: FileFilter, onUpda
                 className="text-muted-foreground/50"
                 onClick={() => onDelete(filter.id)}
             >
-                <Trash2 className="" />
+                <Trash2 />
             </Button>
         </Reorder.Item>
     );
