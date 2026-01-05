@@ -10,13 +10,15 @@ export function DialogAbout() {
     // Using hardcoded values matching the C++ resource request
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="px-4 py-3 w-auto sm:max-w-[400px] text-xs">
+            <DialogContent className="px-4 py-3 w-auto sm:max-w-[400px] text-xs" aria-describedby={undefined}>
+
                 <DialogHeader>
-                    <DialogTitle className="text-sm">About</DialogTitle>
+                    <DialogTitle className="text-sm">
+                        About
+                    </DialogTitle>
                 </DialogHeader>
 
                 <div className="grid grid-cols-[auto_1fr] gap-2">
-
                     <div className="px-1 bg-sky-500/5 rounded flex items-center justify-center">
                         <IconBinocular className="p-1 size-12 border-sky-500 border rounded shadow" />
                         {/* <IconAppLogo className="p-2" /> */}
@@ -34,6 +36,7 @@ export function DialogAbout() {
                 <DialogFooter>
                     <Button onClick={() => onOpenChange(false)}>OK</Button>
                 </DialogFooter>
+
             </DialogContent>
         </Dialog>
     );

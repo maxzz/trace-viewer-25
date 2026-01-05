@@ -2,7 +2,7 @@ import { useAtom } from 'jotai';
 import { useSnapshot } from 'valtio';
 import { appSettings } from '@/store/1-ui-settings';
 import { dialogOptionsOpenAtom } from '@/store/2-ui-atoms';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, } from '@/components/ui/shadcn/dialog';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/shadcn/dialog';
 import { Button } from '@/components/ui/shadcn/button';
 import { Checkbox } from '@/components/ui/shadcn/checkbox';
 import { Label } from '@/components/ui/shadcn/label';
@@ -25,19 +25,21 @@ export function DialogOptions() {
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[400px]">
+            <DialogContent className="max-w-[300px]!" aria-describedby={undefined}>
                 <DialogHeader>
-                    <DialogTitle className="text-sm">Options</DialogTitle>
+                    <DialogTitle className="text-sm">
+                        Options
+                    </DialogTitle>
                 </DialogHeader>
 
-                <div className="grid gap-4 py-4">
+                <div className="py-4 grid gap-2">
                     <Label className="text-xs font-normal flex items-center space-x-1">
                         <Checkbox className="size-5" checked={settings.showFooter} onCheckedChange={handleShowFooterChange} />
                         Show Footer
                     </Label>
 
                     <Label className="text-xs font-normal flex items-center space-x-1">
-                        <Checkbox className="p-1 size-5" checked={settings.useIconsForEntryExit} onCheckedChange={handleUseIconsChange} />
+                        <Checkbox className="size-5" checked={settings.useIconsForEntryExit} onCheckedChange={handleUseIconsChange} />
                         Use Icons for Entry/Exit lines
                     </Label>
 
@@ -50,6 +52,7 @@ export function DialogOptions() {
                 <DialogFooter>
                     <Button onClick={() => onOpenChange(false)}>Close</Button>
                 </DialogFooter>
+                
             </DialogContent>
         </Dialog>
     );
