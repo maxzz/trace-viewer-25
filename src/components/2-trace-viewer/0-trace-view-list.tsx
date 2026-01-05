@@ -6,7 +6,7 @@ import { ITEM_HEIGHT, renderRow } from "./1-trace-view-row";
 
 export function TraceList() {
     const { viewLines, currentLineIndex, uniqueThreadIds, selectedFileId } = useSnapshot(traceStore);
-    const { useIconsForEntryExit } = useSnapshot(appSettings);
+    const { useIconsForEntryExit, showLineNumbers } = useSnapshot(appSettings);
     const scrollRef = useRef<HTMLDivElement>(null);
     const [scrollTop, setScrollTop] = useState(0);
     const [containerHeight, setContainerHeight] = useState(800); // Default
@@ -88,7 +88,7 @@ export function TraceList() {
             <div style={{ height: totalHeight, position: 'relative' }}>
                 <div style={{ transform: `translateY(${offsetY}px)` }}>
                     {visibleLines.map(
-                        (line, index) => renderRow(line, index, startIndex, currentLineIndex, useIconsForEntryExit, uniqueThreadIds)
+                        (line, index) => renderRow(line, index, startIndex, currentLineIndex, useIconsForEntryExit, showLineNumbers, uniqueThreadIds)
                     )}
                 </div>
             </div>

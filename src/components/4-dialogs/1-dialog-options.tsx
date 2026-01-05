@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/shadcn/label';
 
 export function DialogOptions() {
     const [open, onOpenChange] = useAtom(dialogOptionsOpenAtom);
-    const settings = useSnapshot(appSettings);
+    const { showFooter, useIconsForEntryExit, showLineNumbers, extraInFooter } = useSnapshot(appSettings);
 
     const handleShowFooterChange = (checked: boolean) => {
         appSettings.showFooter = checked;
@@ -23,6 +23,10 @@ export function DialogOptions() {
         appSettings.extraInFooter = checked;
     };
 
+    const handleShowLineNumbersChange = (checked: boolean) => {
+        appSettings.showLineNumbers = checked;
+    };
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-[300px]!" aria-describedby={undefined}>
@@ -32,19 +36,28 @@ export function DialogOptions() {
                     </DialogTitle>
                 </DialogHeader>
 
-                <div className="py-4 grid gap-2">
-                    <Label className="text-xs font-normal flex items-center space-x-1">
-                        <Checkbox className="size-5" checked={settings.showFooter} onCheckedChange={handleShowFooterChange} />
-                        Show Footer
-                    </Label>
+                <div className="py-4 text-xs grid gap-2">
+                    Trace viewer options:
 
                     <Label className="text-xs font-normal flex items-center space-x-1">
-                        <Checkbox className="size-5" checked={settings.useIconsForEntryExit} onCheckedChange={handleUseIconsChange} />
+                        <Checkbox className="size-5" checked={useIconsForEntryExit} onCheckedChange={handleUseIconsChange} />
                         Use Icons for Entry/Exit lines
                     </Label>
 
                     <Label className="text-xs font-normal flex items-center space-x-1">
-                        <Checkbox className="size-5" checked={settings.extraInFooter} onCheckedChange={handleExtraInFooterChange} />
+                        <Checkbox className="size-5" checked={showLineNumbers} onCheckedChange={handleShowLineNumbersChange} />
+                        Show Line numbers
+                    </Label>
+
+                    Footer options:
+
+                    <Label className="text-xs font-normal flex items-center space-x-1">
+                        <Checkbox className="size-5" checked={showFooter} onCheckedChange={handleShowFooterChange} />
+                        Show Footer
+                    </Label>
+
+                    <Label className="text-xs font-normal flex items-center space-x-1">
+                        <Checkbox className="size-5" checked={extraInFooter} onCheckedChange={handleExtraInFooterChange} />
                         Show header info in footer
                     </Label>
                 </div>
@@ -52,7 +65,7 @@ export function DialogOptions() {
                 <DialogFooter>
                     <Button onClick={() => onOpenChange(false)}>Close</Button>
                 </DialogFooter>
-                
+
             </DialogContent>
         </Dialog>
     );

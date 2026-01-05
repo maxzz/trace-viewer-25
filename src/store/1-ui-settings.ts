@@ -14,6 +14,7 @@ export interface FileFilter {
 export interface AppSettings {
     showFooter: boolean;
     useIconsForEntryExit: boolean;
+    showLineNumbers: boolean;
     theme: ThemeMode;
     panelSizes?: number[]; // ResizablePanelGroup panel sizes (percentages)
     extraInFooter: boolean; // Show header info (Computer, OS, Compiled) in footer
@@ -26,6 +27,7 @@ export interface AppSettings {
 const DEFAULT_SETTINGS: AppSettings = {
     showFooter: true,
     useIconsForEntryExit: true,
+    showLineNumbers: true,
     theme: 'light',
     extraInFooter: false,
     fileFilters: [],

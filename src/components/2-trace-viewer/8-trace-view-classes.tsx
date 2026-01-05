@@ -4,8 +4,9 @@ export const columnLineNumberClasses = "\
 shrink-0 \
 mr-2 \
 pr-2 \
-w-16 \
+w-10 \
 h-full \
+text-[0.6rem] \
 text-right \
 text-gray-400 \
 border-gray-200 dark:border-gray-800 \
@@ -40,7 +41,6 @@ select-none \
 // Trace List Row Classes
 
 export const lineClasses = "\
-px-2 \
 text-xs \
 font-mono \
 whitespace-pre \

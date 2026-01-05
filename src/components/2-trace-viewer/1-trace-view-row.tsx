@@ -14,7 +14,7 @@ import {
 
 export const ITEM_HEIGHT = 20; // Fixed height for simplicity. was 24
 
-export function renderRow(line: TraceLine, index: number, startIndex: number, currentLineIndex: number, useIconsForEntryExit: boolean, uniqueThreadIds: readonly number[]) {
+export function renderRow(line: TraceLine, index: number, startIndex: number, currentLineIndex: number, useIconsForEntryExit: boolean, showLineNumbers: boolean, uniqueThreadIds: readonly number[]) {
     const globalIndex = startIndex + index;
     const showThreadBackground = uniqueThreadIds.length > 0 && uniqueThreadIds[0] !== line.threadId;
     
@@ -26,9 +26,11 @@ export function renderRow(line: TraceLine, index: number, startIndex: number, cu
             style={{ height: ITEM_HEIGHT }}
         >
             {/* Line Number */}
-            <div className={columnLineNumberClasses}>
-                {line.lineIndex + 1}
-            </div>
+            {showLineNumbers && (
+                <div className={columnLineNumberClasses}>
+                    {line.lineIndex + 1}
+                </div>
+            )}
 
             {/* Time Column */}
             <div className={columnTimeClasses} title={line.timestamp}>
