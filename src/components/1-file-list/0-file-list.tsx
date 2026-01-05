@@ -1,6 +1,6 @@
 import { type RefObject, useEffect, useRef, useMemo } from "react";
 import { useSnapshot } from "valtio";
-import { appSettings } from "../../store/ui-settings";
+import { appSettings } from "../../store/1-ui-settings";
 import { traceStore } from "../../store/traces-store/0-state";
 import { ScrollArea } from "../ui/shadcn/scroll-area";
 import { FileListRow } from "./1-file-list-row";

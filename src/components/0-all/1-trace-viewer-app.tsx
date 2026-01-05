@@ -1,5 +1,5 @@
 import { useSnapshot } from "valtio";
-import { appSettings } from "../../store/ui-settings";
+import { appSettings } from "../../store/1-ui-settings";
 import { traceStore } from "../../store/traces-store/0-state";
 import { TopMenu } from "./2-top-menu";
 import { TraceMainView } from "./6-resizable-panels";

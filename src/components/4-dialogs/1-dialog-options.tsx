@@ -1,7 +1,7 @@
 import { useAtom } from 'jotai';
 import { useSnapshot } from 'valtio';
-import { appSettings } from '@/store/ui-settings';
-import { dialogOptionsOpenAtom } from '@/store/ui-atoms';
+import { appSettings } from '@/store/1-ui-settings';
+import { dialogOptionsOpenAtom } from '@/store/2-ui-atoms';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, } from '@/components/ui/shadcn/dialog';
 import { Button } from '@/components/ui/shadcn/button';
 import { Checkbox } from '@/components/ui/shadcn/checkbox';

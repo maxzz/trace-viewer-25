@@ -1,7 +1,7 @@
 import { useAtom } from "jotai";
-import { dialogEditFiltersOpenAtom } from "../../store/ui-atoms";
-import { appSettings, type FileFilter } from "../../store/ui-settings";
-import { filterActions } from "../../store/file-filters";
+import { dialogEditFiltersOpenAtom } from "../../store/2-ui-atoms";
+import { appSettings, type FileFilter } from "../../store/1-ui-settings";
+import { filterActions } from "../../store/4-file-filters";
 import { useSnapshot } from "valtio";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/shadcn/dialog";
 import { Button } from "../ui/shadcn/button";

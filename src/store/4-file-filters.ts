@@ -1,4 +1,4 @@
-import { type FileFilter, appSettings } from './ui-settings';
+import { type FileFilter, appSettings } from './1-ui-settings';
 
 export const filterActions = {
     addFilter: (name: string, pattern: string) => {

@@ -1,6 +1,6 @@
 import { useSnapshot } from "valtio";
 import { traceStore } from "../../store/traces-store/0-state";
-import { appSettings } from "../../store/ui-settings";
+import { appSettings } from "../../store/1-ui-settings";
 import { Cpu, Clock, AlertCircle } from "lucide-react";
 
 export function TraceFooter() {

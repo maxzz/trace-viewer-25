@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { appSettings } from "../../store/ui-settings";
+import { appSettings } from "../../store/1-ui-settings";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../ui/shadcn/resizable";
 import { FileList } from "../1-file-list/0-file-list";
 import { TraceList } from "../2-trace-viewer";

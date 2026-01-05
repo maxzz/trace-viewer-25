@@ -1,10 +1,10 @@
 import { ButtonThemeToggle } from "./3-btn-theme-toggle";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/shadcn/dropdown-menu";
 import { useSnapshot } from "valtio";
-import { appSettings } from "../../store/ui-settings";
-import { filterActions } from "../../store/file-filters";
+import { appSettings } from "../../store/1-ui-settings";
+import { filterActions } from "../../store/4-file-filters";
 import { useSetAtom } from "jotai";
-import { dialogEditFiltersOpenAtom } from "../../store/ui-atoms";
+import { dialogEditFiltersOpenAtom } from "../../store/2-ui-atoms";
 import { Filter, Check } from "lucide-react";
 import { Button } from "../ui/shadcn/button";
 

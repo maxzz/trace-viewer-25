@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, } from 
 import { Button } from "@/components/ui/shadcn/button";
 import { Input } from "@/components/ui/shadcn/input";
 import { Textarea } from "@/components/ui/shadcn/textarea";
-import { dialogFileHeaderOpenAtom } from "@/store/ui-atoms";
+import { dialogFileHeaderOpenAtom } from "@/store/2-ui-atoms";
 import { traceStore } from "@/store/traces-store/0-state";
 
 export function DialogFileHeader() {

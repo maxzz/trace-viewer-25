@@ -1,4 +1,4 @@
-import { appSettings } from "../store/ui-settings";
+import { appSettings } from "../store/1-ui-settings";
 import { type ThemeMode } from "./theme-apply";
 
 export function isThemeDark(theme: ThemeMode): boolean {

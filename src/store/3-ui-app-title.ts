@@ -1,10 +1,5 @@
-import { atom } from 'jotai';
 import { proxy } from 'valtio';
 
-export const dialogOptionsOpenAtom = atom(false);
-export const dialogAboutOpenAtom = atom(false);
-export const dialogFileHeaderOpenAtom = atom(false);
-export const dialogEditFiltersOpenAtom = atom(false);
 // App title
 
 export const defaultTitle = 'Trace Viewer';
@@ -42,7 +37,6 @@ export function setAppTitle(files: File[], droppedFolderName?: string, filePaths
     appMainTitle.title = title;
     appMainTitle.openFolderName = folderName;
 }
-
 function getCommonPath(paths: string[]): string {
     if (paths.length === 0) return '';
     if (paths.length === 1) {

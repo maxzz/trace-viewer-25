@@ -1,7 +1,7 @@
 import { traceStore } from "@/store/traces-store/0-state";
 import { atom } from "jotai";
 import { notice } from "../7-toaster";
-import { setAppTitle } from "@/store/ui-atoms";
+import { setAppTitle } from '@/store/3-ui-app-title';
 
 export type DoSetFilesFrom_Dnd_Atom = typeof doSetFilesFrom_Dnd_Atom;
 
