@@ -1,5 +1,5 @@
-import { TraceParser } from "../../trace-viewer-core/parser";
-import { type TraceLine, type TraceHeader, LineCode } from "../../trace-viewer-core/types";
+import { TraceParser } from "../../trace-viewer-core/0-parser";
+import { type TraceLine, type TraceHeader, LineCode } from "../../trace-viewer-core/9-core-types";
 
 export interface ParsedTraceData {
     rawLines: TraceLine[];
@@ -18,6 +18,7 @@ export async function parseTraceFile(file: File): Promise<ParsedTraceData> {
     parser.parse();
 
     const rawLines = parser.lines;
+    
     // Filter out Time lines (84) for default view
     const viewLines = parser.lines.filter(l => l.code !== 84);
     const uniqueThreadIds = Array.from(new Set(parser.lines.map(l => l.threadId))).sort((a, b) => a - b);

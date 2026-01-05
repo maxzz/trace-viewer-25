@@ -32,7 +32,9 @@ const DEFAULT_SETTINGS: AppSettings = {
     selectedFilterId: null,
 };
 
-const loadSettings = (): AppSettings => {
+// Load settings from localStorage
+
+function loadSettings(): AppSettings {
     try {
         const stored = localStorage.getItem(STORAGE_ID);
         if (stored) {
@@ -43,7 +45,7 @@ const loadSettings = (): AppSettings => {
         console.error("Failed to load settings", e);
     }
     return { ...DEFAULT_SETTINGS };
-};
+}
 
 export const appSettings = proxy<AppSettings>(loadSettings());
 

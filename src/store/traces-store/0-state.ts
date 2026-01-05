@@ -1,6 +1,6 @@
 import { proxy, subscribe } from "valtio";
-import type { TraceLine, TraceHeader } from "../../trace-viewer-core/types";
-import { parseTraceFile } from "./1-parse-trace";
+import { type TraceLine, type TraceHeader } from "../../trace-viewer-core/9-core-types";
+import { parseTraceFile } from "./1-parse-trace-file";
 
 export interface TraceFile {
     id: string;
@@ -19,18 +19,18 @@ export interface TraceFile {
 export interface TraceState {
     files: TraceFile[];
     selectedFileId: string | null;
-    
+
     // Active file properties (mirrored from selected file for backward compatibility)
-    lines: TraceLine[]; 
-    rawLines: TraceLine[]; 
-    viewLines: TraceLine[]; 
+    lines: TraceLine[];
+    rawLines: TraceLine[];
+    viewLines: TraceLine[];
     uniqueThreadIds: number[];
     header: TraceHeader;
     fileName: string | null;
     isLoading: boolean;
     error: string | null;
     currentLineIndex: number;
-    
+
     // Actions
     loadTrace: (file: File) => Promise<void>;
     selectFile: (id: string | null) => void;
@@ -44,7 +44,7 @@ const emptyHeader = { magic: '' };
 export const traceStore = proxy<TraceState>({
     files: [],
     selectedFileId: null,
-    
+
     // Initial empty state
     lines: [],
     rawLines: [],
@@ -58,7 +58,7 @@ export const traceStore = proxy<TraceState>({
 
     loadTrace: async (file: File) => {
         const id = Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
-        
+
         // Create new file entry
         const newFile: TraceFile = {
             id,
@@ -76,13 +76,13 @@ export const traceStore = proxy<TraceState>({
 
         // Add to store immediately
         traceStore.files.push(newFile);
-        
+
         // Select it (this will update loading state in UI)
         traceStore.selectFile(id);
 
         try {
             const parsedData = await parseTraceFile(file);
-            
+
             // Find the file in store
             const fileIndex = traceStore.files.findIndex(f => f.id === id);
             if (fileIndex !== -1) {
@@ -94,7 +94,7 @@ export const traceStore = proxy<TraceState>({
                 updatedFile.header = parsedData.header;
                 updatedFile.errorCount = parsedData.errorCount;
                 updatedFile.isLoading = false;
-                
+
                 // If this is still the selected file, update the top-level properties
                 if (traceStore.selectedFileId === id) {
                     syncActiveFile(updatedFile);
@@ -116,7 +116,7 @@ export const traceStore = proxy<TraceState>({
 
     selectFile: (id: string | null) => {
         traceStore.selectedFileId = id;
-        
+
         if (id) {
             const file = traceStore.files.find(f => f.id === id);
             if (file) {
@@ -140,7 +140,7 @@ export const traceStore = proxy<TraceState>({
         const index = traceStore.files.findIndex(f => f.id === id);
         if (index !== -1) {
             traceStore.files.splice(index, 1);
-            
+
             // If closed file was selected, select another one
             if (traceStore.selectedFileId === id) {
                 if (traceStore.files.length > 0) {
@@ -160,7 +160,7 @@ export const traceStore = proxy<TraceState>({
             traceStore.selectFile(id);
         }
     },
-    
+
     closeAllFiles: () => {
         traceStore.files = [];
         traceStore.selectFile(null);
@@ -180,12 +180,14 @@ function syncActiveFile(file: TraceFile) {
 }
 
 // Subscribe to currentLineIndex changes to update the file state
-subscribe(traceStore, () => {
-    if (traceStore.selectedFileId) {
-        const file = traceStore.files.find(f => f.id === traceStore.selectedFileId);
-        // Only update if changed to avoid infinite loops if syncActiveFile triggers this
-        if (file && file.currentLineIndex !== traceStore.currentLineIndex) {
-            file.currentLineIndex = traceStore.currentLineIndex;
+subscribe(traceStore,
+    () => {
+        if (traceStore.selectedFileId) {
+            const file = traceStore.files.find(f => f.id === traceStore.selectedFileId);
+            // Only update if changed to avoid infinite loops if syncActiveFile triggers this
+            if (file && file.currentLineIndex !== traceStore.currentLineIndex) {
+                file.currentLineIndex = traceStore.currentLineIndex;
+            }
         }
     }
-});
+);

@@ -1,5 +1,5 @@
-import { LineCode, type TraceLine, type TraceHeader, type TraceLineDescriptor } from "./types";
-import { TraceCrypto } from "./crypto";
+import { LineCode, type TraceLine, type TraceHeader, type TraceLineDescriptor } from "./9-core-types";
+import { TraceCrypto } from "./1-crypto";
 
 export class ThreadFlow {
     public threadId: number;
