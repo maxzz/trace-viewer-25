@@ -5,10 +5,15 @@ import { setAppTitle } from "@/store/ui-atoms";
 
 export type DoSetFilesFrom_Dnd_Atom = typeof doSetFilesFrom_Dnd_Atom;
 
+interface FileWithPath {
+    file: File;
+    path: string;
+}
+
 export const doSetFilesFrom_Dnd_Atom = atom(                    // used by DropItDoc only
     null,
     async (get, set, dataTransfer: DataTransfer) => {
-        const files: File[] = [];
+        const filesWithPaths: FileWithPath[] = [];
         let droppedFolderName: string | undefined;
 
         // IMPORTANT: webkitGetAsEntry() is only valid synchronously during the drop event.
@@ -47,28 +52,33 @@ export const doSetFilesFrom_Dnd_Atom = atom(                    // used by DropI
 
             // Now process entries asynchronously
             for (const entry of entries) {
-                await processEntry(entry, files);
+                await processEntry(entry, filesWithPaths);
             }
-            files.push(...fallbackFiles);
+            // Add fallback files with empty path
+            fallbackFiles.forEach(file => filesWithPaths.push({ file, path: '' }));
         } else {
             // Fallback for older browsers
             for (let i = 0; i < dataTransfer.files.length; i++) {
                 const file = dataTransfer.files[i];
                 if (isTrc3File(file)) {
-                    files.push(file);
+                    filesWithPaths.push({ file, path: '' });
                 }
             }
         }
 
-        if (files.length === 0) {
+        if (filesWithPaths.length === 0) {
             return;
         }
 
         // Clear previously uploaded files
         traceStore.closeAllFiles();
 
+        // Extract files and paths
+        const files = filesWithPaths.map(fp => fp.file);
+        const filePaths = filesWithPaths.map(fp => fp.path);
+
         // Update title
-        setAppTitle(files, droppedFolderName);
+        setAppTitle(files, droppedFolderName, filePaths);
 
         // Load new files
         files.forEach(file => {
@@ -78,19 +88,19 @@ export const doSetFilesFrom_Dnd_Atom = atom(                    // used by DropI
 );
 
 // Helper function to process a single entry (file or directory)
-async function processEntry(entry: FileSystemEntry, files: File[]): Promise<void> {
+async function processEntry(entry: FileSystemEntry, filesWithPaths: FileWithPath[]): Promise<void> {
     if (entry.isFile) {
         return new Promise((resolve, reject) => {
             (entry as FileSystemFileEntry).file((file) => {
                 if (isTrc3File(file)) {
-                    files.push(file);
+                    filesWithPaths.push({ file, path: entry.fullPath });
                 }
                 resolve();
             }, reject);
         });
     } else if (entry.isDirectory) {
         // Only process first-level files in directory
-        await collectFilesFromDirectory(entry as FileSystemDirectoryEntry, files);
+        await collectFilesFromDirectory(entry as FileSystemDirectoryEntry, filesWithPaths);
     }
 }
 
@@ -125,7 +135,7 @@ interface FileSystemDirectoryReader {
 }
 
 // Helper function to recursively collect files from a directory entry (first level only)
-async function collectFilesFromDirectory(entry: FileSystemDirectoryEntry, files: File[]): Promise<void> {
+async function collectFilesFromDirectory(entry: FileSystemDirectoryEntry, filesWithPaths: FileWithPath[]): Promise<void> {
     return new Promise((resolve, reject) => {
         const reader = entry.createReader();
         const entries: FileSystemEntry[] = [];
@@ -135,18 +145,18 @@ async function collectFilesFromDirectory(entry: FileSystemDirectoryEntry, files:
                 if (batch.length === 0) {
                     // All entries read, now process them
                     Promise.all(
-                        entries.map(async (entry) => {
-                            if (entry.isFile) {
-                                return new Promise<File | null>((resolveFile) => {
-                                    (entry as FileSystemFileEntry).file((file) => {
-                                        resolveFile(isTrc3File(file) ? file : null);
+                        entries.map(async (childEntry) => {
+                            if (childEntry.isFile) {
+                                return new Promise<FileWithPath | null>((resolveFile) => {
+                                    (childEntry as FileSystemFileEntry).file((file) => {
+                                        resolveFile(isTrc3File(file) ? { file, path: childEntry.fullPath } : null);
                                     }, reject);
                                 });
                             }
                             return null;
                         })
                     ).then((fileResults) => {
-                        files.push(...fileResults.filter((f): f is File => f !== null));
+                        filesWithPaths.push(...fileResults.filter((f): f is FileWithPath => f !== null));
                         resolve();
                     });
                 } else {
