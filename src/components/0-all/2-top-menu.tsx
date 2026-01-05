@@ -4,7 +4,7 @@ import { useSnapshot } from "valtio";
 import { traceStore } from "../../store/traces-store/0-state";
 import { Input } from "../ui/shadcn/input";
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarShortcut, MenubarTrigger } from "../ui/shadcn/menubar";
-import { dialogFileHeaderOpenAtom, dialogAboutOpenAtom, dialogOptionsOpenAtom, dialogEditFiltersOpenAtom } from "../../store/ui-atoms";
+import { dialogFileHeaderOpenAtom, dialogAboutOpenAtom, dialogOptionsOpenAtom, dialogEditFiltersOpenAtom, setAppTitle } from "../../store/ui-atoms";
 
 export function TopMenu() {
     const setOptionsOpen = useSetAtom(dialogOptionsOpenAtom);
@@ -84,8 +84,13 @@ function TraceLoadInput({ inputRef }: { inputRef: React.RefObject<HTMLInputEleme
                 // Clear previously uploaded files
                 traceStore.closeAllFiles();
 
+                const fileList = Array.from(files);
+
+                // Update title
+                setAppTitle(fileList);
+
                 // Load new files
-                Array.from(files).forEach(file => {
+                fileList.forEach(file => {
                     traceStore.loadTrace(file);
                 });
             }

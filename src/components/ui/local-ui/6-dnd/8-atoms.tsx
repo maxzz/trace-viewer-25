@@ -1,6 +1,7 @@
 import { traceStore } from "@/store/traces-store/0-state";
 import { atom } from "jotai";
 import { notice } from "../7-toaster";
+import { setAppTitle } from "@/store/ui-atoms";
 
 export type DoSetFilesFrom_Dnd_Atom = typeof doSetFilesFrom_Dnd_Atom;
 
@@ -8,8 +9,18 @@ export const doSetFilesFrom_Dnd_Atom = atom(                    // used by DropI
     null,
     async (get, set, dataTransfer: DataTransfer) => {
         const files: File[] = [];
+        let droppedFolderName: string | undefined;
 
         if (dataTransfer.items) {
+            // Check if single folder dropped
+            if (dataTransfer.items.length === 1) {
+                 const item = dataTransfer.items[0];
+                 const entry = (item as any).webkitGetAsEntry?.() as FileSystemEntry | null | undefined;
+                 if (entry && entry.isDirectory) {
+                     droppedFolderName = entry.name;
+                 }
+            }
+
             // Use the modern DataTransferItem API which supports directories
             for (let i = 0; i < dataTransfer.items.length; i++) {
                 const item = dataTransfer.items[i];
@@ -47,6 +58,10 @@ export const doSetFilesFrom_Dnd_Atom = atom(                    // used by DropI
 
         // Clear previously uploaded files
         traceStore.closeAllFiles();
+
+        // Update title
+        setAppTitle(files, droppedFolderName);
+
         // Load new files
         files.forEach(file => {
             traceStore.loadTrace(file);

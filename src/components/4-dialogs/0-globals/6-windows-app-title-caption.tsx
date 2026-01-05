@@ -7,7 +7,7 @@ export function WindowsAppTitleCaption() {
 
     useEffect(
         () => {
-            document.title = title ? `${title} - ${defaultTitle}` : defaultTitle;
+            document.title = title || defaultTitle;
         }, [title]
     );
 
