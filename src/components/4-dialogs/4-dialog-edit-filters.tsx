@@ -1,7 +1,7 @@
+import { useCallback, useState } from "react";
 import { useAtom } from "jotai";
 import { useSnapshot } from "valtio";
 import { Reorder, useDragControls } from "motion/react";
-import { useState } from "react";
 import { Button } from "../ui/shadcn/button";
 import { Input } from "../ui/shadcn/input";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/shadcn/dialog";
@@ -90,7 +90,6 @@ export function DialogEditFilters() {
                                     <FilterItem
                                         key={filter.id}
                                         filter={filter as unknown as FileFilter}
-                                        onUpdate={filterActions.updateFilter}
                                         onDelete={filterActions.deleteFilter}
                                         isNameInvalid={invalidFilterIds.name.has(filter.id)}
                                         isPatternInvalid={invalidFilterIds.pattern.has(filter.id)}
@@ -155,7 +154,7 @@ function Header() {
     );
 }
 
-function FilterItem({ filter, onUpdate, onDelete, isNameInvalid, isPatternInvalid }: { filter: FileFilter, onUpdate: (id: string, data: Partial<FileFilter>) => void, onDelete: (id: string) => void, isNameInvalid?: boolean, isPatternInvalid?: boolean; }) {
+function FilterItem({ filter, onDelete, isNameInvalid, isPatternInvalid }: { filter: FileFilter, onDelete: (id: string) => void, isNameInvalid?: boolean, isPatternInvalid?: boolean; }) {
     const dragControls = useDragControls();
 
     return (
@@ -175,14 +174,13 @@ function FilterItem({ filter, onUpdate, onDelete, isNameInvalid, isPatternInvali
                     className={`h-8 ${isNameInvalid ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
                     placeholder="Filter Name"
                     value={filter.name}
-                    onChange={(e) => onUpdate(filter.id, { name: e.target.value })}
+                    onChange={(e) => filterActions.updateFilter(filter.id, { name: e.target.value })}
                     {...turnOffAutoComplete}
                 />
                 <PatternInput
                     filterId={filter.id}
                     pattern={filter.pattern}
                     isPatternInvalid={isPatternInvalid ?? false}
-                    onUpdate={onUpdate}
                 />
             </div>
 
@@ -193,10 +191,14 @@ function FilterItem({ filter, onUpdate, onDelete, isNameInvalid, isPatternInvali
     );
 }
 
-function PatternInput({ filterId, pattern, isPatternInvalid, onUpdate }: { filterId: string, pattern: string, isPatternInvalid: boolean, onUpdate: (id: string, data: Partial<FileFilter>) => void; }) {
+function PatternInput({ filterId, pattern, isPatternInvalid }: { filterId: string, pattern: string, isPatternInvalid: boolean }) {
     // Detect if pattern is regex (starts and ends with /)
     const isRegex = pattern.startsWith('/') && pattern.endsWith('/') && pattern.length > 1;
     const patternWithoutSlashes = isRegex ? pattern.slice(1, -1) : pattern;
+
+    const onUpdate = (id: string, data: Partial<FileFilter>) => {
+        filterActions.updateFilter(id, data);
+    };
 
     function handlePatternChange(value: string) {
         // If currently regex, wrap the new value with slashes
