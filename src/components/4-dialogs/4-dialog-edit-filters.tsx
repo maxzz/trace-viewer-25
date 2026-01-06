@@ -98,16 +98,16 @@ function FilterItem({ filter, onUpdate, onDelete }: { filter: FileFilter, onUpda
     const isRegex = filter.pattern.startsWith('/') && filter.pattern.endsWith('/') && filter.pattern.length > 1;
     const patternWithoutSlashes = isRegex ? filter.pattern.slice(1, -1) : filter.pattern;
 
-    const handlePatternChange = (value: string) => {
+    function handlePatternChange(value: string) {
         // If currently regex, wrap the new value with slashes
         if (isRegex) {
             onUpdate(filter.id, { pattern: `/${value}/` });
         } else {
             onUpdate(filter.id, { pattern: value });
         }
-    };
+    }
 
-    const handleToggleRegex = () => {
+    function handleToggleRegex() {
         if (isRegex) {
             // Remove regex: unwrap slashes
             onUpdate(filter.id, { pattern: patternWithoutSlashes });
@@ -115,7 +115,7 @@ function FilterItem({ filter, onUpdate, onDelete }: { filter: FileFilter, onUpda
             // Enable regex: wrap with slashes
             onUpdate(filter.id, { pattern: `/${filter.pattern}/` });
         }
-    };
+    }
 
     return (
         <Reorder.Item
@@ -146,14 +146,14 @@ function FilterItem({ filter, onUpdate, onDelete }: { filter: FileFilter, onUpda
                         {...turnOffAutoComplete}
                     />
                     <Button
-                        className={`absolute right-0 top-0 h-8 w-8 rounded-l-none border-l-0 ${isRegex ? 'bg-primary/10 text-primary' : 'hover:bg-transparent'}`}
+                        className={`absolute right-0 top-0 size-8 rounded-l-none ${isRegex ? 'text-primary bg-primary/10' : 'hover:bg-transparent'}`}
                         variant={isRegex ? "outline" : "ghost"}
                         size="icon-sm"
                         onClick={handleToggleRegex}
-                        title={isRegex ? "Disable regex mode" : "Enable regex mode"}
+                        title="Use regex pattern"
                         type="button"
                     >
-                        <Regex className="size-3.5" />
+                        <Regex className="size-3" />
                     </Button>
                 </div>
             </div>
