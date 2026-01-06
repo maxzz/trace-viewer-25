@@ -87,7 +87,7 @@ export function DialogEditFilters() {
                         <Reorder.Group className="m-0 p-0" axis="y" values={fileFilters as unknown as FileFilter[]} onReorder={handleReorder}>
                             {fileFilters.map(
                                 (filter) => (
-                                    <FilterItem
+                                    <FilterRow
                                         key={filter.id}
                                         filter={filter as unknown as FileFilter}
                                         onDelete={filterActions.deleteFilter}
@@ -152,12 +152,12 @@ function Header() {
     );
 }
 
-function FilterItem({ filter, onDelete, isNameInvalid, isPatternInvalid }: { filter: FileFilter, onDelete: (id: string) => void, isNameInvalid?: boolean, isPatternInvalid?: boolean; }) {
+function FilterRow({ filter, onDelete, isNameInvalid, isPatternInvalid }: { filter: FileFilter, onDelete: (id: string) => void, isNameInvalid?: boolean, isPatternInvalid?: boolean; }) {
     const dragControls = useDragControls();
 
     return (
         <Reorder.Item
-            className="mb-1 bg-background flex items-center"
+            className="mb-1 bg-background flex items-center select-none"
             id={filter.id}
             value={filter}
             dragListener={false}
@@ -175,7 +175,7 @@ function FilterItem({ filter, onDelete, isNameInvalid, isPatternInvalid }: { fil
                     onChange={(e) => filterActions.updateFilter(filter.id, { name: e.target.value })}
                     {...turnOffAutoComplete}
                 />
-                <PatternInput
+                <InputPattern
                     filterId={filter.id}
                     pattern={filter.pattern}
                     isPatternInvalid={isPatternInvalid ?? false}
@@ -189,7 +189,7 @@ function FilterItem({ filter, onDelete, isNameInvalid, isPatternInvalid }: { fil
     );
 }
 
-function PatternInput({ filterId, pattern, isPatternInvalid }: { filterId: string, pattern: string, isPatternInvalid: boolean; }) {
+function InputPattern({ filterId, pattern, isPatternInvalid }: { filterId: string, pattern: string, isPatternInvalid: boolean; }) {
     // Detect if pattern is regex (starts and ends with /)
     const isRegex = pattern.startsWith('/') && pattern.endsWith('/') && pattern.length > 1;
     const patternWithoutSlashes = isRegex ? pattern.slice(1, -1) : pattern;
