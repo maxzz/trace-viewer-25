@@ -3,7 +3,7 @@ import { useSnapshot } from "valtio";
 import { appSettings } from "../../store/1-ui-settings";
 import { Button } from "../ui/shadcn/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/shadcn/dropdown-menu";
-import { Filter, Check, FilterX } from "lucide-react";
+import { Filter, Check, FilterX, ChevronDown } from "lucide-react";
 import { filterActions } from "../../store/4-file-filters";
 import { dialogEditFiltersOpenAtom } from "../../store/2-ui-atoms";
 import { useRef } from "react";
@@ -17,15 +17,15 @@ export function FileFilterDropdown() {
         lastActiveFilterIdRef.current = selectedFilterId;
     }
 
-    const activeFilter = fileFilters.find(f => f.id === selectedFilterId);
+    const activeFilter = fileFilters.find(filter => filter.id === selectedFilterId);
 
-    const handleToggleFilter = () => {
+    function handleToggleFilter() {
         if (selectedFilterId) {
             filterActions.selectFilter(null);
         } else {
             // Try to restore last active filter
             const targetId = lastActiveFilterIdRef.current;
-            const exists = targetId && fileFilters.find(f => f.id === targetId);
+            const exists = targetId && fileFilters.find(filter => filter.id === targetId);
 
             if (exists) {
                 filterActions.selectFilter(targetId);
@@ -34,7 +34,7 @@ export function FileFilterDropdown() {
                 filterActions.selectFilter(fileFilters[0].id);
             }
         }
-    };
+    }
 
     const showToggleButton = selectedFilterId || fileFilters.length > 0;
 
@@ -43,10 +43,10 @@ export function FileFilterDropdown() {
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button className="h-6 px-2 gap-1 rounded" variant="ghost" size="sm">
-                        <Filter className="size-3 opacity-70" />
                         <span className="max-w-[150px] truncate text-xs font-normal">
                             {activeFilter ? activeFilter.name : "All files"}
                         </span>
+                        <ChevronDown className="size-3 opacity-70" />
                     </Button>
                 </DropdownMenuTrigger>
 
