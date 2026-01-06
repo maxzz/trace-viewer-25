@@ -28,3 +28,6 @@
 	TODO: add buttons to show only files with errors and show file content only error lines (and +- 3 lines around or corresponding function name)
 	TODO: option to show columns
     TODO: option to show only files with errors
+    TODO: add button to quick activate/deactivate current filter
+    TODO: when open folder and none of files match show message: Files loaded but do not match filter
+    

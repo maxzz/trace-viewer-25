@@ -17,13 +17,13 @@ export const ITEM_HEIGHT = 20; // Fixed height for simplicity. was 24
 export function renderRow(line: TraceLine, index: number, startIndex: number, currentLineIndex: number, useIconsForEntryExit: boolean, showLineNumbers: boolean, uniqueThreadIds: readonly number[]) {
     const globalIndex = startIndex + index;
     const showThreadBackground = uniqueThreadIds.length > 0 && uniqueThreadIds[0] !== line.threadId;
-    
+
     return (
         <div
-            key={line.lineIndex}
-            onClick={() => (traceStore.currentLineIndex = globalIndex)}
             className={getRowClasses(line, globalIndex, currentLineIndex)}
             style={{ height: ITEM_HEIGHT }}
+            key={line.lineIndex}
+            onClick={() => (traceStore.currentLineIndex = globalIndex)}
         >
             {/* Line Number */}
             {showLineNumbers && (
@@ -43,13 +43,13 @@ export function renderRow(line: TraceLine, index: number, startIndex: number, cu
                     const color = getThreadColor(tid);
                     return (
                         <div key={tid} className="relative w-3 h-full flex justify-center items-center" title={`Thread ${tid} (0x${tid.toString(16).toUpperCase()})`}>
-                            <div 
+                            <div
                                 className="absolute w-px -top-1/2 -bottom-1/2 border-l"
-                                style={{ borderLeftColor: color, opacity: 0.5 }} 
+                                style={{ borderLeftColor: color, opacity: 0.5 }}
                             />
                             {tid === line.threadId && (
-                                <div 
-                                    className="size-2 bg-transparent border rounded-full z-10" 
+                                <div
+                                    className="size-2 bg-transparent border rounded-full z-10"
                                     style={{ borderColor: color }}
                                 />
                             )}
@@ -62,8 +62,8 @@ export function renderRow(line: TraceLine, index: number, startIndex: number, cu
             <div
                 className={cn("flex-1 h-full truncate flex items-center", line.textColor, getLineColor(line))}
                 title={line.content}
-                style={{ 
-                    paddingLeft: `${line.indent * 12}px`, 
+                style={{
+                    paddingLeft: `${line.indent * 12}px`,
                     backgroundColor: showThreadBackground ? getThreadColor(line.threadId, 0.1) : undefined  //0.05
                 }}
             >
@@ -105,16 +105,16 @@ const formatContent = (line: TraceLine, useIconsForEntryExit: boolean) => {
         // Try to find hResult pattern (e.g. hResult=2147500037, hResult: 2147500037, hResult 2147500037) and convert to hex
         // 2147500037 -> 0x80004005
         let result = line.content.replace(/hResult([:=\s]+)(-?\d+)/g, (match, separator, p1) => {
-             try {
+            try {
                 const dec = parseInt(p1, 10);
                 // Handle signed integer to unsigned hex conversion
                 const hex = (dec >>> 0).toString(16).toUpperCase();
                 // Preserve the separator (:, =, or space) in the output, normalize whitespace to single space
                 const normalizedSeparator = separator.includes(':') ? ': ' : separator.includes('=') ? '=' : ' ';
                 return `hResult${normalizedSeparator}0x${hex}`;
-             } catch {
-                 return match;
-             }
+            } catch {
+                return match;
+            }
         });
 
         // If no hResult pattern was found, check if the line contains only a single integer
