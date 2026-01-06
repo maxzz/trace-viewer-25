@@ -137,20 +137,21 @@ function FilterItem({ filter, onUpdate, onDelete }: { filter: FileFilter, onUpda
                     onChange={(e) => onUpdate(filter.id, { name: e.target.value })}
                     {...turnOffAutoComplete}
                 />
-                <div className="flex items-center gap-1">
+                <div className="relative">
                     <Input
-                        className="h-8 flex-1"
+                        className="h-8 pr-8"
                         placeholder={isRegex ? "Regex pattern" : "Pattern (e.g. *.log)"}
                         value={patternWithoutSlashes}
                         onChange={(e) => handlePatternChange(e.target.value)}
                         {...turnOffAutoComplete}
                     />
                     <Button
-                        className={`size-8 ${isRegex ? 'bg-primary/10 text-primary' : ''}`}
+                        className={`absolute right-0 top-0 h-8 w-8 rounded-l-none border-l-0 ${isRegex ? 'bg-primary/10 text-primary' : 'hover:bg-transparent'}`}
                         variant={isRegex ? "outline" : "ghost"}
                         size="icon-sm"
                         onClick={handleToggleRegex}
                         title={isRegex ? "Disable regex mode" : "Enable regex mode"}
+                        type="button"
                     >
                         <Regex className="size-3.5" />
                     </Button>
