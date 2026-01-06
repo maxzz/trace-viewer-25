@@ -29,27 +29,14 @@ export function DialogEditFilters() {
                 </DialogHeader>
 
                 <div>
-                    <div className="flex items-center justify-between mb-4">
+                    {/* <div className="flex items-center justify-between mb-4">
                         <Label className="text-xs font-normal">
                             Add or Edit Filters
                         </Label>
-                    </div>
+                    </div> */}
 
                     {/* Show header line for the filters list with column names located over the filter name and pattern columns */}
-                    {fileFilters.length !== 0 && (
-                        <div className="mb-0.5 px-8 flex items-center justify-between">
-                            <div className="px-1 flex-1 text-center">
-                                <Label>
-                                    Name
-                                </Label>
-                            </div>
-                            <div className="flex-1 text-center">
-                                <Label>
-                                    Pattern
-                                </Label>
-                            </div>
-                        </div>
-                    )}
+                    {fileFilters.length !== 0 && <Header />}
 
                     <div className="-mr-2 pr-2 py-1 max-h-[60vh] overflow-y-auto">
                         <Reorder.Group className="list-none p-0 m-0" axis="y" values={fileFilters as unknown as FileFilter[]} onReorder={handleReorder}>
@@ -65,7 +52,7 @@ export function DialogEditFilters() {
                             )}
                         </Reorder.Group>
 
-                        <Button className="mt-1 mx-8" variant="outline" size="xs" onClick={() => filterActions.addFilter("Filter name", "")}>
+                        <Button className="mt-1 mx-5 h-7" variant="outline" size="xs" onClick={() => filterActions.addFilter("Filter name", "")}>
                             <Plus className="size-3.5" />
                             <div className="text-center text-muted-foreground text-xs border border-dashed rounded-md">
                                 Add Filter
@@ -91,19 +78,32 @@ export function DialogEditFilters() {
 //TODO: no scroll
 //TODO: delete confirmation
 
+function Header() {
+    return (
+        <div className="mt-4 px-5 grid grid-cols-2">
+            <div className="text-xs font-semibold">
+                Name
+            </div>
+            <div className="text-xs font-semibold">
+                Pattern
+            </div>
+        </div>
+    );
+}
+
 function FilterItem({ filter, onUpdate, onDelete }: { filter: FileFilter, onUpdate: (id: string, data: Partial<FileFilter>) => void, onDelete: (id: string) => void; }) {
     const dragControls = useDragControls();
 
     return (
         <Reorder.Item
-            className="mb-1 bg-background flex items-center 1gap-2"
+            className="mb-1 bg-background flex items-center"
             id={filter.id}
             value={filter}
             dragListener={false}
             dragControls={dragControls}
         >
-            <div className="cursor-grab touch-none p-2 hover:bg-muted rounded" onPointerDown={(e) => dragControls.start(e)}>
-                <GripVertical className="size-4 text-muted-foreground" />
+            <div className="py-2 px-1 hover:bg-muted cursor-grab touch-none rounded" onPointerDown={(e) => dragControls.start(e)}>
+                <GripVertical className="size-3 text-muted-foreground" />
             </div>
 
             <div className="flex-1 grid grid-cols-2 gap-1">
@@ -123,8 +123,8 @@ function FilterItem({ filter, onUpdate, onDelete }: { filter: FileFilter, onUpda
                 />
             </div>
 
-            <Button className="text-muted-foreground/50" variant="ghost" size="icon-sm" onClick={() => onDelete(filter.id)}>
-                <Trash2 />
+            <Button className="size-7 text-muted-foreground/50" variant="ghost" size="icon-sm" onClick={() => onDelete(filter.id)}>
+                <Trash2 className="size-3.5" />
             </Button>
         </Reorder.Item>
     );
