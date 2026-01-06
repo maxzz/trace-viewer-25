@@ -15,7 +15,7 @@ import { notice } from "../ui/local-ui/7-toaster/7-toaster";
 export function DialogEditFilters() {
     const [open, setOpen] = useAtom(dialogEditFiltersOpenAtom);
     const { fileFilters } = useSnapshot(appSettings);
-    const [invalidFilterIds, setInvalidFilterIds] = useState<{name: Set<string>, pattern: Set<string>}>({ name: new Set(), pattern: new Set() });
+    const [invalidFilterIds, setInvalidFilterIds] = useState<{ name: Set<string>, pattern: Set<string>; }>({ name: new Set(), pattern: new Set() });
 
     const handleReorder = (newOrder: FileFilter[]) => {
         filterActions.reorderFilters(newOrder);
@@ -24,7 +24,7 @@ export function DialogEditFilters() {
     function validateFilters(): boolean {
         const invalidNames = new Set<string>();
         const invalidPatterns = new Set<string>();
-        
+
         fileFilters.forEach(filter => {
             if (!filter.name || filter.name.trim() === '') {
                 invalidNames.add(filter.id);
@@ -33,14 +33,14 @@ export function DialogEditFilters() {
                 invalidPatterns.add(filter.id);
             }
         });
-        
+
         setInvalidFilterIds({ name: invalidNames, pattern: invalidPatterns });
-        
+
         if (invalidNames.size > 0 || invalidPatterns.size > 0) {
             notice.error('Filter name and pattern cannot be empty');
             return false;
         }
-        
+
         return true;
     }
 
@@ -107,9 +107,12 @@ export function DialogEditFilters() {
                         </Button>
                     </div>
 
-                    <div className="mt-4 text-xs text-muted-foreground">
+                    {/* add this as an icon and motion animation or simple show popover with info on hover */}
+                    <div className="mx-5 mt-1 mb-3 text-xs text-muted-foreground text-balance">
                         <p>
-                            Patterns support wildcards (e.g., <code>*.log</code>, <code>error*</code>) or regex.
+                            Patterns support wildcards or regex.
+                            For example to exclude files with name "DpHost" use "^(?!.*DpHost).*$" as regex pattern. 
+                            To include files with name "DpHost" use "DpHost" as regex pattern or wildcard version "*DpHost*".
                         </p>
                     </div>
                 </div>
@@ -138,7 +141,7 @@ function Header() {
     );
 }
 
-function FilterItem({ filter, onUpdate, onDelete, isNameInvalid, isPatternInvalid }: { filter: FileFilter, onUpdate: (id: string, data: Partial<FileFilter>) => void, onDelete: (id: string) => void, isNameInvalid?: boolean, isPatternInvalid?: boolean }) {
+function FilterItem({ filter, onUpdate, onDelete, isNameInvalid, isPatternInvalid }: { filter: FileFilter, onUpdate: (id: string, data: Partial<FileFilter>) => void, onDelete: (id: string) => void, isNameInvalid?: boolean, isPatternInvalid?: boolean; }) {
     const dragControls = useDragControls();
 
     // Detect if pattern is regex (starts and ends with /)

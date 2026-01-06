@@ -4,7 +4,8 @@ import { useSnapshot } from "valtio";
 import { appSettings } from "../../store/1-ui-settings";
 import { Button } from "../ui/shadcn/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/shadcn/dropdown-menu";
-import { Filter, Check, FilterX, ChevronDown } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
+import { IconFilterOff, IconFilterOn, IconL_ChevronDown } from "../ui/icons/normal";
 import { filterActions } from "../../store/4-file-filters";
 import { dialogEditFiltersOpenAtom } from "../../store/2-ui-atoms";
 
@@ -43,11 +44,11 @@ export function FileFilterDropdown() {
         <div className="flex items-center gap-1">
             <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
                 <DropdownMenuTrigger asChild>
-                    <Button className="h-6 px-2 gap-1 rounded" variant="outline" size="sm" title="Current filter">
+                    <Button className="h-6 px-2 gap-1 rounded select-none" variant="outline" size="sm" title="Current filter">
                         <span className="max-w-[150px] truncate text-xs font-normal">
                             {activeFilter ? activeFilter.name : "All files"}
                         </span>
-                        <ChevronDown className={`size-3 opacity-70 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                        <IconL_ChevronDown className={`size-3 opacity-50 transition-all duration-200 ${isOpen ? 'scale-y-[-1] opacity-100' : ''}`} />
                     </Button>
                 </DropdownMenuTrigger>
 
@@ -83,8 +84,8 @@ export function FileFilterDropdown() {
 
             <Button className="size-6 rounded" variant="ghost" size="icon" onClick={handleToggleFilter} disabled={!hasfilters} title={selectedFilterId ? "Disable filter (Show all files)" : "Enable filter"}>
                 {selectedFilterId
-                    ? <FilterX className="size-3 opacity-70" />
-                    : <Filter className="size-3 opacity-70" />
+                    ? <IconFilterOff className="size-3 opacity-70" />
+                    : <IconFilterOn className="size-3 opacity-70" />
                 }
             </Button>
         </div>

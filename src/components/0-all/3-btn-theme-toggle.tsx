@@ -10,7 +10,7 @@ export function ButtonThemeToggle() {
 
     return (
         <Button
-            className="size-6 focus-visible:1ring-0"
+            className="size-6 rounded"
             variant="ghost"
             size="icon"
             onClick={() => toggleTheme(theme)}
@@ -18,8 +18,8 @@ export function ButtonThemeToggle() {
             type="button"
         >
             {isDark
-                ? <IconThemeSun className="size-4 stroke-1!" />
-                : <IconThemeMoon className="size-4 stroke-1!" />
+                ? <IconThemeSun className="size-3 stroke-1!" />
+                : <IconThemeMoon className="size-3 stroke-1!" />
             }
         </Button>
     );

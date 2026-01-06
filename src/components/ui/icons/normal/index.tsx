@@ -8,6 +8,8 @@ export * from "./13-stop";
 export * from "./21-rocket";
 export * from "./22-search";
 export * from "./22-filter";
+export * from "./22-filter-off";
+export * from "./22-filter-on";
 export * from "./24-refresh";
 export * from "./25-sliders";
 export * from "./26-broken-img";

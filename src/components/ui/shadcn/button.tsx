@@ -1,4 +1,4 @@
-import * as React from "react"; // 01.04.26
+import * as React from "react"; // 01.06.26
 import { Slot } from "@radix-ui/react-slot";
 import { type VariantProps, cva } from "class-variance-authority";
 import { cn } from "@/utils/index";
@@ -15,31 +15,31 @@ export function Button({ className, variant, size, asChild = false, ...rest }: R
 }
 
 const buttonBaseClasses = "\
-  text-xs \
-  font-normal \
-  transition-all \
-  rounded-md \
-  outline-none \
-  whitespace-nowrap \
-  shrink-0 \
-  \
-  [&_svg]:shrink-0 \
-  [&_svg]:pointer-events-none \
-  [&_svg:not([class*='size-'])]:size-4 \
-  \
-  disabled:pointer-events-none \
-  disabled:opacity-50 \
-  \
-  focus-visible:ring-[1px] \
-  focus-visible:ring-ring \
-  focus-visible:border-ring \
-  \
-  aria-invalid:border-destructive \
-  aria-invalid:ring-destructive/20 \
-  dark:aria-invalid:ring-destructive/40 \
-  \
-  inline-flex items-center justify-center gap-2 \
-  ";
+text-xs \
+font-normal \
+transition-all \
+rounded-md \
+outline-none \
+whitespace-nowrap \
+shrink-0 \
+\
+[&_svg]:shrink-0 \
+[&_svg]:pointer-events-none \
+[&_svg:not([class*='size-'])]:size-4 \
+\
+disabled:pointer-events-none \
+disabled:opacity-50 \
+\
+focus-visible:ring-[1px] \
+focus-visible:ring-ring \
+focus-visible:border-transparent \
+\
+aria-invalid:border-destructive \
+aria-invalid:ring-destructive/20 \
+dark:aria-invalid:ring-destructive/40 \
+\
+inline-flex items-center justify-center gap-2 \
+";
 
 export const buttonVariants = cva(
     buttonBaseClasses,
