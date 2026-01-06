@@ -6,11 +6,12 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { Filter, Check, FilterX, ChevronDown } from "lucide-react";
 import { filterActions } from "../../store/4-file-filters";
 import { dialogEditFiltersOpenAtom } from "../../store/2-ui-atoms";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 export function FileFilterDropdown() {
-    const { fileFilters, selectedFilterId } = useSnapshot(appSettings);
+    const [isOpen, setIsOpen] = useState(false);
     const setEditFiltersOpen = useSetAtom(dialogEditFiltersOpenAtom);
+    const { fileFilters, selectedFilterId } = useSnapshot(appSettings);
 
     const lastActiveFilterIdRef = useRef<string | null>(null);
     if (selectedFilterId) {
@@ -40,17 +41,17 @@ export function FileFilterDropdown() {
 
     return (
         <div className="flex items-center gap-1">
-            <DropdownMenu>
+            <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
                 <DropdownMenuTrigger asChild>
-                    <Button className="h-6 px-2 gap-1 rounded" variant="ghost" size="sm">
+                    <Button className="h-6 px-2 gap-1 rounded" variant="outline" size="sm">
                         <span className="max-w-[150px] truncate text-xs font-normal">
                             {activeFilter ? activeFilter.name : "All files"}
                         </span>
-                        <ChevronDown className="size-3 opacity-70" />
+                        <ChevronDown className={`size-3 opacity-70 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
                     </Button>
                 </DropdownMenuTrigger>
 
-                <DropdownMenuContent align="start">
+                <DropdownMenuContent align="end">
 
                     <DropdownMenuItem onSelect={() => filterActions.selectFilter(null)}>
                         <span className={!selectedFilterId ? "font-medium" : ""}>
