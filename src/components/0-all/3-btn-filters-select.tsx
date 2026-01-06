@@ -1,3 +1,4 @@
+import { useRef, useState } from "react";
 import { useSetAtom } from "jotai";
 import { useSnapshot } from "valtio";
 import { appSettings } from "../../store/1-ui-settings";
@@ -6,7 +7,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { Filter, Check, FilterX, ChevronDown } from "lucide-react";
 import { filterActions } from "../../store/4-file-filters";
 import { dialogEditFiltersOpenAtom } from "../../store/2-ui-atoms";
-import { useRef, useState } from "react";
 
 export function FileFilterDropdown() {
     const [isOpen, setIsOpen] = useState(false);
@@ -43,7 +43,7 @@ export function FileFilterDropdown() {
         <div className="flex items-center gap-1">
             <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
                 <DropdownMenuTrigger asChild>
-                    <Button className="h-6 px-2 gap-1 rounded" variant="outline" size="sm">
+                    <Button className="h-6 px-2 gap-1 rounded" variant="outline" size="sm" title="Current filter">
                         <span className="max-w-[150px] truncate text-xs font-normal">
                             {activeFilter ? activeFilter.name : "All files"}
                         </span>
@@ -82,18 +82,11 @@ export function FileFilterDropdown() {
             </DropdownMenu>
 
             {showToggleButton && (
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6 rounded"
-                    onClick={handleToggleFilter}
-                    title={selectedFilterId ? "Disable filter (Show all files)" : "Enable filter"}
-                >
-                    {selectedFilterId ? (
-                        <FilterX className="size-3 opacity-70" />
-                    ) : (
-                        <Filter className="size-3 opacity-70" />
-                    )}
+                <Button className="size-6 rounded" variant="ghost" size="icon" onClick={handleToggleFilter} title={selectedFilterId ? "Disable filter (Show all files)" : "Enable filter"}>
+                    {selectedFilterId
+                        ? <FilterX className="size-3 opacity-70" />
+                        : <Filter className="size-3 opacity-70" />
+                    }
                 </Button>
             )}
         </div>
