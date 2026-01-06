@@ -37,7 +37,7 @@ export function FileFilterDropdown() {
         }
     }
 
-    const showToggleButton = selectedFilterId || fileFilters.length > 0;
+    const hasfilters = selectedFilterId || fileFilters.length > 0;
 
     return (
         <div className="flex items-center gap-1">
@@ -81,14 +81,12 @@ export function FileFilterDropdown() {
                 </DropdownMenuContent>
             </DropdownMenu>
 
-            {showToggleButton && (
-                <Button className="size-6 rounded" variant="ghost" size="icon" onClick={handleToggleFilter} title={selectedFilterId ? "Disable filter (Show all files)" : "Enable filter"}>
-                    {selectedFilterId
-                        ? <FilterX className="size-3 opacity-70" />
-                        : <Filter className="size-3 opacity-70" />
-                    }
-                </Button>
-            )}
+            <Button className="size-6 rounded" variant="ghost" size="icon" onClick={handleToggleFilter} disabled={!hasfilters} title={selectedFilterId ? "Disable filter (Show all files)" : "Enable filter"}>
+                {selectedFilterId
+                    ? <FilterX className="size-3 opacity-70" />
+                    : <Filter className="size-3 opacity-70" />
+                }
+            </Button>
         </div>
     );
 }
