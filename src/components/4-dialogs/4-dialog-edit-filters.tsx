@@ -68,7 +68,7 @@ export function DialogEditFilters() {
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogContent className="max-w-[500px]!" aria-describedby={undefined}>
                 <DialogHeader>
-                    <DialogTitle>
+                    <DialogTitle className="select-none">
                         Filters
                     </DialogTitle>
                 </DialogHeader>
@@ -84,7 +84,7 @@ export function DialogEditFilters() {
                     {fileFilters.length !== 0 && <Header />}
 
                     <div className="-mr-2 pr-2 py-1 max-h-[60vh] overflow-y-auto">
-                        <Reorder.Group className="list-none p-0 m-0" axis="y" values={fileFilters as unknown as FileFilter[]} onReorder={handleReorder}>
+                        <Reorder.Group className="m-0 p-0" axis="y" values={fileFilters as unknown as FileFilter[]} onReorder={handleReorder}>
                             {fileFilters.map(
                                 (filter) => (
                                     <FilterItem
@@ -100,9 +100,7 @@ export function DialogEditFilters() {
 
                         <Button className="mt-1 mx-5 h-7" variant="outline" size="xs" onClick={() => filterActions.addFilter("Filter name", "")}>
                             <Plus className="size-3.5" />
-                            <div className="text-center text-muted-foreground text-xs border border-dashed rounded-md">
-                                Add Filter
-                            </div>
+                            Add Filter
                         </Button>
                     </div>
 
@@ -143,7 +141,7 @@ const codeClasses = "px-1 bg-muted outline rounded";
 
 function Header() {
     return (
-        <div className="mt-4 px-5 grid grid-cols-2">
+        <div className="mt-4 px-5 grid grid-cols-2 select-none">
             <div className="text-xs font-semibold">
                 Name
             </div>
@@ -191,22 +189,20 @@ function FilterItem({ filter, onDelete, isNameInvalid, isPatternInvalid }: { fil
     );
 }
 
-function PatternInput({ filterId, pattern, isPatternInvalid }: { filterId: string, pattern: string, isPatternInvalid: boolean }) {
+function PatternInput({ filterId, pattern, isPatternInvalid }: { filterId: string, pattern: string, isPatternInvalid: boolean; }) {
     // Detect if pattern is regex (starts and ends with /)
     const isRegex = pattern.startsWith('/') && pattern.endsWith('/') && pattern.length > 1;
     const patternWithoutSlashes = isRegex ? pattern.slice(1, -1) : pattern;
 
-    // Use local state for input value to prevent cursor jumping
+    // Use local state for input value to prevent cursor jumping to the end of the input when the pattern changes
     const [localValue, setLocalValue] = useState(patternWithoutSlashes);
 
-    // Sync local state when pattern changes externally
-    useEffect(() => {
-        setLocalValue(patternWithoutSlashes);
-    }, [patternWithoutSlashes]);
+    // Sync local state when pattern changes externally to prevent cursor jumping to the end of the input when the pattern changes
+    useEffect(() => setLocalValue(patternWithoutSlashes), [patternWithoutSlashes]);
 
-    const onUpdate = (id: string, data: Partial<FileFilter>) => {
+    function onUpdate(id: string, data: Partial<FileFilter>) {
         filterActions.updateFilter(id, data);
-    };
+    }
 
     function handlePatternChange(value: string) {
         setLocalValue(value);
