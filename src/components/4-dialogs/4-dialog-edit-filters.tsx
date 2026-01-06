@@ -158,29 +158,6 @@ function Header() {
 function FilterItem({ filter, onUpdate, onDelete, isNameInvalid, isPatternInvalid }: { filter: FileFilter, onUpdate: (id: string, data: Partial<FileFilter>) => void, onDelete: (id: string) => void, isNameInvalid?: boolean, isPatternInvalid?: boolean; }) {
     const dragControls = useDragControls();
 
-    // Detect if pattern is regex (starts and ends with /)
-    const isRegex = filter.pattern.startsWith('/') && filter.pattern.endsWith('/') && filter.pattern.length > 1;
-    const patternWithoutSlashes = isRegex ? filter.pattern.slice(1, -1) : filter.pattern;
-
-    function handlePatternChange(value: string) {
-        // If currently regex, wrap the new value with slashes
-        if (isRegex) {
-            onUpdate(filter.id, { pattern: `/${value}/` });
-        } else {
-            onUpdate(filter.id, { pattern: value });
-        }
-    }
-
-    function handleToggleRegex() {
-        if (isRegex) {
-            // Remove regex: unwrap slashes
-            onUpdate(filter.id, { pattern: patternWithoutSlashes });
-        } else {
-            // Enable regex: wrap with slashes
-            onUpdate(filter.id, { pattern: `/${filter.pattern}/` });
-        }
-    }
-
     return (
         <Reorder.Item
             className="mb-1 bg-background flex items-center"
@@ -201,33 +178,67 @@ function FilterItem({ filter, onUpdate, onDelete, isNameInvalid, isPatternInvali
                     onChange={(e) => onUpdate(filter.id, { name: e.target.value })}
                     {...turnOffAutoComplete}
                 />
-                <div className="relative">
-                    <Input
-                        className={`h-8 pr-8 ${isPatternInvalid ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
-                        placeholder={isRegex ? "Regex pattern" : "Pattern (e.g. *.log)"}
-                        value={patternWithoutSlashes}
-                        onChange={(e) => handlePatternChange(e.target.value)}
-                        {...turnOffAutoComplete}
-                    />
-                    <div className="absolute right-0 top-0">
-                        <Button
-                            className={`border-0 border-l border-l-border rounded-r-[3px] rounded-l-none ${isRegex ? 'text-primary bg-primary/10' : 'hover:bg-primary/5'} ${isPatternInvalid ? 'border-l-red-500' : ''}`}
-                            variant={isRegex ? "outline" : "ghost"}
-                            size="icon-sm"
-                            onClick={handleToggleRegex}
-                            title="Use regex pattern"
-                            type="button"
-                            tabIndex={-1}
-                        >
-                            <Regex className={`size-3 ${isRegex ? 'text-primary' : 'text-muted-foreground/50'}`} />
-                        </Button>
-                    </div>
-                </div>
+                <PatternInput
+                    filterId={filter.id}
+                    pattern={filter.pattern}
+                    isPatternInvalid={isPatternInvalid ?? false}
+                    onUpdate={onUpdate}
+                />
             </div>
 
             <Button className="ml-0.5 size-7 text-muted-foreground/50 rounded" variant="ghost" size="icon-sm" tabIndex={-1} onClick={() => onDelete(filter.id)}>
                 <Trash2 className="size-3.5" />
             </Button>
         </Reorder.Item>
+    );
+}
+
+function PatternInput({ filterId, pattern, isPatternInvalid, onUpdate }: { filterId: string, pattern: string, isPatternInvalid: boolean, onUpdate: (id: string, data: Partial<FileFilter>) => void; }) {
+    // Detect if pattern is regex (starts and ends with /)
+    const isRegex = pattern.startsWith('/') && pattern.endsWith('/') && pattern.length > 1;
+    const patternWithoutSlashes = isRegex ? pattern.slice(1, -1) : pattern;
+
+    function handlePatternChange(value: string) {
+        // If currently regex, wrap the new value with slashes
+        if (isRegex) {
+            onUpdate(filterId, { pattern: `/${value}/` });
+        } else {
+            onUpdate(filterId, { pattern: value });
+        }
+    }
+
+    function handleToggleRegex() {
+        if (isRegex) {
+            // Remove regex: unwrap slashes
+            onUpdate(filterId, { pattern: patternWithoutSlashes });
+        } else {
+            // Enable regex: wrap with slashes
+            onUpdate(filterId, { pattern: `/${pattern}/` });
+        }
+    }
+
+    return (
+        <div className="relative">
+            <Input
+                className={`h-8 pr-8 ${isPatternInvalid ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
+                placeholder={isRegex ? "Regex pattern" : "Pattern (e.g. *.log)"}
+                value={patternWithoutSlashes}
+                onChange={(e) => handlePatternChange(e.target.value)}
+                {...turnOffAutoComplete}
+            />
+            <div className="absolute right-0 top-0">
+                <Button
+                    className={`border-0 border-l border-l-border rounded-r-[3px] rounded-l-none ${isRegex ? 'text-primary bg-primary/10' : 'hover:bg-primary/5'} ${isPatternInvalid ? 'border-l-red-500' : ''}`}
+                    variant={isRegex ? "outline" : "ghost"}
+                    size="icon-sm"
+                    onClick={handleToggleRegex}
+                    title="Use regex pattern"
+                    type="button"
+                    tabIndex={-1}
+                >
+                    <Regex className={`size-3 ${isRegex ? 'text-primary' : 'text-muted-foreground/50'}`} />
+                </Button>
+            </div>
+        </div>
     );
 }
