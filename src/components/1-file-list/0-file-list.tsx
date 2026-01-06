@@ -17,21 +17,37 @@ export function FileList() {
             const filter = fileFilters.find(f => f.id === selectedFilterId);
             if (!filter) return files;
 
-            const pattern = filter.pattern.toLowerCase();
+            const pattern = filter.pattern;
+
+            // Check if pattern is regex (starts and ends with /)
+            if (pattern.startsWith('/') && pattern.endsWith('/') && pattern.length > 1) {
+                try {
+                    const regexPattern = pattern.slice(1, -1);
+                    const regex = new RegExp(regexPattern, 'i');
+                    return files.filter(file => regex.test(file.fileName));
+                } catch (e) {
+                    // Invalid regex, return empty or fallback
+                    console.warn('Invalid regex pattern:', pattern, e);
+                    return [];
+                }
+            }
+
+            // Non-regex pattern: use existing logic
+            const patternLower = pattern.toLowerCase();
 
             // Convert glob to regex if contains *
-            if (pattern.includes('*')) {
+            if (patternLower.includes('*')) {
                 try {
-                    const regexStr = "^" + pattern.split('*').map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('.*') + "$";
+                    const regexStr = "^" + patternLower.split('*').map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('.*') + "$";
                     const regex = new RegExp(regexStr, 'i');
                     return files.filter(file => regex.test(file.fileName));
                 } catch (e) {
                     // fallback to contains
-                    return files.filter(file => file.fileName.toLowerCase().includes(pattern.replace(/\*/g, '')));
+                    return files.filter(file => file.fileName.toLowerCase().includes(patternLower.replace(/\*/g, '')));
                 }
             }
 
-            return files.filter(file => file.fileName.toLowerCase().includes(pattern));
+            return files.filter(file => file.fileName.toLowerCase().includes(patternLower));
         }, [files, selectedFilterId, fileFilters]
     );
 

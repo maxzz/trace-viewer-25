@@ -5,7 +5,7 @@ import { Button } from "../ui/shadcn/button";
 import { Input } from "../ui/shadcn/input";
 import { Label } from "../ui/shadcn/label";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/shadcn/dialog";
-import { GripVertical, Trash2, Plus } from "lucide-react";
+import { GripVertical, Trash2, Plus, Regex } from "lucide-react";
 import { appSettings, type FileFilter } from "../../store/1-ui-settings";
 import { dialogEditFiltersOpenAtom } from "../../store/2-ui-atoms";
 import { filterActions } from "../../store/4-file-filters";
@@ -62,7 +62,7 @@ export function DialogEditFilters() {
 
                     <div className="mt-4 text-xs text-muted-foreground">
                         <p>
-                            Patterns support wildcards (e.g., <code>*.log</code>, <code>error*</code>).
+                            Patterns support wildcards (e.g., <code>*.log</code>, <code>error*</code>) or regex (use the regex button to enable).
                         </p>
                     </div>
                 </div>
@@ -94,6 +94,29 @@ function Header() {
 function FilterItem({ filter, onUpdate, onDelete }: { filter: FileFilter, onUpdate: (id: string, data: Partial<FileFilter>) => void, onDelete: (id: string) => void; }) {
     const dragControls = useDragControls();
 
+    // Detect if pattern is regex (starts and ends with /)
+    const isRegex = filter.pattern.startsWith('/') && filter.pattern.endsWith('/') && filter.pattern.length > 1;
+    const patternWithoutSlashes = isRegex ? filter.pattern.slice(1, -1) : filter.pattern;
+
+    const handlePatternChange = (value: string) => {
+        // If currently regex, wrap the new value with slashes
+        if (isRegex) {
+            onUpdate(filter.id, { pattern: `/${value}/` });
+        } else {
+            onUpdate(filter.id, { pattern: value });
+        }
+    };
+
+    const handleToggleRegex = () => {
+        if (isRegex) {
+            // Remove regex: unwrap slashes
+            onUpdate(filter.id, { pattern: patternWithoutSlashes });
+        } else {
+            // Enable regex: wrap with slashes
+            onUpdate(filter.id, { pattern: `/${filter.pattern}/` });
+        }
+    };
+
     return (
         <Reorder.Item
             className="mb-1 bg-background flex items-center"
@@ -114,13 +137,24 @@ function FilterItem({ filter, onUpdate, onDelete }: { filter: FileFilter, onUpda
                     onChange={(e) => onUpdate(filter.id, { name: e.target.value })}
                     {...turnOffAutoComplete}
                 />
-                <Input
-                    className="h-8"
-                    placeholder="Pattern (e.g. *.log)"
-                    value={filter.pattern}
-                    onChange={(e) => onUpdate(filter.id, { pattern: e.target.value })}
-                    {...turnOffAutoComplete}
-                />
+                <div className="flex items-center gap-1">
+                    <Input
+                        className="h-8 flex-1"
+                        placeholder={isRegex ? "Regex pattern" : "Pattern (e.g. *.log)"}
+                        value={patternWithoutSlashes}
+                        onChange={(e) => handlePatternChange(e.target.value)}
+                        {...turnOffAutoComplete}
+                    />
+                    <Button
+                        className={`size-8 ${isRegex ? 'bg-primary/10 text-primary' : ''}`}
+                        variant={isRegex ? "outline" : "ghost"}
+                        size="icon-sm"
+                        onClick={handleToggleRegex}
+                        title={isRegex ? "Disable regex mode" : "Enable regex mode"}
+                    >
+                        <Regex className="size-3.5" />
+                    </Button>
+                </div>
             </div>
 
             <Button className="size-7 text-muted-foreground/50" variant="ghost" size="icon-sm" onClick={() => onDelete(filter.id)}>
