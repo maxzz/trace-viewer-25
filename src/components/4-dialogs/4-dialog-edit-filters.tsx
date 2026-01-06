@@ -1,6 +1,7 @@
 import { useAtom } from "jotai";
 import { useSnapshot } from "valtio";
 import { Reorder, useDragControls } from "motion/react";
+import { useState } from "react";
 import { Button } from "../ui/shadcn/button";
 import { Input } from "../ui/shadcn/input";
 import { Label } from "../ui/shadcn/label";
@@ -10,17 +11,57 @@ import { appSettings, type FileFilter } from "../../store/1-ui-settings";
 import { dialogEditFiltersOpenAtom } from "../../store/2-ui-atoms";
 import { filterActions } from "../../store/4-file-filters";
 import { turnOffAutoComplete } from "@/utils/disable-hidden-children";
+import { notice } from "../ui/local-ui/7-toaster/7-toaster";
 
 export function DialogEditFilters() {
     const [open, setOpen] = useAtom(dialogEditFiltersOpenAtom);
     const { fileFilters } = useSnapshot(appSettings);
+    const [invalidFilterIds, setInvalidFilterIds] = useState<Set<string>>(new Set());
 
     const handleReorder = (newOrder: FileFilter[]) => {
         filterActions.reorderFilters(newOrder);
     };
 
+    function validateFilters(): boolean {
+        const invalidIds = new Set<string>();
+        fileFilters.forEach(filter => {
+            if (!filter.name || filter.name.trim() === '') {
+                invalidIds.add(filter.id);
+            }
+        });
+        
+        setInvalidFilterIds(invalidIds);
+        
+        if (invalidIds.size > 0) {
+            notice.error(`Please provide names for all filters (${invalidIds.size} filter${invalidIds.size > 1 ? 's' : ''} missing name)`);
+            return false;
+        }
+        
+        return true;
+    }
+
+    function handleOpenChange(newOpen: boolean) {
+        if (newOpen) {
+            // Opening dialog - clear any previous invalid states
+            setInvalidFilterIds(new Set());
+            setOpen(true);
+        } else {
+            // Attempting to close - validate first
+            if (validateFilters()) {
+                setOpen(false);
+            }
+            // If validation fails, don't close (setOpen is not called)
+        }
+    }
+
+    function handleClose() {
+        if (validateFilters()) {
+            setOpen(false);
+        }
+    }
+
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogContent className="max-w-[500px]!" aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle>
@@ -47,6 +88,7 @@ export function DialogEditFilters() {
                                         filter={filter as unknown as FileFilter}
                                         onUpdate={filterActions.updateFilter}
                                         onDelete={filterActions.deleteFilter}
+                                        isNameInvalid={invalidFilterIds.has(filter.id)}
                                     />
                                 )
                             )}
@@ -62,13 +104,13 @@ export function DialogEditFilters() {
 
                     <div className="mt-4 text-xs text-muted-foreground">
                         <p>
-                            Patterns support wildcards (e.g., <code>*.log</code>, <code>error*</code>) or regex (use the regex button to enable).
+                            Patterns support wildcards (e.g., <code>*.log</code>, <code>error*</code>) or regex.
                         </p>
                     </div>
                 </div>
 
                 <DialogFooter>
-                    <Button onClick={() => setOpen(false)}>Close</Button>
+                    <Button onClick={handleClose}>Close</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog >
@@ -91,7 +133,7 @@ function Header() {
     );
 }
 
-function FilterItem({ filter, onUpdate, onDelete }: { filter: FileFilter, onUpdate: (id: string, data: Partial<FileFilter>) => void, onDelete: (id: string) => void; }) {
+function FilterItem({ filter, onUpdate, onDelete, isNameInvalid }: { filter: FileFilter, onUpdate: (id: string, data: Partial<FileFilter>) => void, onDelete: (id: string) => void, isNameInvalid?: boolean }) {
     const dragControls = useDragControls();
 
     // Detect if pattern is regex (starts and ends with /)
@@ -131,7 +173,7 @@ function FilterItem({ filter, onUpdate, onDelete }: { filter: FileFilter, onUpda
 
             <div className="flex-1 grid grid-cols-2 gap-1">
                 <Input
-                    className="h-8"
+                    className={`h-8 ${isNameInvalid ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
                     placeholder="Filter Name"
                     value={filter.name}
                     onChange={(e) => onUpdate(filter.id, { name: e.target.value })}
