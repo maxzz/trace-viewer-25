@@ -66,7 +66,7 @@ export function DialogEditFilters() {
 
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
-            <DialogContent className="max-w-[500px]!" aria-describedby={undefined}>
+            <DialogContent className="max-w-[500px]!" aria-describedby={undefined} onOpenAutoFocus={(e) => e.preventDefault()}>
                 <DialogHeader>
                     <DialogTitle className="select-none">
                         Filters
