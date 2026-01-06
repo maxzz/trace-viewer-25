@@ -37,7 +37,7 @@ export function DialogEditFilters() {
 
                     {/* Show header line for the filters list with column names located over the filter name and pattern columns */}
                     {fileFilters.length !== 0 && (
-                        <div className="mb-1 px-10 flex items-center justify-between">
+                        <div className="mb-0.5 px-8 flex items-center justify-between">
                             <div className="px-1 flex-1 text-center">
                                 <Label>
                                     Name
@@ -65,7 +65,7 @@ export function DialogEditFilters() {
                             )}
                         </Reorder.Group>
 
-                        <Button className="mt-1 mx-10" variant="outline" size="xs" onClick={() => filterActions.addFilter("Filter name", "")}>
+                        <Button className="mt-1 mx-8" variant="outline" size="xs" onClick={() => filterActions.addFilter("Filter name", "")}>
                             <Plus className="size-3.5" />
                             <div className="text-center text-muted-foreground text-xs border border-dashed rounded-md">
                                 Add Filter
@@ -96,11 +96,11 @@ function FilterItem({ filter, onUpdate, onDelete }: { filter: FileFilter, onUpda
 
     return (
         <Reorder.Item
-            value={filter}
+            className="mb-1 bg-background flex items-center 1gap-2"
             id={filter.id}
+            value={filter}
             dragListener={false}
             dragControls={dragControls}
-            className="mb-1 bg-background flex items-center gap-2"
         >
             <div className="cursor-grab touch-none p-2 hover:bg-muted rounded" onPointerDown={(e) => dragControls.start(e)}>
                 <GripVertical className="size-4 text-muted-foreground" />
@@ -123,12 +123,7 @@ function FilterItem({ filter, onUpdate, onDelete }: { filter: FileFilter, onUpda
                 />
             </div>
 
-            <Button
-                variant="ghost"
-                size="icon-sm"
-                className="text-muted-foreground/50"
-                onClick={() => onDelete(filter.id)}
-            >
+            <Button className="text-muted-foreground/50" variant="ghost" size="icon-sm" onClick={() => onDelete(filter.id)}>
                 <Trash2 />
             </Button>
         </Reorder.Item>
