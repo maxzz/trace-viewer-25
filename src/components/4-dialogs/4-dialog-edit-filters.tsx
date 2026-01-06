@@ -209,9 +209,9 @@ function FilterItem({ filter, onUpdate, onDelete, isNameInvalid, isPatternInvali
                         onChange={(e) => handlePatternChange(e.target.value)}
                         {...turnOffAutoComplete}
                     />
-                    <div className="absolute right-0.5 top-0 p-px size-8">
+                    <div className="absolute right-0 top-0">
                         <Button
-                            className={`h-full border-0 outline-solid outline -outline-offset-1 outline-red-500 border-l rounded-r-[3px] rounded-l-none ${isRegex ? 'text-primary bg-primary/10' : 'hover:bg-transparent'} ${isPatternInvalid ? 'border-l-red-500' : ''}`}
+                            className={`border-0 border-l border-l-border rounded-r-[3px] rounded-l-none ${isRegex ? 'text-primary bg-primary/10' : 'hover:bg-primary/5'} ${isPatternInvalid ? 'border-l-red-500' : ''}`}
                             variant={isRegex ? "outline" : "ghost"}
                             size="icon-sm"
                             onClick={handleToggleRegex}
@@ -219,7 +219,7 @@ function FilterItem({ filter, onUpdate, onDelete, isNameInvalid, isPatternInvali
                             type="button"
                             tabIndex={-1}
                         >
-                            <Regex className="size-3" />
+                            <Regex className={`size-3 ${isRegex ? 'text-primary' : 'text-muted-foreground/50'}`} />
                         </Button>
                     </div>
                 </div>
