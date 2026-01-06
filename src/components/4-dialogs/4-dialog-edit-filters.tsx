@@ -4,7 +4,6 @@ import { Reorder, useDragControls } from "motion/react";
 import { useState } from "react";
 import { Button } from "../ui/shadcn/button";
 import { Input } from "../ui/shadcn/input";
-import { Label } from "../ui/shadcn/label";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/shadcn/dialog";
 import { GripVertical, Trash2, Plus, Regex } from "lucide-react";
 import { appSettings, type FileFilter } from "../../store/1-ui-settings";
@@ -38,11 +37,7 @@ export function DialogEditFilters() {
         setInvalidFilterIds({ name: invalidNames, pattern: invalidPatterns });
         
         if (invalidNames.size > 0 || invalidPatterns.size > 0) {
-            const errors = [];
-            if (invalidNames.size > 0) errors.push(`${invalidNames.size} missing name${invalidNames.size > 1 ? 's' : ''}`);
-            if (invalidPatterns.size > 0) errors.push(`${invalidPatterns.size} missing pattern${invalidPatterns.size > 1 ? 's' : ''}`);
-            
-            notice.error(`Please fix validation errors: ${errors.join(', ')}`);
+            notice.error('Filter name and pattern cannot be empty');
             return false;
         }
         
