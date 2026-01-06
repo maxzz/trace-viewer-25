@@ -16,24 +16,33 @@ import { notice } from "../ui/local-ui/7-toaster/7-toaster";
 export function DialogEditFilters() {
     const [open, setOpen] = useAtom(dialogEditFiltersOpenAtom);
     const { fileFilters } = useSnapshot(appSettings);
-    const [invalidFilterIds, setInvalidFilterIds] = useState<Set<string>>(new Set());
+    const [invalidFilterIds, setInvalidFilterIds] = useState<{name: Set<string>, pattern: Set<string>}>({ name: new Set(), pattern: new Set() });
 
     const handleReorder = (newOrder: FileFilter[]) => {
         filterActions.reorderFilters(newOrder);
     };
 
     function validateFilters(): boolean {
-        const invalidIds = new Set<string>();
+        const invalidNames = new Set<string>();
+        const invalidPatterns = new Set<string>();
+        
         fileFilters.forEach(filter => {
             if (!filter.name || filter.name.trim() === '') {
-                invalidIds.add(filter.id);
+                invalidNames.add(filter.id);
+            }
+            if (!filter.pattern || filter.pattern.trim() === '') {
+                invalidPatterns.add(filter.id);
             }
         });
         
-        setInvalidFilterIds(invalidIds);
+        setInvalidFilterIds({ name: invalidNames, pattern: invalidPatterns });
         
-        if (invalidIds.size > 0) {
-            notice.error(`Please provide names for all filters (${invalidIds.size} filter${invalidIds.size > 1 ? 's' : ''} missing name)`);
+        if (invalidNames.size > 0 || invalidPatterns.size > 0) {
+            const errors = [];
+            if (invalidNames.size > 0) errors.push(`${invalidNames.size} missing name${invalidNames.size > 1 ? 's' : ''}`);
+            if (invalidPatterns.size > 0) errors.push(`${invalidPatterns.size} missing pattern${invalidPatterns.size > 1 ? 's' : ''}`);
+            
+            notice.error(`Please fix validation errors: ${errors.join(', ')}`);
             return false;
         }
         
@@ -43,7 +52,7 @@ export function DialogEditFilters() {
     function handleOpenChange(newOpen: boolean) {
         if (newOpen) {
             // Opening dialog - clear any previous invalid states
-            setInvalidFilterIds(new Set());
+            setInvalidFilterIds({ name: new Set(), pattern: new Set() });
             setOpen(true);
         } else {
             // Attempting to close - validate first
@@ -88,7 +97,8 @@ export function DialogEditFilters() {
                                         filter={filter as unknown as FileFilter}
                                         onUpdate={filterActions.updateFilter}
                                         onDelete={filterActions.deleteFilter}
-                                        isNameInvalid={invalidFilterIds.has(filter.id)}
+                                        isNameInvalid={invalidFilterIds.name.has(filter.id)}
+                                        isPatternInvalid={invalidFilterIds.pattern.has(filter.id)}
                                     />
                                 )
                             )}
@@ -133,7 +143,7 @@ function Header() {
     );
 }
 
-function FilterItem({ filter, onUpdate, onDelete, isNameInvalid }: { filter: FileFilter, onUpdate: (id: string, data: Partial<FileFilter>) => void, onDelete: (id: string) => void, isNameInvalid?: boolean }) {
+function FilterItem({ filter, onUpdate, onDelete, isNameInvalid, isPatternInvalid }: { filter: FileFilter, onUpdate: (id: string, data: Partial<FileFilter>) => void, onDelete: (id: string) => void, isNameInvalid?: boolean, isPatternInvalid?: boolean }) {
     const dragControls = useDragControls();
 
     // Detect if pattern is regex (starts and ends with /)
@@ -181,14 +191,14 @@ function FilterItem({ filter, onUpdate, onDelete, isNameInvalid }: { filter: Fil
                 />
                 <div className="relative">
                     <Input
-                        className="h-8 pr-8"
+                        className={`h-8 pr-8 ${isPatternInvalid ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
                         placeholder={isRegex ? "Regex pattern" : "Pattern (e.g. *.log)"}
                         value={patternWithoutSlashes}
                         onChange={(e) => handlePatternChange(e.target.value)}
                         {...turnOffAutoComplete}
                     />
                     <Button
-                        className={`absolute right-0 top-0 size-8 rounded-l-none ${isRegex ? 'text-primary bg-primary/10' : 'hover:bg-transparent'}`}
+                        className={`absolute right-0 top-0 size-8 rounded-l-none ${isRegex ? 'text-primary bg-primary/10' : 'hover:bg-transparent'} ${isPatternInvalid ? 'border-l-red-500' : ''}`}
                         variant={isRegex ? "outline" : "ghost"}
                         size="icon-sm"
                         onClick={handleToggleRegex}
