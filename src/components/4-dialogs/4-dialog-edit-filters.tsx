@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAtom } from "jotai";
 import { useSnapshot } from "valtio";
 import { Reorder, useDragControls } from "motion/react";
@@ -196,11 +196,20 @@ function PatternInput({ filterId, pattern, isPatternInvalid }: { filterId: strin
     const isRegex = pattern.startsWith('/') && pattern.endsWith('/') && pattern.length > 1;
     const patternWithoutSlashes = isRegex ? pattern.slice(1, -1) : pattern;
 
+    // Use local state for input value to prevent cursor jumping
+    const [localValue, setLocalValue] = useState(patternWithoutSlashes);
+
+    // Sync local state when pattern changes externally
+    useEffect(() => {
+        setLocalValue(patternWithoutSlashes);
+    }, [patternWithoutSlashes]);
+
     const onUpdate = (id: string, data: Partial<FileFilter>) => {
         filterActions.updateFilter(id, data);
     };
 
     function handlePatternChange(value: string) {
+        setLocalValue(value);
         // If currently regex, wrap the new value with slashes
         if (isRegex) {
             onUpdate(filterId, { pattern: `/${value}/` });
@@ -224,7 +233,7 @@ function PatternInput({ filterId, pattern, isPatternInvalid }: { filterId: strin
             <Input
                 className={`h-8 pr-8 ${isPatternInvalid ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
                 placeholder={isRegex ? "Regex pattern" : "Pattern (e.g. *.log)"}
-                value={patternWithoutSlashes}
+                value={localValue}
                 onChange={(e) => handlePatternChange(e.target.value)}
                 {...turnOffAutoComplete}
             />
