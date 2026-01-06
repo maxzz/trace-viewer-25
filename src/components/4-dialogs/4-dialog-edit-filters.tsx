@@ -108,22 +108,36 @@ export function DialogEditFilters() {
                     </div>
 
                     {/* add this as an icon and motion animation or simple show popover with info on hover */}
-                    <div className="mx-5 mt-1 mb-3 text-xs text-muted-foreground text-balance">
-                        <p>
-                            Patterns support wildcards or regex.
-                            For example to exclude files with name "DpHost" use "^(?!.*DpHost).*$" as regex pattern. 
-                            To include files with name "DpHost" use "DpHost" as regex pattern or wildcard version "*DpHost*".
+                    <div className="mx-5 mt-1 mb-1 text-xs text-muted-foreground text-balance">
+                        <p className="mb-1">
+                            Patterns support wildcards or regex. For example:
                         </p>
+                        <ul className="list-disc list-inside space-y-1">
+                            <li>
+                                <span className={codeClasses}>^(?!.*DpHost).*$</span> regex to exclude files with name <span className={codeClasses}>DpHost</span>
+                            </li>
+                            <li>
+                                <span className={codeClasses}>DpHost</span> regex to include files with name <span className={codeClasses}>DpHost</span>
+                            </li>
+                            <li>
+                                <span className={codeClasses}>DpHost</span> wildcard to include files with name <span className={codeClasses}>DpHost</span>
+                            </li>
+                            <li>
+                                <span className={codeClasses}>*DpHost*</span> wildcard to include files with name <span className={codeClasses}>DpHost</span>
+                            </li>
+                        </ul>
                     </div>
                 </div>
 
-                <DialogFooter>
-                    <Button onClick={handleClose}>Close</Button>
+                <DialogFooter className="justify-center!">
+                    <Button variant="outline" onClick={handleClose}>Close</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog >
     );
 }
+
+const codeClasses = "px-1 bg-muted outline rounded";
 
 //TODO: no scroll
 //TODO: delete confirmation
@@ -195,20 +209,23 @@ function FilterItem({ filter, onUpdate, onDelete, isNameInvalid, isPatternInvali
                         onChange={(e) => handlePatternChange(e.target.value)}
                         {...turnOffAutoComplete}
                     />
-                    <Button
-                        className={`absolute right-0 top-0 size-8 rounded-l-none ${isRegex ? 'text-primary bg-primary/10' : 'hover:bg-transparent'} ${isPatternInvalid ? 'border-l-red-500' : ''}`}
-                        variant={isRegex ? "outline" : "ghost"}
-                        size="icon-sm"
-                        onClick={handleToggleRegex}
-                        title="Use regex pattern"
-                        type="button"
-                    >
-                        <Regex className="size-3" />
-                    </Button>
+                    <div className="absolute right-0.5 top-0 p-px size-8">
+                        <Button
+                            className={`h-full border-0 outline-solid outline -outline-offset-1 outline-red-500 border-l rounded-r-[3px] rounded-l-none ${isRegex ? 'text-primary bg-primary/10' : 'hover:bg-transparent'} ${isPatternInvalid ? 'border-l-red-500' : ''}`}
+                            variant={isRegex ? "outline" : "ghost"}
+                            size="icon-sm"
+                            onClick={handleToggleRegex}
+                            title="Use regex pattern"
+                            type="button"
+                            tabIndex={-1}
+                        >
+                            <Regex className="size-3" />
+                        </Button>
+                    </div>
                 </div>
             </div>
 
-            <Button className="size-7 text-muted-foreground/50" variant="ghost" size="icon-sm" onClick={() => onDelete(filter.id)}>
+            <Button className="ml-0.5 size-7 text-muted-foreground/50 rounded" variant="ghost" size="icon-sm" tabIndex={-1} onClick={() => onDelete(filter.id)}>
                 <Trash2 className="size-3.5" />
             </Button>
         </Reorder.Item>

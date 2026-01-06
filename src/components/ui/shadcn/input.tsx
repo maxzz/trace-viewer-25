@@ -41,8 +41,8 @@ disabled:cursor-not-allowed \
 disabled:opacity-50 \
 \
 focus-visible:ring-[1px] \
-focus-visible:border-ring \
 focus-visible:ring-ring \
+focus-visible:border-transparent \
 \
 aria-invalid:ring-destructive/20 \
 dark:aria-invalid:ring-destructive/40 \
