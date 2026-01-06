@@ -43,15 +43,9 @@ export function renderRow(line: TraceLine, index: number, startIndex: number, cu
                     const color = getThreadColor(tid);
                     return (
                         <div key={tid} className="relative w-3 h-full flex justify-center items-center" title={`Thread ${tid} (0x${tid.toString(16).toUpperCase()})`}>
-                            <div
-                                className="absolute w-px -top-1/2 -bottom-1/2 border-l"
-                                style={{ borderLeftColor: color, opacity: 0.5 }}
-                            />
+                            <div className="absolute w-px -top-1/2 -bottom-1/2 border-l" style={{ borderLeftColor: color, opacity: 0.5 }} />
                             {tid === line.threadId && (
-                                <div
-                                    className="size-2 bg-transparent border rounded-full z-10"
-                                    style={{ borderColor: color }}
-                                />
+                                <div className="size-2 bg-transparent border rounded-full z-10" style={{ borderColor: color }} />
                             )}
                         </div>
                     );
@@ -63,7 +57,7 @@ export function renderRow(line: TraceLine, index: number, startIndex: number, cu
                 className={cn("flex-1 h-full truncate flex items-center", line.textColor, getLineColor(line))}
                 title={line.content}
                 style={{
-                    paddingLeft: `${line.indent * 12}px`,
+                    paddingLeft: `${line.indent * 12 + 8}px`, // 8px is space at the beginning of the trace line
                     backgroundColor: showThreadBackground ? getThreadColor(line.threadId, 0.1) : undefined  //0.05
                 }}
             >

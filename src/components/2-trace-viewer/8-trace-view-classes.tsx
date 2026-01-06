@@ -17,6 +17,7 @@ flex items-center justify-end \
 
 export const columnTimeClasses = "\
 shrink-0 \
+pl-0.5 \
 w-18 \
 h-full \
 text-[0.6rem] \
@@ -31,7 +32,6 @@ flex items-center \
 
 export const columnThreadIdClasses = "\
 shrink-0 \
-mr-2 \
 w-16 \
 text-yellow-600 dark:text-yellow-500 \
 border-gray-200 dark:border-gray-800 \
