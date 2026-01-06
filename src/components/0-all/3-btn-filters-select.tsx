@@ -15,10 +15,10 @@ export function FileFilterDropdown() {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 gap-1 px-2">
-                    <Filter className="size-4 opacity-70" />
+                <Button className="h-6 px-2 gap-1 rounded" variant="ghost" size="sm">
+                    <Filter className="size-3 opacity-70" />
                     <span className="max-w-[150px] truncate text-xs font-normal">
-                        {activeFilter ? activeFilter.name : "Show all files"}
+                        {activeFilter ? activeFilter.name : "All files"}
                     </span>
                 </Button>
             </DropdownMenuTrigger>
@@ -27,7 +27,7 @@ export function FileFilterDropdown() {
 
                 <DropdownMenuItem onSelect={() => filterActions.selectFilter(null)}>
                     <span className={!selectedFilterId ? "font-medium" : ""}>
-                        Show all files
+                        All files
                     </span>
                     {!selectedFilterId && <Check className="ml-auto size-4" />}
                 </DropdownMenuItem>
