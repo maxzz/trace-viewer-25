@@ -9,6 +9,7 @@ export interface FileFilter {
     id: string;
     name: string;
     pattern: string;
+    color?: string; // Tailwind color name (e.g. "red-500")
 }
 
 export interface AppSettings {
@@ -22,6 +23,7 @@ export interface AppSettings {
     // File Filters
     fileFilters: FileFilter[];
     selectedFilterId: string | null;
+    highlightEnabled: boolean;
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
@@ -32,6 +34,7 @@ const DEFAULT_SETTINGS: AppSettings = {
     extraInFooter: false,
     fileFilters: [],
     selectedFilterId: null,
+    highlightEnabled: true,
 };
 
 // Load settings from localStorage

@@ -14,6 +14,7 @@ export interface TraceFile {
     isLoading: boolean;
     error: string | null;
     currentLineIndex: number;
+    matchedFilterIds: string[]; // Cache for filters that match this file
 }
 
 export interface TraceState {
@@ -71,7 +72,8 @@ export const traceStore = proxy<TraceState>({
             errorCount: 0,
             isLoading: true,
             error: null,
-            currentLineIndex: -1
+            currentLineIndex: -1,
+            matchedFilterIds: []
         };
 
         // Add to store immediately

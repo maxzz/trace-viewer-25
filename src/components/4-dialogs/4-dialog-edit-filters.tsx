@@ -11,6 +11,8 @@ import { dialogEditFiltersOpenAtom } from "../../store/2-ui-atoms";
 import { filterActions } from "../../store/4-file-filters";
 import { turnOffAutoComplete } from "@/utils/disable-hidden-children";
 import { notice } from "../ui/local-ui/7-toaster/7-toaster";
+import { ColorPickerPopup } from "../ui/color-picker-popup";
+import { cn } from "@/utils/index";
 
 export function DialogEditFilters() {
     const [open, setOpen] = useAtom(dialogEditFiltersOpenAtom);
@@ -66,7 +68,7 @@ export function DialogEditFilters() {
 
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
-            <DialogContent className="max-w-[500px]!" aria-describedby={undefined} onOpenAutoFocus={(e) => e.preventDefault()}>
+            <DialogContent className="max-w-[600px]!" aria-describedby={undefined} onOpenAutoFocus={(e) => e.preventDefault()}>
                 <DialogHeader>
                     <DialogTitle className="select-none">
                         Filters
@@ -74,12 +76,6 @@ export function DialogEditFilters() {
                 </DialogHeader>
 
                 <div>
-                    {/* <div className="flex items-center justify-between mb-4">
-                        <Label className="text-xs font-normal">
-                            Add or Edit Filters
-                        </Label>
-                    </div> */}
-
                     {/* Show header line for the filters list with column names located over the filter name and pattern columns */}
                     {fileFilters.length !== 0 && <Header />}
 
@@ -104,7 +100,6 @@ export function DialogEditFilters() {
                         </Button>
                     </div>
 
-                    {/* add this as an icon and motion animation or simple show popover with info on hover */}
                     <div className="mx-5 mt-1 mb-1 text-xs text-muted-foreground text-balance">
                         <p className="mb-1">
                             Patterns support wildcards or regex. For example:
@@ -136,17 +131,17 @@ export function DialogEditFilters() {
 
 const codeClasses = "px-1 bg-muted outline rounded";
 
-//TODO: no scroll
-//TODO: delete confirmation
-
 function Header() {
     return (
-        <div className="mt-4 px-5 grid grid-cols-2 select-none">
+        <div className="mt-4 px-5 grid grid-cols-[1fr_1fr_36px] gap-1 select-none">
             <div className="text-xs font-semibold">
                 Name
             </div>
             <div className="text-xs font-semibold">
                 Pattern
+            </div>
+            <div className="text-xs font-semibold text-center">
+                Color
             </div>
         </div>
     );
@@ -167,7 +162,7 @@ function FilterRow({ filter, onDelete, isNameInvalid, isPatternInvalid }: { filt
                 <GripVertical className="size-3 text-muted-foreground" />
             </div>
 
-            <div className="flex-1 grid grid-cols-2 gap-1">
+            <div className="flex-1 grid grid-cols-[1fr_1fr_36px] gap-1">
                 <Input
                     className={`h-8 ${isNameInvalid ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
                     placeholder="Filter Name"
@@ -180,6 +175,24 @@ function FilterRow({ filter, onDelete, isNameInvalid, isPatternInvalid }: { filt
                     pattern={filter.pattern}
                     isPatternInvalid={isPatternInvalid ?? false}
                 />
+                <div className="flex justify-center items-center">
+                    <ColorPickerPopup 
+                        color={filter.color} 
+                        onChange={(color) => filterActions.updateFilter(filter.id, { color })}
+                    >
+                        <Button 
+                            variant="outline" 
+                            className="size-8 p-0 overflow-hidden" 
+                            title={filter.color ? `Color: ${filter.color}` : "Select color"}
+                        >
+                            <div className={cn(
+                                "size-full",
+                                !filter.color && "bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxwYXRoIGQ9Ik0wIDBoNHY0SDB6bTQgNGg0djRINHoiIGZpbGw9IiNjY2MiIGZpbGwtb3BhY2l0eT0iLjQiLz48L3N2Zz4=')]", // Checkerboard for transparent
+                                filter.color && `bg-${filter.color}`
+                            )} />
+                        </Button>
+                    </ColorPickerPopup>
+                </div>
             </div>
 
             <Button className="ml-0.5 size-7 text-muted-foreground/50 rounded" variant="ghost" size="icon-sm" tabIndex={-1} onClick={() => onDelete(filter.id)}>
