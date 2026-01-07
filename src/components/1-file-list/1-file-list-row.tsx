@@ -30,7 +30,7 @@ export function FileListRow({ file, isSelected, onClick }: FileListItemProps) {
             <ContextMenuTrigger>
                 <div
                     className={cn(
-                        "flex items-center gap-2 px-3 py-0.5 text-xs cursor-pointer transition-colors border-l-2 select-none group",
+                        "relative flex items-center gap-2 px-3 py-0.5 text-xs cursor-pointer transition-colors border-l-2 select-none group",
                         isSelected
                             ? "bg-muted-foreground/20 border-primary outline -outline-offset-1 outline-primary"
                             : "text-muted-foreground hover:text-foreground hover:bg-muted-foreground/10 border-transparent",
@@ -38,19 +38,20 @@ export function FileListRow({ file, isSelected, onClick }: FileListItemProps) {
                             ? !isSelected
                                 ? "text-red-600 dark:text-red-400"
                                 : "text-red-600 dark:text-red-400"
-                            : "",
-                         // Use style for background opacity to avoid purging issues with dynamic classes
-                        !isSelected && highlightColor ? `bg-opacity-20` : ""
+                            : ""
                     )}
-                    style={
-                        (!isSelected && highlightColor) 
-                            ? { backgroundColor: `var(--color-${highlightColor})` } as React.CSSProperties
-                            : undefined
-                    }
                     onClick={onClick}
                 >
+                    {/* Highlight Background Layer */}
+                    {!isSelected && highlightColor && (
+                        <div 
+                            className="absolute inset-0 opacity-20 pointer-events-none"
+                            style={{ backgroundColor: `var(--color-${highlightColor})` }} 
+                        />
+                    )}
+
                     {/* File icon */}
-                    <div className="relative shrink-0">
+                    <div className="relative shrink-0 z-10">
                         <FileText className={cn("size-4", isSelected ? "text-primary" : "opacity-70", hasError && "text-red-600 dark:text-red-400")} />
 
                         {file.errorCount === 0 && !!file.error && (
@@ -78,7 +79,7 @@ export function FileListRow({ file, isSelected, onClick }: FileListItemProps) {
 
                     </div>
 
-                    <span className="flex-1 truncate" title={file.fileName}>
+                    <span className="flex-1 truncate z-10" title={file.fileName}>
                         {file.fileName}
                     </span>
 
@@ -103,7 +104,7 @@ export function FileListRow({ file, isSelected, onClick }: FileListItemProps) {
 
                     {/* Loading indicator */}
                     {file.isLoading && (
-                        <span className="size-2 rounded-full bg-blue-500 animate-pulse shrink-0" />
+                        <span className="size-2 rounded-full bg-blue-500 animate-pulse shrink-0 z-10" />
                     )}
                 </div>
             </ContextMenuTrigger>
