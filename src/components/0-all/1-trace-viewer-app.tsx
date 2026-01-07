@@ -5,7 +5,7 @@ import { TopMenu } from "./2-top-menu";
 import { TraceMainView } from "./6-resizable-panels";
 import { TraceEmptyState } from "../2-trace-viewer/7-trace-empty-state";
 import { TraceFooter } from "./7-app-footer";
-import { FileFilterDropdown } from "./3-btn-filters-select";
+import { FileFilterDropdown, ButtonHighlightToggle } from "./3-btn-filters-select";
 import { ButtonThemeToggle } from "./3-btn-theme-toggle";
 
 export function TraceViewerApp() {
@@ -36,6 +36,7 @@ function TopMenuToolbar() {
     return (
         <div className="px-2 flex items-center gap-2">
             <FileFilterDropdown />
+            <ButtonHighlightToggle />
             <ButtonThemeToggle />
         </div>
     );

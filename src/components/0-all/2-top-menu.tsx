@@ -4,7 +4,7 @@ import { useSnapshot } from "valtio";
 import { traceStore } from "../../store/traces-store/0-state";
 import { Input } from "../ui/shadcn/input";
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarShortcut, MenubarTrigger } from "../ui/shadcn/menubar";
-import { dialogFileHeaderOpenAtom, dialogAboutOpenAtom, dialogOptionsOpenAtom, dialogEditFiltersOpenAtom } from "../../store/2-ui-atoms";
+import { dialogFileHeaderOpenAtom, dialogAboutOpenAtom, dialogOptionsOpenAtom, dialogEditFiltersOpenAtom, dialogEditHighlightsOpenAtom } from "../../store/2-ui-atoms";
 import { setAppTitle } from '@/store/3-ui-app-title';
 
 export function TopMenu() {
@@ -12,6 +12,7 @@ export function TopMenu() {
     const setAboutOpen = useSetAtom(dialogAboutOpenAtom);
     const setFileHeaderOpen = useSetAtom(dialogFileHeaderOpenAtom);
     const setEditFiltersOpen = useSetAtom(dialogEditFiltersOpenAtom);
+    const setEditHighlightsOpen = useSetAtom(dialogEditHighlightsOpenAtom);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { files, selectedFileId } = useSnapshot(traceStore);
@@ -49,6 +50,9 @@ export function TopMenu() {
                     <MenubarContent>
                         <MenubarItem onClick={() => setEditFiltersOpen(true)}>
                             Filter...
+                        </MenubarItem>
+                        <MenubarItem onClick={() => setEditHighlightsOpen(true)}>
+                            Highlight...
                         </MenubarItem>
                         <MenubarSeparator />
                         <MenubarItem onClick={() => setFileHeaderOpen(true)} disabled={!hasActiveFile}>

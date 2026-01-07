@@ -8,6 +8,7 @@ import { DialogAbout } from "../4-dialogs/3-dialog-about";
 import { DialogOptions } from "../4-dialogs/1-dialog-options";
 import { DialogFileHeader } from "../4-dialogs/2-dialog-file-header";
 import { DialogEditFilters } from "../4-dialogs/4-dialog-edit-filters";
+import { DialogHighlightRules } from "../4-dialogs/5-dialog-highlight-rules";
 
 export function App() {
     return (
@@ -29,5 +30,6 @@ function Dialogs() {
         <DialogAbout />
         <DialogOptions />
         <DialogEditFilters />
+        <DialogHighlightRules />
     </>);
 }

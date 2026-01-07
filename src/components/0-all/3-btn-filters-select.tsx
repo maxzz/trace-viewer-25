@@ -4,9 +4,10 @@ import { useSnapshot } from "valtio";
 import { appSettings } from "../../store/1-ui-settings";
 import { Button } from "../ui/shadcn/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/shadcn/dropdown-menu";
-import { Check, ChevronDown } from "lucide-react";
+import { Check, Highlighter } from "lucide-react";
 import { IconFilterOff, IconFilterOn, IconL_ChevronDown } from "../ui/icons/normal";
 import { filterActions } from "../../store/4-file-filters";
+import { highlightActions } from "../../store/5-highlight-rules";
 import { dialogEditFiltersOpenAtom } from "../../store/2-ui-atoms";
 
 export function FileFilterDropdown() {
@@ -89,5 +90,23 @@ export function FileFilterDropdown() {
                 }
             </Button>
         </div>
+    );
+}
+
+export function ButtonHighlightToggle() {
+    const { highlightEnabled, highlightRules } = useSnapshot(appSettings);
+    const hasRules = highlightRules.length > 0;
+
+    return (
+        <Button 
+            className="size-6 rounded" 
+            variant={highlightEnabled ? "ghost" : "ghost"} 
+            size="icon" 
+            onClick={highlightActions.toggleHighlight}
+            disabled={!hasRules}
+            title={highlightEnabled ? "Disable highlighting" : "Enable highlighting"}
+        >
+            <Highlighter className={`size-3.5 ${highlightEnabled ? "text-primary opacity-100" : "opacity-40"}`} />
+        </Button>
     );
 }

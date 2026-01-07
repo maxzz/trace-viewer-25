@@ -14,7 +14,8 @@ export interface TraceFile {
     isLoading: boolean;
     error: string | null;
     currentLineIndex: number;
-    matchedFilterIds: string[]; // Cache for filters that match this file
+    matchedFilterIds: string[]; // Cache for FILTERS that match this file (for hiding)
+    matchedHighlightIds: string[]; // Cache for HIGHLIGHT rules that match this file (for coloring)
 }
 
 export interface TraceState {
@@ -41,6 +42,9 @@ export interface TraceState {
 }
 
 const emptyHeader = { magic: '' };
+
+import { recomputeFilterMatches } from "../4-file-filters";
+import { recomputeHighlightMatches } from "../5-highlight-rules";
 
 export const traceStore = proxy<TraceState>({
     files: [],
@@ -73,7 +77,8 @@ export const traceStore = proxy<TraceState>({
             isLoading: true,
             error: null,
             currentLineIndex: -1,
-            matchedFilterIds: []
+            matchedFilterIds: [],
+            matchedHighlightIds: []
         };
 
         // Add to store immediately
@@ -101,6 +106,10 @@ export const traceStore = proxy<TraceState>({
                 if (traceStore.selectedFileId === id) {
                     syncActiveFile(updatedFile);
                 }
+                
+                // Recompute filters and highlights for the new file
+                recomputeFilterMatches();
+                recomputeHighlightMatches();
             }
         } catch (e: any) {
             console.error("Failed to load trace", e);

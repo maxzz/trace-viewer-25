@@ -9,6 +9,12 @@ export interface FileFilter {
     id: string;
     name: string;
     pattern: string;
+}
+
+export interface HighlightRule {
+    id: string;
+    name: string;
+    pattern: string;
     color?: string; // Tailwind color name (e.g. "red-500")
 }
 
@@ -20,9 +26,12 @@ export interface AppSettings {
     panelSizes?: number[]; // ResizablePanelGroup panel sizes (percentages)
     extraInFooter: boolean; // Show header info (Computer, OS, Compiled) in footer
     
-    // File Filters
+    // File Filters (Hiding files)
     fileFilters: FileFilter[];
     selectedFilterId: string | null;
+
+    // Highlight Rules (Coloring files)
+    highlightRules: HighlightRule[];
     highlightEnabled: boolean;
 }
 
@@ -34,6 +43,7 @@ const DEFAULT_SETTINGS: AppSettings = {
     extraInFooter: false,
     fileFilters: [],
     selectedFilterId: null,
+    highlightRules: [],
     highlightEnabled: true,
 };
 

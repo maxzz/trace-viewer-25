@@ -6,38 +6,40 @@ import { Button } from "../ui/shadcn/button";
 import { Input } from "../ui/shadcn/input";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/shadcn/dialog";
 import { GripVertical, Trash2, Plus, Regex } from "lucide-react";
-import { appSettings, type FileFilter } from "../../store/1-ui-settings";
-import { dialogEditFiltersOpenAtom } from "../../store/2-ui-atoms";
-import { filterActions } from "../../store/4-file-filters";
+import { appSettings, type HighlightRule } from "../../store/1-ui-settings";
+import { dialogEditHighlightsOpenAtom } from "../../store/2-ui-atoms";
+import { highlightActions } from "../../store/5-highlight-rules";
 import { turnOffAutoComplete } from "@/utils/disable-hidden-children";
 import { notice } from "../ui/local-ui/7-toaster/7-toaster";
+import { ColorPickerPopup } from "../ui/color-picker-popup";
+import { cn } from "@/utils/index";
 
-export function DialogEditFilters() {
-    const [open, setOpen] = useAtom(dialogEditFiltersOpenAtom);
-    const { fileFilters } = useSnapshot(appSettings);
-    const [invalidFilterIds, setInvalidFilterIds] = useState<{ name: Set<string>, pattern: Set<string>; }>({ name: new Set(), pattern: new Set() });
+export function DialogHighlightRules() {
+    const [open, setOpen] = useAtom(dialogEditHighlightsOpenAtom);
+    const { highlightRules } = useSnapshot(appSettings);
+    const [invalidIds, setInvalidIds] = useState<{ name: Set<string>, pattern: Set<string>; }>({ name: new Set(), pattern: new Set() });
 
-    const handleReorder = (newOrder: FileFilter[]) => {
-        filterActions.reorderFilters(newOrder);
+    const handleReorder = (newOrder: HighlightRule[]) => {
+        highlightActions.reorderRules(newOrder);
     };
 
-    function validateFilters(): boolean {
+    function validateRules(): boolean {
         const invalidNames = new Set<string>();
         const invalidPatterns = new Set<string>();
 
-        fileFilters.forEach(filter => {
-            if (!filter.name || filter.name.trim() === '') {
-                invalidNames.add(filter.id);
+        highlightRules.forEach(rule => {
+            if (!rule.name || rule.name.trim() === '') {
+                invalidNames.add(rule.id);
             }
-            if (!filter.pattern || filter.pattern.trim() === '') {
-                invalidPatterns.add(filter.id);
+            if (!rule.pattern || rule.pattern.trim() === '') {
+                invalidPatterns.add(rule.id);
             }
         });
 
-        setInvalidFilterIds({ name: invalidNames, pattern: invalidPatterns });
+        setInvalidIds({ name: invalidNames, pattern: invalidPatterns });
 
         if (invalidNames.size > 0 || invalidPatterns.size > 0) {
-            notice.error('Filter name and pattern cannot be empty');
+            notice.error('Rule name and pattern cannot be empty');
             return false;
         }
 
@@ -47,19 +49,18 @@ export function DialogEditFilters() {
     function handleOpenChange(newOpen: boolean) {
         if (newOpen) {
             // Opening dialog - clear any previous invalid states
-            setInvalidFilterIds({ name: new Set(), pattern: new Set() });
+            setInvalidIds({ name: new Set(), pattern: new Set() });
             setOpen(true);
         } else {
             // Attempting to close - validate first
-            if (validateFilters()) {
+            if (validateRules()) {
                 setOpen(false);
             }
-            // If validation fails, don't close (setOpen is not called)
         }
     }
 
     function handleClose() {
-        if (validateFilters()) {
+        if (validateRules()) {
             setOpen(false);
         }
     }
@@ -69,53 +70,38 @@ export function DialogEditFilters() {
             <DialogContent className="max-w-[600px]!" aria-describedby={undefined} onOpenAutoFocus={(e) => e.preventDefault()}>
                 <DialogHeader>
                     <DialogTitle className="select-none">
-                        Filters
+                        Highlight Rules
                     </DialogTitle>
                 </DialogHeader>
 
                 <div>
-                    {/* Show header line for the filters list with column names located over the filter name and pattern columns */}
-                    {fileFilters.length !== 0 && <Header />}
+                    {highlightRules.length !== 0 && <Header />}
 
                     <div className="-mr-2 pr-2 py-1 max-h-[60vh] overflow-y-auto">
-                        <Reorder.Group className="m-0 p-0" axis="y" values={fileFilters as unknown as FileFilter[]} onReorder={handleReorder}>
-                            {fileFilters.map(
-                                (filter) => (
-                                    <FilterRow
-                                        key={filter.id}
-                                        filter={filter as unknown as FileFilter}
-                                        onDelete={filterActions.deleteFilter}
-                                        isNameInvalid={invalidFilterIds.name.has(filter.id)}
-                                        isPatternInvalid={invalidFilterIds.pattern.has(filter.id)}
+                        <Reorder.Group className="m-0 p-0" axis="y" values={highlightRules as unknown as HighlightRule[]} onReorder={handleReorder}>
+                            {highlightRules.map(
+                                (rule) => (
+                                    <RuleRow
+                                        key={rule.id}
+                                        rule={rule as unknown as HighlightRule}
+                                        onDelete={highlightActions.deleteRule}
+                                        isNameInvalid={invalidIds.name.has(rule.id)}
+                                        isPatternInvalid={invalidIds.pattern.has(rule.id)}
                                     />
                                 )
                             )}
                         </Reorder.Group>
 
-                        <Button className="mt-1 mx-5 h-7" variant="outline" size="xs" onClick={() => filterActions.addFilter("Filter name", "")}>
+                        <Button className="mt-1 mx-5 h-7" variant="outline" size="xs" onClick={() => highlightActions.addRule("Rule name", "")}>
                             <Plus className="size-3.5" />
-                            Add Filter
+                            Add Rule
                         </Button>
                     </div>
 
                     <div className="mx-5 mt-1 mb-1 text-xs text-muted-foreground text-balance">
                         <p className="mb-1">
-                            Patterns support wildcards or regex. For example:
+                            Patterns support wildcards or regex. The first matching rule determines the color.
                         </p>
-                        <ul className="list-disc list-inside space-y-1">
-                            <li>
-                                <span className={codeClasses}>^(?!.*DpHost).*$</span> regex to exclude files with name <span className={codeClasses}>DpHost</span>
-                            </li>
-                            <li>
-                                <span className={codeClasses}>DpHost</span> regex to include files with name <span className={codeClasses}>DpHost</span>
-                            </li>
-                            <li>
-                                <span className={codeClasses}>DpHost</span> wildcard to include files with name <span className={codeClasses}>DpHost</span>
-                            </li>
-                            <li>
-                                <span className={codeClasses}>*DpHost*</span> wildcard to include files with name <span className={codeClasses}>DpHost</span>
-                            </li>
-                        </ul>
                     </div>
                 </div>
 
@@ -127,29 +113,30 @@ export function DialogEditFilters() {
     );
 }
 
-const codeClasses = "px-1 bg-muted outline rounded";
-
 function Header() {
     return (
-        <div className="mt-4 px-5 grid grid-cols-2 gap-1 select-none">
+        <div className="mt-4 px-5 grid grid-cols-[1fr_1fr_36px] gap-1 select-none">
             <div className="text-xs font-semibold">
                 Name
             </div>
             <div className="text-xs font-semibold">
                 Pattern
             </div>
+            <div className="text-xs font-semibold text-center">
+                Color
+            </div>
         </div>
     );
 }
 
-function FilterRow({ filter, onDelete, isNameInvalid, isPatternInvalid }: { filter: FileFilter, onDelete: (id: string) => void, isNameInvalid?: boolean, isPatternInvalid?: boolean; }) {
+function RuleRow({ rule, onDelete, isNameInvalid, isPatternInvalid }: { rule: HighlightRule, onDelete: (id: string) => void, isNameInvalid?: boolean, isPatternInvalid?: boolean; }) {
     const dragControls = useDragControls();
 
     return (
         <Reorder.Item
             className="mb-1 bg-background flex items-center select-none"
-            id={filter.id}
-            value={filter}
+            id={rule.id}
+            value={rule}
             dragListener={false}
             dragControls={dragControls}
         >
@@ -157,60 +144,72 @@ function FilterRow({ filter, onDelete, isNameInvalid, isPatternInvalid }: { filt
                 <GripVertical className="size-3 text-muted-foreground" />
             </div>
 
-            <div className="flex-1 grid grid-cols-2 gap-1">
+            <div className="flex-1 grid grid-cols-[1fr_1fr_36px] gap-1">
                 <Input
                     className={`h-8 ${isNameInvalid ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
-                    placeholder="Filter Name"
-                    value={filter.name}
-                    onChange={(e) => filterActions.updateFilter(filter.id, { name: e.target.value })}
+                    placeholder="Rule Name"
+                    value={rule.name}
+                    onChange={(e) => highlightActions.updateRule(rule.id, { name: e.target.value })}
                     {...turnOffAutoComplete}
                 />
                 <InputPattern
-                    filterId={filter.id}
-                    pattern={filter.pattern}
+                    ruleId={rule.id}
+                    pattern={rule.pattern}
                     isPatternInvalid={isPatternInvalid ?? false}
                 />
+                <div className="flex justify-center items-center">
+                    <ColorPickerPopup 
+                        color={rule.color} 
+                        onChange={(color) => highlightActions.updateRule(rule.id, { color })}
+                    >
+                        <Button 
+                            variant="outline" 
+                            className="size-8 p-0 overflow-hidden" 
+                            title={rule.color ? `Color: ${rule.color}` : "Select color"}
+                        >
+                            <div className={cn(
+                                "size-full",
+                                !rule.color && "bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxwYXRoIGQ9Ik0wIDBoNHY0SDB6bTQgNGg0djRINHoiIGZpbGw9IiNjY2MiIGZpbGwtb3BhY2l0eT0iLjQiLz48L3N2Zz4=')]",
+                                rule.color && `bg-${rule.color}`
+                            )} />
+                        </Button>
+                    </ColorPickerPopup>
+                </div>
             </div>
 
-            <Button className="ml-0.5 size-7 text-muted-foreground/50 rounded" variant="ghost" size="icon-sm" tabIndex={-1} onClick={() => onDelete(filter.id)}>
+            <Button className="ml-0.5 size-7 text-muted-foreground/50 rounded" variant="ghost" size="icon-sm" tabIndex={-1} onClick={() => onDelete(rule.id)}>
                 <Trash2 className="size-3.5" />
             </Button>
         </Reorder.Item>
     );
 }
 
-function InputPattern({ filterId, pattern, isPatternInvalid }: { filterId: string, pattern: string, isPatternInvalid: boolean; }) {
-    // Detect if pattern is regex (starts and ends with /)
+function InputPattern({ ruleId, pattern, isPatternInvalid }: { ruleId: string, pattern: string, isPatternInvalid: boolean; }) {
     const isRegex = pattern.startsWith('/') && pattern.endsWith('/') && pattern.length > 1;
     const patternWithoutSlashes = isRegex ? pattern.slice(1, -1) : pattern;
 
-    // Use local state for input value to prevent cursor jumping to the end of the input when the pattern changes
     const [localValue, setLocalValue] = useState(patternWithoutSlashes);
 
-    // Sync local state when pattern changes externally to prevent cursor jumping to the end of the input when the pattern changes
     useEffect(() => setLocalValue(patternWithoutSlashes), [patternWithoutSlashes]);
 
-    function onUpdate(id: string, data: Partial<FileFilter>) {
-        filterActions.updateFilter(id, data);
+    function onUpdate(id: string, data: Partial<HighlightRule>) {
+        highlightActions.updateRule(id, data);
     }
 
     function handlePatternChange(value: string) {
         setLocalValue(value);
-        // If currently regex, wrap the new value with slashes
         if (isRegex) {
-            onUpdate(filterId, { pattern: `/${value}/` });
+            onUpdate(ruleId, { pattern: `/${value}/` });
         } else {
-            onUpdate(filterId, { pattern: value });
+            onUpdate(ruleId, { pattern: value });
         }
     }
 
     function handleToggleRegex() {
         if (isRegex) {
-            // Remove regex: unwrap slashes
-            onUpdate(filterId, { pattern: patternWithoutSlashes });
+            onUpdate(ruleId, { pattern: patternWithoutSlashes });
         } else {
-            // Enable regex: wrap with slashes
-            onUpdate(filterId, { pattern: `/${pattern}/` });
+            onUpdate(ruleId, { pattern: `/${pattern}/` });
         }
     }
 
