@@ -4,6 +4,8 @@ import { AlertCircle, FileText } from "lucide-react";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger, } from "../ui/shadcn/context-menu";
 import { useSnapshot } from "valtio";
 import { appSettings } from "@/store/1-ui-settings";
+import { useSetAtom } from "jotai";
+import { dialogFileHeaderOpenAtom } from "@/store/2-ui-atoms";
 
 interface FileListItemProps {
     file: TraceFile;
@@ -14,6 +16,7 @@ interface FileListItemProps {
 export function FileListRow({ file, isSelected, onClick }: FileListItemProps) {
     const hasError = file.errorCount > 0 || !!file.error;
     const { highlightRules, highlightEnabled } = useSnapshot(appSettings);
+    const setFileHeaderOpen = useSetAtom(dialogFileHeaderOpenAtom);
 
     let highlightColor = undefined;
     if (highlightEnabled && file.matchedHighlightIds && file.matchedHighlightIds.length > 0) {
@@ -110,6 +113,13 @@ export function FileListRow({ file, isSelected, onClick }: FileListItemProps) {
             </ContextMenuTrigger>
 
             <ContextMenuContent>
+                <ContextMenuItem onClick={() => {
+                    traceStore.selectFile(file.id);
+                    setFileHeaderOpen(true);
+                }}>
+                    Show File Header
+                </ContextMenuItem>
+                <ContextMenuSeparator />
                 <ContextMenuItem onClick={() => traceStore.closeFile(file.id)} className="text-red-600 focus:text-red-600 focus:bg-red-100 dark:focus:bg-red-900/20">
                     Close
                 </ContextMenuItem>
