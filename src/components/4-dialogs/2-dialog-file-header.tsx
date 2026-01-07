@@ -9,11 +9,15 @@ import { dialogFileHeaderOpenAtom } from "@/store/2-ui-atoms";
 import { traceStore } from "@/store/traces-store/0-state";
 
 export function DialogFileHeader() {
-    const [open, onOpenChange] = useAtom(dialogFileHeaderOpenAtom);
-    const { header, fileName } = useSnapshot(traceStore);
+    const [fileId, setFileId] = useAtom(dialogFileHeaderOpenAtom);
+    const { files } = useSnapshot(traceStore);
+    
+    const file = fileId ? files.find(f => f.id === fileId) : null;
+    const header = file?.header;
+    const fileName = file?.fileName;
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
+        <Dialog open={!!fileId} onOpenChange={(open) => !open && setFileId(null)}>
             <DialogContent className="max-w-[500px]" aria-describedby={undefined}>
 
                 <DialogHeader>
@@ -27,13 +31,13 @@ export function DialogFileHeader() {
 
                     <ScrollArea className="px-3 py-2 min-h-[260px] bg-muted rounded border border-input">
                         <div className="space-y-0">
-                            {formatHeaderText(header.rawText || '')}
+                            {formatHeaderText(header?.rawText || '')}
                         </div>
                     </ScrollArea>
                 </div>
 
                 <DialogFooter className="justify-center!">
-                    <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
+                    <Button variant="outline" onClick={() => setFileId(null)}>Close</Button>
                 </DialogFooter>
 
             </DialogContent>

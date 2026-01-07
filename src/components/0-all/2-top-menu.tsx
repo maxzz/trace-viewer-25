@@ -55,7 +55,7 @@ export function TopMenu() {
                             File Name Highlight Rules...
                         </MenubarItem>
                         <MenubarSeparator />
-                        <MenubarItem onClick={() => setFileHeaderOpen(true)} disabled={!hasActiveFile}>
+                        <MenubarItem onClick={() => setFileHeaderOpen(selectedFileId)} disabled={!hasActiveFile}>
                             Show File Header ...
                         </MenubarItem>
                     </MenubarContent>

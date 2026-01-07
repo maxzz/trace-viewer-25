@@ -114,8 +114,8 @@ export function FileListRow({ file, isSelected, onClick }: FileListItemProps) {
 
             <ContextMenuContent>
                 <ContextMenuItem onClick={() => {
-                    traceStore.selectFile(file.id);
-                    setFileHeaderOpen(true);
+                    // traceStore.selectFile(file.id);
+                    setFileHeaderOpen(file.id);
                 }}>
                     Show File Header
                 </ContextMenuItem>
