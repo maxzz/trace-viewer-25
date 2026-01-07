@@ -14,25 +14,27 @@ import { notice } from "../ui/local-ui/7-toaster/7-toaster";
 
 export function DialogEditFilters() {
     const [open, setOpen] = useAtom(dialogEditFiltersOpenAtom);
-    const { fileFilters } = useSnapshot(appSettings);
+    const { fileFilters } = useSnapshot(appSettings, { sync: true });
     const [invalidFilterIds, setInvalidFilterIds] = useState<{ name: Set<string>, pattern: Set<string>; }>({ name: new Set(), pattern: new Set() });
 
-    const handleReorder = (newOrder: FileFilter[]) => {
+    function handleReorder(newOrder: FileFilter[]) {
         filterActions.reorderFilters(newOrder);
-    };
+    }
 
     function validateFilters(): boolean {
         const invalidNames = new Set<string>();
         const invalidPatterns = new Set<string>();
 
-        fileFilters.forEach(filter => {
-            if (!filter.name || filter.name.trim() === '') {
-                invalidNames.add(filter.id);
+        fileFilters.forEach(
+            (filter) => {
+                if (!filter.name || filter.name.trim() === '') {
+                    invalidNames.add(filter.id);
+                }
+                if (!filter.pattern || filter.pattern.trim() === '') {
+                    invalidPatterns.add(filter.id);
+                }
             }
-            if (!filter.pattern || filter.pattern.trim() === '') {
-                invalidPatterns.add(filter.id);
-            }
-        });
+        );
 
         setInvalidFilterIds({ name: invalidNames, pattern: invalidPatterns });
 

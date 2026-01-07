@@ -14,27 +14,29 @@ import { notice } from "../ui/local-ui/7-toaster/7-toaster";
 import { ColorPickerPopup } from "../ui/color-picker-popup";
 import { cn } from "@/utils/index";
 
-export function DialogEditHighlights() {
+export function DialogEditHighlightRules() {
     const [open, setOpen] = useAtom(dialogEditHighlightsOpenAtom);
-    const { highlightRules } = useSnapshot(appSettings);
+    const { highlightRules } = useSnapshot(appSettings, { sync: true });
     const [invalidRuleIds, setInvalidRuleIds] = useState<{ name: Set<string>, pattern: Set<string>; }>({ name: new Set(), pattern: new Set() });
 
-    const handleReorder = (newOrder: HighlightRule[]) => {
+    function handleReorder(newOrder: HighlightRule[]) {
         highlightActions.reorderRules(newOrder);
-    };
+    }
 
     function validateRules(): boolean {
         const invalidNames = new Set<string>();
         const invalidPatterns = new Set<string>();
 
-        highlightRules.forEach(rule => {
-            if (!rule.name || rule.name.trim() === '') {
-                invalidNames.add(rule.id);
+        highlightRules.forEach(
+            (rule) => {
+                if (!rule.name || rule.name.trim() === '') {
+                    invalidNames.add(rule.id);
+                }
+                if (!rule.pattern || rule.pattern.trim() === '') {
+                    invalidPatterns.add(rule.id);
+                }
             }
-            if (!rule.pattern || rule.pattern.trim() === '') {
-                invalidPatterns.add(rule.id);
-            }
-        });
+        );
 
         setInvalidRuleIds({ name: invalidNames, pattern: invalidPatterns });
 
@@ -65,7 +67,7 @@ export function DialogEditHighlights() {
 
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
-            <DialogContent className="max-w-[600px]!" aria-describedby={undefined} onOpenAutoFocus={(e) => e.preventDefault()}>
+            <DialogContent className="max-w-[500px]!" aria-describedby={undefined} onOpenAutoFocus={(e) => e.preventDefault()}>
                 <DialogHeader>
                     <DialogTitle className="select-none">
                         Highlights
@@ -92,7 +94,7 @@ export function DialogEditHighlights() {
 
                         <Button className="mt-1 mx-5 h-7" variant="outline" size="xs" onClick={() => highlightActions.addRule("Highlight name", "")}>
                             <Plus className="size-3.5" />
-                            Add Highlight
+                            Add Highlight Rule
                         </Button>
                     </div>
 
@@ -104,7 +106,7 @@ export function DialogEditHighlights() {
                             <li>
                                 <span className={codeClasses}>*Error*</span> wildcard to color files with name containing Error
                             </li>
-                             <li>
+                            <li>
                                 <span className={codeClasses}>/Log$/</span> regex to color files ending in Log
                             </li>
                         </ul>
@@ -112,7 +114,9 @@ export function DialogEditHighlights() {
                 </div>
 
                 <DialogFooter className="justify-center!">
-                    <Button variant="outline" onClick={handleClose}>Close</Button>
+                    <Button variant="outline" onClick={handleClose}>
+                        Close
+                    </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog >
@@ -123,7 +127,7 @@ const codeClasses = "px-1 bg-muted outline rounded";
 
 function Header() {
     return (
-        <div className="mt-4 px-5 grid grid-cols-[1fr_1fr_36px] gap-1 select-none">
+        <div className="mt-4 px-5 grid grid-cols-[1fr_1fr_52px] gap-1 select-none">
             <div className="text-xs font-semibold">
                 Name
             </div>
@@ -166,13 +170,13 @@ function HighlightRow({ rule, onDelete, isNameInvalid, isPatternInvalid }: { rul
                     isPatternInvalid={isPatternInvalid ?? false}
                 />
                 <div className="flex justify-center items-center">
-                    <ColorPickerPopup 
-                        color={rule.color} 
+                    <ColorPickerPopup
+                        color={rule.color}
                         onChange={(color) => highlightActions.updateRule(rule.id, { color })}
                     >
-                        <Button 
-                            variant="outline" 
-                            className="size-8 p-0 overflow-hidden" 
+                        <Button
+                            variant="outline"
+                            className="size-8 p-0 overflow-hidden"
                             title={rule.color ? `Color: ${rule.color}` : "Select color"}
                         >
                             <div className={cn(

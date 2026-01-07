@@ -13,7 +13,7 @@ export function DialogFileHeader() {
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[600px]" aria-describedby={undefined}>
+            <DialogContent className="sm:max-w-[300px]" aria-describedby={undefined}>
 
                 <DialogHeader>
                     <DialogTitle>
@@ -27,7 +27,7 @@ export function DialogFileHeader() {
                     </div>
 
                     <div className="grid gap-2">
-                        <Textarea className="min-h-[300px] text-sm font-mono bg-muted resize-none" value={header.rawText || ''} readOnly />
+                        <Textarea className="min-h-[300px] text-xs font-mono bg-muted resize-none" value={header.rawText || ''} readOnly />
                     </div>
                 </div>
 
