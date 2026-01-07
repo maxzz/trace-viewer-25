@@ -6,6 +6,8 @@ import { Input } from "../ui/shadcn/input";
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarShortcut, MenubarTrigger } from "../ui/shadcn/menubar";
 import { dialogFileHeaderOpenAtom, dialogAboutOpenAtom, dialogOptionsOpenAtom, dialogEditFiltersOpenAtom, dialogEditHighlightsOpenAtom } from "../../store/2-ui-atoms";
 import { setAppTitle } from '@/store/3-ui-app-title';
+import { isZipFile } from "../../utils/file-utils";
+import { extractTracesFromZip } from "../../utils/zip-manager";
 
 export function TopMenu() {
     const setOptionsOpen = useSetAtom(dialogOptionsOpenAtom);
@@ -83,7 +85,7 @@ function TraceLoadInput({ inputRef }: { inputRef: React.RefObject<HTMLInputEleme
     // const { isLoading } = useSnapshot(traceStore);
 
     const handleFileChange = useCallback(
-        (e: React.ChangeEvent<HTMLInputElement>) => {
+        async (e: React.ChangeEvent<HTMLInputElement>) => {
             const files = e.target.files;
             if (files && files.length > 0) {
                 // Clear previously uploaded files
@@ -95,9 +97,13 @@ function TraceLoadInput({ inputRef }: { inputRef: React.RefObject<HTMLInputEleme
                 setAppTitle(fileList);
 
                 // Load new files
-                fileList.forEach(file => {
-                    traceStore.loadTrace(file);
-                });
+                for (const file of fileList) {
+                    if (isZipFile(file)) {
+                        await extractTracesFromZip(file);
+                    } else {
+                        traceStore.loadTrace(file);
+                    }
+                }
             }
             // Reset input so same file can be selected again if needed
             e.target.value = '';
@@ -107,7 +113,7 @@ function TraceLoadInput({ inputRef }: { inputRef: React.RefObject<HTMLInputEleme
     return (
         <Input
             type="file"
-            accept=".trc3"
+            accept=".trc3,.zip"
             multiple
             onChange={handleFileChange}
             className="hidden"

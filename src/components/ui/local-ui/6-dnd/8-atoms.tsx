@@ -2,6 +2,8 @@ import { traceStore } from "@/store/traces-store/0-state";
 import { atom } from "jotai";
 import { notice } from "../7-toaster";
 import { setAppTitle } from '@/store/3-ui-app-title';
+import { isTrc3File, isZipFile } from "../../../../utils/file-utils";
+import { extractTracesFromZip } from "../../../../utils/zip-manager";
 
 export type DoSetFilesFrom_Dnd_Atom = typeof doSetFilesFrom_Dnd_Atom;
 
@@ -43,7 +45,7 @@ export const doSetFilesFrom_Dnd_Atom = atom(                    // used by DropI
                     } else {
                         // Fallback to direct file access
                         const file = item.getAsFile();
-                        if (file && isTrc3File(file)) {
+                        if (file && (isTrc3File(file) || isZipFile(file))) {
                             fallbackFiles.push(file);
                         }
                     }
@@ -60,7 +62,7 @@ export const doSetFilesFrom_Dnd_Atom = atom(                    // used by DropI
             // Fallback for older browsers
             for (let i = 0; i < dataTransfer.files.length; i++) {
                 const file = dataTransfer.files[i];
-                if (isTrc3File(file)) {
+                if (isTrc3File(file) || isZipFile(file)) {
                     filesWithPaths.push({ file, path: '' });
                 }
             }
@@ -81,9 +83,13 @@ export const doSetFilesFrom_Dnd_Atom = atom(                    // used by DropI
         setAppTitle(files, droppedFolderName, filePaths);
 
         // Load new files
-        files.forEach(file => {
-            traceStore.loadTrace(file);
-        });
+        for (const file of files) {
+            if (isZipFile(file)) {
+                await extractTracesFromZip(file);
+            } else {
+                traceStore.loadTrace(file);
+            }
+        }
     }
 );
 
@@ -92,7 +98,7 @@ async function processEntry(entry: FileSystemEntry, filesWithPaths: FileWithPath
     if (entry.isFile) {
         return new Promise((resolve, reject) => {
             (entry as FileSystemFileEntry).file((file) => {
-                if (isTrc3File(file)) {
+                if (isTrc3File(file) || isZipFile(file)) {
                     filesWithPaths.push({ file, path: entry.fullPath });
                 }
                 resolve();
@@ -103,12 +109,6 @@ async function processEntry(entry: FileSystemEntry, filesWithPaths: FileWithPath
         await collectFilesFromDirectory(entry as FileSystemDirectoryEntry, filesWithPaths);
     }
 }
-
-// Helper function to check if file has .trc3 extension
-function isTrc3File(file: File): boolean {
-    return file.name.toLowerCase().endsWith('.trc3');
-}
-
 // TypeScript declarations for FileSystemEntry API (webkitGetAsEntry)
 
 interface FileSystemEntry {
@@ -149,7 +149,7 @@ async function collectFilesFromDirectory(entry: FileSystemDirectoryEntry, filesW
                             if (childEntry.isFile) {
                                 return new Promise<FileWithPath | null>((resolveFile) => {
                                     (childEntry as FileSystemFileEntry).file((file) => {
-                                        resolveFile(isTrc3File(file) ? { file, path: childEntry.fullPath } : null);
+                                        resolveFile((isTrc3File(file) || isZipFile(file)) ? { file, path: childEntry.fullPath } : null);
                                     }, reject);
                                 });
                             }

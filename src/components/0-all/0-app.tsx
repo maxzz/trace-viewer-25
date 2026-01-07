@@ -9,6 +9,7 @@ import { DialogOptions } from "../4-dialogs/1-dialog-options";
 import { DialogFileHeader } from "../4-dialogs/2-dialog-file-header";
 import { DialogEditFilters } from "../4-dialogs/4-dialog-edit-filters";
 import { DialogEditHighlightRules } from "../4-dialogs/5-dialog-edit-highlight-rules";
+import { ZipLoadingOverlay } from "../ui/zip-loading-overlay";
 
 export function App() {
     return (
@@ -16,6 +17,7 @@ export function App() {
             <UISymbolDefs />
             <AppGlobals />
             <Toaster />
+            <ZipLoadingOverlay />
             <DropItDoc doSetFilesFromDropAtom={doSetFilesFrom_Dnd_Atom} />
 
             <TraceViewerApp />
