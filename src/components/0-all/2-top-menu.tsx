@@ -2,7 +2,7 @@ import { useCallback, useRef } from "react";
 import { useSetAtom, useAtom } from "jotai";
 import { useSnapshot } from "valtio";
 import { notice } from "../ui/local-ui/7-toaster";
-import { extractTracesFromZip, isZipFile, cancelTimelineBuild } from "@/workers-client";
+import { extractTracesFromZip, isZipFile, cancelFullTimelineBuild } from "@/workers-client";
 import { traceStore } from "@/store/traces-store/0-state";
 import { Input } from "../ui/shadcn/input";
 import { Button } from "../ui/shadcn/button";
@@ -169,9 +169,9 @@ function TimelineProgress() {
                     <Button variant="secondary" onClick={() => setOpen(false)}>Continue</Button>
                     <Button variant="destructive" onClick={
                         () => {
-                            cancelTimelineBuild();
+                            cancelFullTimelineBuild();
                             traceStore.setTimelineLoading(false);
-                            traceStore.setTimeline([]);
+                            traceStore.setFullTimeline([]);
                             notice.info("Timeline build cancelled");
                             setOpen(false);
                         }

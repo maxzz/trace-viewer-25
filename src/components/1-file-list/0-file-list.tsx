@@ -1,11 +1,11 @@
 import { type RefObject, useEffect, useRef, useMemo } from "react";
 import { useSnapshot } from "valtio";
-import { appSettings } from "../../store/1-ui-settings";
-import { traceStore } from "../../store/traces-store/0-state";
+import { appSettings, type FileFilter } from "../../store/1-ui-settings";
+import { traceStore, type TraceFile } from "../../store/traces-store/0-state";
 import { ScrollArea } from "../ui/shadcn/scroll-area";
 import { FileListRow } from "./1-file-list-row";
-import { TimelineList } from "./2-timeline-list";
-import { cancelTimelineBuild } from "../../workers-client/timeline-client";
+import { FullTimelineList } from "./2-timeline-list";
+import { cancelFullTimelineBuild } from "../../workers-client/timeline-client";
 
 export function FileList() {
     const { files, selectedFileId } = useSnapshot(traceStore);
@@ -15,8 +15,8 @@ export function FileList() {
     // Timeline build effect
     useEffect(() => {
         if (!showCombinedTimeline) {
-            traceStore.setTimeline([]);
-            // cancelTimelineBuild(); // Don't cancel here strictly, might be running?
+            traceStore.setFullTimeline([]);
+            // cancelFullTimelineBuild(); // Don't cancel here strictly, might be running?
             return;
         }
 
@@ -25,63 +25,23 @@ export function FileList() {
         if (isLoading) return;
 
         if (files.length === 0) {
-            traceStore.setTimeline([]);
+            traceStore.setFullTimeline([]);
             return;
         }
 
         // Debounce build
-        const timer = setTimeout(
-            () => {
-                traceStore.asyncBuildFullTimes(timelinePrecision);
-            },
-             300
-        );
+        const timer = setTimeout(() => { traceStore.asyncBuildFullTimes(timelinePrecision); }, 300);
 
         return () => {
             clearTimeout(timer);
-            cancelTimelineBuild();
+            cancelFullTimelineBuild();
         };
     }, [showCombinedTimeline, timelinePrecision, files]); // files dependency: if files loaded/added/removed
 
     // Compute filtered files
     const filteredFiles = useMemo(
-        () => {
-            if (!selectedFilterId) return files;
-            const filter = fileFilters.find(f => f.id === selectedFilterId);
-            if (!filter) return files;
-
-            const pattern = filter.pattern;
-
-            // Check if pattern is regex (starts and ends with /)
-            if (pattern.startsWith('/') && pattern.endsWith('/') && pattern.length > 1) {
-                try {
-                    const regexPattern = pattern.slice(1, -1);
-                    const regex = new RegExp(regexPattern, 'i');
-                    return files.filter(file => regex.test(file.fileName));
-                } catch (e) {
-                    // Invalid regex, return empty or fallback
-                    console.warn('Invalid regex pattern:', pattern, e);
-                    return [];
-                }
-            }
-
-            // Non-regex pattern: use existing logic
-            const patternLower = pattern.toLowerCase();
-
-            // Convert glob to regex if contains *
-            if (patternLower.includes('*')) {
-                try {
-                    const regexStr = "^" + patternLower.split('*').map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('.*') + "$";
-                    const regex = new RegExp(regexStr, 'i');
-                    return files.filter(file => regex.test(file.fileName));
-                } catch (e) {
-                    // fallback to contains
-                    return files.filter(file => file.fileName.toLowerCase().includes(patternLower.replace(/\*/g, '')));
-                }
-            }
-
-            return files.filter(file => file.fileName.toLowerCase().includes(patternLower));
-        }, [files, selectedFilterId, fileFilters]
+        () => filterFiles(files, selectedFilterId, fileFilters),
+        [files, selectedFilterId, fileFilters]
     );
 
     // Effect to handle selection change when filter results change
@@ -138,7 +98,7 @@ export function FileList() {
                 </ScrollArea>
             </div>
 
-            {showCombinedTimeline && <TimelineList />}
+            {showCombinedTimeline && <FullTimelineList />}
         </div>
     );
 }
@@ -192,4 +152,45 @@ function createFileListKeyDownHandler(containerRef: RefObject<HTMLDivElement | n
             // For now, do nothing special as selection is immediate.
         }
     };
+}
+
+function filterFiles<T extends { id: string; fileName: string; }>(files: ReadonlyArray<T>, selectedFilterId: string | null, fileFilters: ReadonlyArray<FileFilter>): T[] {
+    if (!selectedFilterId) {
+        return [...files];
+    }
+
+    const filter = fileFilters.find(f => f.id === selectedFilterId);
+    if (!filter) return [...files];
+
+    const pattern = filter.pattern;
+
+    // Check if pattern is regex (starts and ends with /)
+    if (pattern.startsWith('/') && pattern.endsWith('/') && pattern.length > 1) {
+        try {
+            const regexPattern = pattern.slice(1, -1);
+            const regex = new RegExp(regexPattern, 'i');
+            return files.filter(file => regex.test(file.fileName));
+        } catch (e) {
+            // Invalid regex, return empty or fallback
+            console.warn('Invalid regex pattern:', pattern, e);
+            return [];
+        }
+    }
+
+    // Non-regex pattern: use existing logic
+    const patternLower = pattern.toLowerCase();
+
+    // Convert glob to regex if contains *
+    if (patternLower.includes('*')) {
+        try {
+            const regexStr = "^" + patternLower.split('*').map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('.*') + "$";
+            const regex = new RegExp(regexStr, 'i');
+            return files.filter(file => regex.test(file.fileName));
+        } catch (e) {
+            // fallback to contains
+            return files.filter(file => file.fileName.toLowerCase().includes(patternLower.replace(/\*/g, '')));
+        }
+    }
+
+    return files.filter(file => file.fileName.toLowerCase().includes(patternLower));
 }

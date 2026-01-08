@@ -1,9 +1,9 @@
 import { proxy, subscribe } from "valtio";
 import { notice } from "../../components/ui/local-ui/7-toaster";
 import { type TraceLine, type TraceHeader } from "../../trace-viewer-core/9-core-types";
-import { type TimelineItem } from "../../workers/timeline-types";
+import { type FullTimelineItem } from "../../workers/timeline-types";
 import { parseTraceFile } from "./1-parse-trace-file";
-import { buildTimeline } from "../../workers-client/timeline-client";
+import { buildFullTimeline as buildFullTimeline } from "../../workers-client/timeline-client";
 
 export interface TraceFile {
     id: string;
@@ -37,7 +37,7 @@ export interface TraceState {
     currentLineIndex: number;
 
     // Timeline
-    timeline: TimelineItem[];
+    timeline: FullTimelineItem[];
     isTimelineLoading: boolean;
     timelineError: string | null;
     selectedTimelineTimestamp: string | null;
@@ -48,7 +48,7 @@ export interface TraceState {
     closeFile: (id: string) => void;
     closeOtherFiles: (id: string) => void;
     closeAllFiles: () => void;
-    setTimeline: (items: TimelineItem[]) => void;
+    setFullTimeline: (items: FullTimelineItem[]) => void;
     setTimelineLoading: (loading: boolean) => void;
     selectTimelineTimestamp: (timestamp: string | null) => void;
     asyncBuildFullTimes: (precision: number) => Promise<void>;
@@ -196,7 +196,7 @@ export const traceStore = proxy<TraceState>({
         traceStore.selectFile(null);
     },
 
-    setTimeline: (items: TimelineItem[]) => {
+    setFullTimeline: (items: FullTimelineItem[]) => {
         traceStore.timeline = items;
         traceStore.isTimelineLoading = false;
         traceStore.timelineError = null;
@@ -226,8 +226,8 @@ export const traceStore = proxy<TraceState>({
                 })
             );
 
-            const items = await buildTimeline(inputFiles, precision);
-            traceStore.setTimeline(items);
+            const items = await buildFullTimeline(inputFiles, precision);
+            traceStore.setFullTimeline(items);
             notice.success("Timeline built");
         } catch (e: any) {
             if (e.message === 'Timeline build cancelled') {

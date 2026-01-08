@@ -9,11 +9,11 @@ export interface TimelineWorkerInput {
 
 export interface TimelineWorkerOutput {
     type: 'SUCCESS' | 'ERROR' | 'CANCELLED';
-    timeline?: { timestamp: string; fileIds: string[] }[];
+    timeline?: FullTimelineItem[];
     error?: string;
 }
 
-export interface TimelineItem {
+export interface FullTimelineItem {
     timestamp: string;
     fileIds: string[];
 }

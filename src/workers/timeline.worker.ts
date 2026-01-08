@@ -1,6 +1,8 @@
-import { type TimelineWorkerInput, type TimelineWorkerOutput, type TimelineItem } from './timeline-types';
+import { type TimelineWorkerInput, type TimelineWorkerOutput, type FullTimelineItem } from './timeline-types';
 
-self.onmessage = (e: MessageEvent<TimelineWorkerInput>) => {
+self.onmessage = handleTimelineBuild;
+
+function handleTimelineBuild(e: MessageEvent<TimelineWorkerInput>) {
     const { type, files, precision } = e.data;
 
     if (type !== 'BUILD') return;
@@ -33,12 +35,12 @@ self.onmessage = (e: MessageEvent<TimelineWorkerInput>) => {
                     // Backfill date if we found this timestamp before but didn't have a date then (unlikely but possible with multiple files)
                     dateMap.set(formatted, lastDate);
                 }
-                
+
                 timestampMap.get(formatted)!.add(file.id);
             }
         }
 
-        const timeline: TimelineItem[] = Array.from(timestampMap.entries())
+        const timeline: FullTimelineItem[] = Array.from(timestampMap.entries())
             .map(
                 ([timestamp, fileIdSet]) => {
                     const date = dateMap.get(timestamp);
@@ -49,20 +51,15 @@ self.onmessage = (e: MessageEvent<TimelineWorkerInput>) => {
                     };
                 }
             )
-            .sort((a, b) => compareTimestamps(a.timestamp, b.timestamp));
+            .sort(
+                (a, b) => compareTimestamps(a.timestamp, b.timestamp)
+            );
 
-        const response: TimelineWorkerOutput = {
-            type: 'SUCCESS',
-            timeline
-        };
-
+        const response: TimelineWorkerOutput = { type: 'SUCCESS', timeline };
         self.postMessage(response);
-
-    } catch (error: any) {
-        const response: TimelineWorkerOutput = {
-            type: 'ERROR',
-            error: error.message || 'Unknown error during timeline build'
-        };
+    }
+    catch (error: any) {
+        const response: TimelineWorkerOutput = { type: 'ERROR', error: error.message || 'Unknown error during timeline build' };
         self.postMessage(response);
     }
 };
@@ -136,19 +133,19 @@ function compareTimestamps(a: string, b: string): number {
         const dateA = new Date(a).getTime();
         const dateB = new Date(b).getTime();
         if (!isNaN(dateA) && !isNaN(dateB)) {
-             return dateA - dateB;
+            return dateA - dateB;
         }
     }
-    
+
     // If mixed or parsing failed, fallback to raw string comparison or just time component
     // If one has date and other doesn't, date one should conceptually be "more specific" or "later"?
     // But usually in trace viewer, if date is missing it implies same day or unknown.
     // Let's rely on parseToValue which currently handles Time only.
     // If we passed full string "MDY HMS" to parseToValue, it would fail or return partial.
-    
+
     // Updated parseToValue to handle potential date prefix?
     // Actually, `parseToValue` logic below is specific to HH:MM:SS.
-    
+
     // Let's update `parseToValue` to handle "MDY HMS".
     return parseToValue(a) - parseToValue(b);
 }
@@ -157,7 +154,7 @@ function parseToValue(ts: string): number {
     // check for date part
     let timePart = ts;
     let datePart = '';
-    
+
     if (ts.includes(' ')) {
         const split = ts.split(' ');
         // Assuming last part is time? "12/05/2024 10:00:00"
@@ -169,9 +166,9 @@ function parseToValue(ts: string): number {
     const parts = timePart.split(':');
     const h = parseInt(parts[0] || '0', 10);
     const m = parseInt(parts[1] || '0', 10);
-    
+
     let s = 0;
-    
+
     if (parts.length > 2) {
         const secStr = parts[2];
         if (secStr.includes('.')) {
@@ -180,10 +177,10 @@ function parseToValue(ts: string): number {
             const fraction = parseFloat(`0.${msStr}`);
             s += fraction;
         } else {
-             s = parseInt(secStr, 10);
+            s = parseInt(secStr, 10);
         }
     }
-    
+
     let value = h * 3600 + m * 60 + s;
 
     // Add date component if available

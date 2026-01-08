@@ -1,14 +1,14 @@
 import { type TraceLine } from '@/trace-viewer-core/9-core-types';
-import { type TimelineWorkerInput, type TimelineWorkerOutput, type TimelineItem } from '../workers/timeline-types';
+import { type TimelineWorkerInput, type TimelineWorkerOutput, type FullTimelineItem } from '../workers/timeline-types';
 
 let worker: Worker | null = null;
 let currentReject: ((reason?: any) => void) | null = null;
 
-type TimelineLine = Pick<TraceLine, 'timestamp' | 'lineIndex' | 'date'>;
+type LineForFullTimeline = Pick<TraceLine, 'timestamp' | 'lineIndex' | 'date'>;
 
-export function buildTimeline(files: { id: string; lines: TimelineLine[]; }[], precision: number): Promise<TimelineItem[]> {
+export function buildFullTimeline(files: { id: string; lines: LineForFullTimeline[]; }[], precision: number): Promise<FullTimelineItem[]> {
     // Cancel any existing work
-    cancelTimelineBuild();
+    cancelFullTimelineBuild();
 
     worker = new Worker(new URL('../workers/timeline.worker.ts', import.meta.url), { type: 'module' });
 
@@ -36,7 +36,7 @@ export function buildTimeline(files: { id: string; lines: TimelineLine[]; }[], p
             const filesData = files.map(
                 (f) => ({
                     id: f.id,
-                    lines: f.lines.map((l: TimelineLine) => ({ timestamp: l.timestamp, lineIndex: l.lineIndex, date: l.date }))
+                    lines: f.lines.map((l: LineForFullTimeline) => ({ timestamp: l.timestamp, lineIndex: l.lineIndex, date: l.date }))
                 })
             );
 
@@ -50,7 +50,7 @@ export function buildTimeline(files: { id: string; lines: TimelineLine[]; }[], p
     );
 }
 
-export function cancelTimelineBuild() {
+export function cancelFullTimelineBuild() {
     if (worker) {
         worker.terminate();
         worker = null;

@@ -4,7 +4,7 @@ import { cn } from "../../utils/classnames";
 import { ScrollArea } from "../ui/shadcn/scroll-area";
 import { traceStore } from "../../store/traces-store/0-state";
 
-export function TimelineList() {
+export function FullTimelineList() {
     const { timeline, selectedTimelineTimestamp } = useSnapshot(traceStore);
     const scrollRef = useRef<HTMLDivElement>(null);
     const itemRefs = useRef<Map<string, HTMLDivElement>>(new Map());
