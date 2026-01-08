@@ -4,39 +4,12 @@ import { appSettings, type FileFilter } from "../../store/1-ui-settings";
 import { traceStore } from "../../store/traces-store/0-state";
 import { ScrollArea } from "../ui/shadcn/scroll-area";
 import { FileListRow } from "./1-file-list-row";
-import { FullTimelineList } from "./2-timeline-list";
-import { cancelFullTimelineBuild } from "../../workers-client/timeline-client";
+import { CombinedTimelinePanel } from "./3-combined-timeline-panel";
 
 export function FileList() {
     const { files, selectedFileId } = useSnapshot(traceStore);
-    const { fileFilters, selectedFilterId, showCombinedTimeline, timelinePrecision } = useSnapshot(appSettings);
+    const { fileFilters, selectedFilterId } = useSnapshot(appSettings);
     const containerRef = useRef<HTMLDivElement>(null);
-
-    // Timeline build effect
-    useEffect(() => {
-        if (!showCombinedTimeline) {
-            traceStore.setFullTimeline([]);
-            // cancelFullTimelineBuild(); // Don't cancel here strictly, might be running?
-            return;
-        }
-
-        // Check if any file is still loading
-        const isLoading = files.some(f => f.isLoading);
-        if (isLoading) return;
-
-        if (files.length === 0) {
-            traceStore.setFullTimeline([]);
-            return;
-        }
-
-        // Debounce build
-        const timer = setTimeout(() => { traceStore.asyncBuildFullTimes(timelinePrecision); }, 300);
-
-        return () => {
-            clearTimeout(timer);
-            cancelFullTimelineBuild();
-        };
-    }, [showCombinedTimeline, timelinePrecision, files]); // files dependency: if files loaded/added/removed
 
     // Compute filtered files
     const filteredFiles = useMemo(
@@ -97,7 +70,7 @@ export function FileList() {
                 </ScrollArea>
             </div>
 
-            {showCombinedTimeline && <FullTimelineList />}
+            <CombinedTimelinePanel />
         </div>
     );
 }
