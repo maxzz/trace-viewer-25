@@ -1,6 +1,7 @@
 import { proxy, subscribe } from "valtio";
 import { type TraceLine, type TraceHeader } from "../../trace-viewer-core/9-core-types";
 import { parseTraceFile } from "./1-parse-trace-file";
+import { type TimelineItem } from "../../workers/timeline-types";
 
 export interface TraceFile {
     id: string;
@@ -33,12 +34,21 @@ export interface TraceState {
     error: string | null;
     currentLineIndex: number;
 
+    // Timeline
+    timeline: TimelineItem[];
+    isTimelineLoading: boolean;
+    timelineError: string | null;
+    selectedTimelineTimestamp: string | null;
+
     // Actions
     loadTrace: (file: File) => Promise<void>;
     selectFile: (id: string | null) => void;
     closeFile: (id: string) => void;
     closeOtherFiles: (id: string) => void;
     closeAllFiles: () => void;
+    setTimeline: (items: TimelineItem[]) => void;
+    setTimelineLoading: (loading: boolean) => void;
+    selectTimelineTimestamp: (timestamp: string | null) => void;
 }
 
 const emptyHeader = { magic: '' };
@@ -60,6 +70,12 @@ export const traceStore = proxy<TraceState>({
     isLoading: false,
     error: null,
     currentLineIndex: -1,
+
+    // Timeline
+    timeline: [],
+    isTimelineLoading: false,
+    timelineError: null,
+    selectedTimelineTimestamp: null,
 
     loadTrace: async (file: File) => {
         const id = Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
@@ -175,6 +191,23 @@ export const traceStore = proxy<TraceState>({
     closeAllFiles: () => {
         traceStore.files = [];
         traceStore.selectFile(null);
+    },
+
+    setTimeline: (items: TimelineItem[]) => {
+        traceStore.timeline = items;
+        traceStore.isTimelineLoading = false;
+        traceStore.timelineError = null;
+    },
+
+    setTimelineLoading: (loading: boolean) => {
+        traceStore.isTimelineLoading = loading;
+        if (loading) {
+            traceStore.timelineError = null;
+        }
+    },
+
+    selectTimelineTimestamp: (timestamp: string | null) => {
+        traceStore.selectedTimelineTimestamp = timestamp;
     }
 });
 

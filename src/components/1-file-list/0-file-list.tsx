@@ -4,11 +4,63 @@ import { appSettings } from "../../store/1-ui-settings";
 import { traceStore } from "../../store/traces-store/0-state";
 import { ScrollArea } from "../ui/shadcn/scroll-area";
 import { FileListRow } from "./1-file-list-row";
+import { TimelineList } from "./2-timeline-list";
+import { buildTimeline, cancelTimelineBuild } from "../../workers-client/timeline-client";
+import { toast } from "sonner";
 
 export function FileList() {
     const { files, selectedFileId } = useSnapshot(traceStore);
-    const { fileFilters, selectedFilterId } = useSnapshot(appSettings);
+    const { fileFilters, selectedFilterId, showCombinedTimeline, timelinePrecision } = useSnapshot(appSettings);
     const containerRef = useRef<HTMLDivElement>(null);
+
+    // Timeline build effect
+    useEffect(() => {
+        if (!showCombinedTimeline) {
+            traceStore.setTimeline([]);
+            // cancelTimelineBuild(); // Don't cancel here strictly, might be running?
+            return;
+        }
+
+        // Check if any file is still loading
+        const isLoading = files.some(f => f.isLoading);
+        if (isLoading) return;
+
+        if (files.length === 0) {
+            traceStore.setTimeline([]);
+            return;
+        }
+
+        // Debounce build
+        const timer = setTimeout(async () => {
+            traceStore.setTimelineLoading(true);
+            try {
+                // Prepare data
+                const inputFiles = files.map(f => ({
+                    id: f.id,
+                    lines: f.lines // Using viewLines (aliased as lines)
+                        .map((l) => ({ timestamp: l.timestamp, lineIndex: l.lineIndex }))
+                }));
+
+                const items = await buildTimeline(inputFiles, timelinePrecision);
+                traceStore.setTimeline(items);
+                toast.success("Timeline built");
+            } catch (e: any) {
+                if (e.message === 'Timeline build cancelled') {
+                    // unexpected here unless we cancelled it
+                    toast.info("Timeline build cancelled");
+                } else {
+                    console.error("Timeline build failed", e);
+                    traceStore.setTimelineLoading(false); // Make sure to stop loading
+                    toast.error(`Timeline build failed: ${e.message}`);
+                }
+            }
+        }, 300);
+
+        return () => {
+            clearTimeout(timer);
+            cancelTimelineBuild();
+        };
+    }, [showCombinedTimeline, timelinePrecision, files]); // files dependency: if files loaded/added/removed
 
     // Compute filtered files
     const filteredFiles = useMemo(
@@ -85,23 +137,27 @@ export function FileList() {
     return (
         <div
             ref={containerRef}
-            className="h-full flex flex-col bg-muted/10 select-none outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            className="h-full flex flex-row bg-muted/10 select-none outline-none focus-visible:ring-1 focus-visible:ring-ring"
             tabIndex={0}
         >
-            <ScrollArea className="flex-1" fixedWidth>
-                <div className="flex flex-col py-1">
-                    {filteredFiles.map(
-                        (file) => (
-                            <FileListRow
-                                key={file.id}
-                                file={file as any}
-                                isSelected={file.id === selectedFileId}
-                                onClick={() => traceStore.selectFile(file.id)}
-                            />
-                        )
-                    )}
-                </div>
-            </ScrollArea>
+            <div className="flex-1 flex flex-col h-full min-w-0">
+                <ScrollArea className="flex-1" fixedWidth>
+                    <div className="flex flex-col py-1">
+                        {filteredFiles.map(
+                            (file) => (
+                                <FileListRow
+                                    key={file.id}
+                                    file={file as any}
+                                    isSelected={file.id === selectedFileId}
+                                    onClick={() => traceStore.selectFile(file.id)}
+                                />
+                            )
+                        )}
+                    </div>
+                </ScrollArea>
+            </div>
+
+            {showCombinedTimeline && <TimelineList />}
         </div>
     );
 }

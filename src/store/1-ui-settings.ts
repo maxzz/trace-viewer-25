@@ -33,6 +33,10 @@ export interface AppSettings {
     // Highlight Rules (Coloring files)
     highlightRules: HighlightRule[];
     highlightEnabled: boolean;
+
+    // Timeline
+    showCombinedTimeline: boolean;
+    timelinePrecision: number; // 0-5 digits to hide/round
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
@@ -45,6 +49,8 @@ const DEFAULT_SETTINGS: AppSettings = {
     selectedFilterId: null,
     highlightRules: [],
     highlightEnabled: true,
+    showCombinedTimeline: false,
+    timelinePrecision: 2,
 };
 
 // Load settings from localStorage

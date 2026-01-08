@@ -16,6 +16,7 @@ interface FileListItemProps {
 export function FileListRow({ file, isSelected, onClick }: FileListItemProps) {
     const hasError = file.errorCount > 0 || !!file.error;
     const { highlightRules, highlightEnabled } = useSnapshot(appSettings);
+    const { timeline, selectedTimelineTimestamp } = useSnapshot(traceStore);
     const setFileHeaderOpen = useSetAtom(dialogFileHeaderOpenAtom);
 
     let highlightColor = undefined;
@@ -27,6 +28,10 @@ export function FileListRow({ file, isSelected, onClick }: FileListItemProps) {
             highlightColor = rule.color;
         }
     }
+
+    const isMarked = selectedTimelineTimestamp 
+        ? timeline.find(t => t.timestamp === selectedTimelineTimestamp)?.fileIds.includes(file.id) 
+        : false;
 
     return (
         <ContextMenu>
@@ -108,6 +113,13 @@ export function FileListRow({ file, isSelected, onClick }: FileListItemProps) {
                     {/* Loading indicator */}
                     {file.isLoading && (
                         <span className="size-2 rounded-full bg-blue-500 animate-pulse shrink-0 z-10" />
+                    )}
+
+                    {/* Timeline Marker */}
+                    {isMarked && (
+                        <div className="ml-auto shrink-0 z-10">
+                            <div className="size-2 rounded-full bg-orange-500 ring-1 ring-background" title="Present in selected timeline" />
+                        </div>
                     )}
                 </div>
             </ContextMenuTrigger>
