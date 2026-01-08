@@ -4,7 +4,7 @@ let worker: Worker | null = null;
 let currentReject: ((reason?: any) => void) | null = null;
 
 export function buildTimeline(
-    files: { id: string; lines: { timestamp?: string; lineIndex: number }[] }[],
+    files: { id: string; lines: { timestamp?: string; lineIndex: number; }[]; }[],
     precision: number
 ): Promise<TimelineItem[]> {
     // Cancel any existing work
@@ -14,38 +14,42 @@ export function buildTimeline(
         type: 'module'
     });
 
-    return new Promise((resolve, reject) => {
-        currentReject = reject;
+    return new Promise(
+        (resolve, reject) => {
+            currentReject = reject;
 
-        worker!.onmessage = (e: MessageEvent<TimelineWorkerOutput>) => {
-            const { type, timeline, error } = e.data;
-            if (type === 'SUCCESS' && timeline) {
-                resolve(timeline);
+            worker!.onmessage = (e: MessageEvent<TimelineWorkerOutput>) => {
+                const { type, timeline, error } = e.data;
+                if (type === 'SUCCESS' && timeline) {
+                    resolve(timeline);
+                    cleanup();
+                } else if (type === 'ERROR') {
+                    reject(new Error(error));
+                    cleanup();
+                }
+            };
+
+            worker!.onerror = (err) => {
+                reject(err);
                 cleanup();
-            } else if (type === 'ERROR') {
-                reject(new Error(error));
-                cleanup();
-            }
-        };
+            };
 
-        worker!.onerror = (err) => {
-            reject(err);
-            cleanup();
-        };
+            // Prepare minimal data to send
+            const filesData = files.map(
+                (f) => ({
+                    id: f.id,
+                    lines: f.lines.map(l => ({ timestamp: l.timestamp, lineIndex: l.lineIndex }))
+                })
+            );
 
-        // Prepare minimal data to send
-        const filesData = files.map(f => ({
-            id: f.id,
-            lines: f.lines.map(l => ({ timestamp: l.timestamp, lineIndex: l.lineIndex }))
-        }));
-
-        const msg: TimelineWorkerInput = {
-            type: 'BUILD',
-            files: filesData,
-            precision
-        };
-        worker!.postMessage(msg);
-    });
+            const msg: TimelineWorkerInput = {
+                type: 'BUILD',
+                files: filesData,
+                precision
+            };
+            worker!.postMessage(msg);
+        }
+    );
 }
 
 export function cancelTimelineBuild() {

@@ -23,10 +23,12 @@ self.onmessage = (e: MessageEvent<TimelineWorkerInput>) => {
         }
 
         const timeline: TimelineItem[] = Array.from(timestampMap.entries())
-            .map(([timestamp, fileIdSet]) => ({
-                timestamp,
-                fileIds: Array.from(fileIdSet)
-            }))
+            .map(
+                ([timestamp, fileIdSet]) => ({
+                    timestamp,
+                    fileIds: Array.from(fileIdSet)
+                })
+            )
             .sort((a, b) => compareTimestamps(a.timestamp, b.timestamp));
 
         const response: TimelineWorkerOutput = {
@@ -89,15 +91,15 @@ function formatTimestamp(ts: string, precision: number): string | null {
     // precision 1, 2, 3
     // We take N digits of ms
     const msTruncated = ms.substring(0, precision);
-    
+
     // If we want to pad? The requirement examples don't show padding for shorter ms.
     // "11:16:47.5"
     if (msTruncated.length > 0) {
         return `${hours}:${minutes}:${seconds}.${msTruncated}`;
     } else {
-         // Fallback if no ms existed but precision > 0 requested?
-         // E.g. precision 2, ts "11:16:47". Result "11:16:47".
-         return `${hours}:${minutes}:${seconds}`;
+        // Fallback if no ms existed but precision > 0 requested?
+        // E.g. precision 2, ts "11:16:47". Result "11:16:47".
+        return `${hours}:${minutes}:${seconds}`;
     }
 }
 
@@ -109,7 +111,7 @@ function compareTimestamps(a: string, b: string): number {
     // ':'.charCodeAt(0) = 58
     // So "1:" > "11" is true. This is wrong sort.
     // We need to parse.
-    
+
     return parseToValue(a) - parseToValue(b);
 }
 
@@ -118,14 +120,14 @@ function parseToValue(ts: string): number {
     // HH:MM:SS.mmm
     // Or HH:MM
     // Or HH:MM:S
-    
+
     const parts = ts.split(':');
     const h = parseInt(parts[0] || '0', 10);
     const m = parseInt(parts[1] || '0', 10);
-    
+
     let s = 0;
     let ms = 0;
-    
+
     if (parts.length > 2) {
         const secStr = parts[2];
         // Check for decimal
@@ -142,22 +144,22 @@ function parseToValue(ts: string): number {
             // String comparison of "5" vs "51": "5" > "51" is FALSE. "5" vs "5". Next char undefined vs "1".
             // "5" < "51".
             // So if we just treat the decimal part as a fraction, it works.
-            
+
             // Let's just use hours*3600 + min*60 + sec + fraction
             const fraction = parseFloat(`0.${msStr}`);
             return h * 3600 + m * 60 + s + fraction;
         } else {
-             // Handle "4" case (precision 4) where it might be single digit representing 10s?
-             // formatTimestamp(4) returns "HH:MM:S". "11:16:4".
-             // If we parse "4" as seconds, it becomes 4s. But it meant 40s bucket.
-             // BUT, for sorting, "11:16:4" vs "11:16:5". 4 < 5. Correct order.
-             // So treating it as seconds for sorting value is fine as long as we compare consistent precisions.
-             // But if we mix? The list is generated with SINGLE precision. So we compare items of SAME format.
-             // So simple parsing is fine.
-             s = parseInt(secStr, 10);
-             return h * 3600 + m * 60 + s;
+            // Handle "4" case (precision 4) where it might be single digit representing 10s?
+            // formatTimestamp(4) returns "HH:MM:S". "11:16:4".
+            // If we parse "4" as seconds, it becomes 4s. But it meant 40s bucket.
+            // BUT, for sorting, "11:16:4" vs "11:16:5". 4 < 5. Correct order.
+            // So treating it as seconds for sorting value is fine as long as we compare consistent precisions.
+            // But if we mix? The list is generated with SINGLE precision. So we compare items of SAME format.
+            // So simple parsing is fine.
+            s = parseInt(secStr, 10);
+            return h * 3600 + m * 60 + s;
         }
     }
-    
+
     return h * 3600 + m * 60 + s;
 }
