@@ -4,7 +4,7 @@ let worker: Worker | null = null;
 let currentReject: ((reason?: any) => void) | null = null;
 
 export function buildTimeline(
-    files: { id: string; lines: { timestamp?: string; lineIndex: number; }[]; }[],
+    files: { id: string; lines: { timestamp?: string; lineIndex: number; date?: string; }[]; }[],
     precision: number
 ): Promise<TimelineItem[]> {
     // Cancel any existing work
@@ -38,7 +38,7 @@ export function buildTimeline(
             const filesData = files.map(
                 (f) => ({
                     id: f.id,
-                    lines: f.lines.map(l => ({ timestamp: l.timestamp, lineIndex: l.lineIndex }))
+                    lines: f.lines.map(l => ({ timestamp: l.timestamp, lineIndex: l.lineIndex, date: l.date }))
                 })
             );
 

@@ -39,7 +39,7 @@ export function FileList() {
                     (f) => ({
                         id: f.id,
                         lines: f.lines.map(
-                            (l) => ({ timestamp: l.timestamp, lineIndex: l.lineIndex })
+                            (l) => ({ timestamp: l.timestamp, lineIndex: l.lineIndex, date: l.date })
                         ) // Using viewLines (aliased as lines)
                     })
                 );

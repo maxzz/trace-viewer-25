@@ -2,7 +2,7 @@ export interface TimelineWorkerInput {
     type: 'BUILD';
     files: {
         id: string;
-        lines: { timestamp?: string; lineIndex: number }[];
+        lines: { timestamp?: string; lineIndex: number; date?: string; }[];
     }[];
     precision: number;
 }

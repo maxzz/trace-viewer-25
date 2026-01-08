@@ -7,9 +7,17 @@ self.onmessage = (e: MessageEvent<TimelineWorkerInput>) => {
 
     try {
         const timestampMap = new Map<string, Set<string>>();
+        const dateMap = new Map<string, string>(); // Store date for each timestamp
 
         for (const file of files) {
+            let lastDate: string | undefined = undefined;
+
             for (const line of file.lines) {
+                // Update last known date from lines that have it (LineCode.Day usually)
+                if (line.date) {
+                    lastDate = line.date;
+                }
+
                 if (!line.timestamp) continue;
 
                 const formatted = formatTimestamp(line.timestamp, precision);
@@ -17,17 +25,29 @@ self.onmessage = (e: MessageEvent<TimelineWorkerInput>) => {
 
                 if (!timestampMap.has(formatted)) {
                     timestampMap.set(formatted, new Set());
+                    // Store the date associated with this timestamp if available
+                    if (lastDate) {
+                        dateMap.set(formatted, lastDate);
+                    }
+                } else if (lastDate && !dateMap.has(formatted)) {
+                    // Backfill date if we found this timestamp before but didn't have a date then (unlikely but possible with multiple files)
+                    dateMap.set(formatted, lastDate);
                 }
+                
                 timestampMap.get(formatted)!.add(file.id);
             }
         }
 
         const timeline: TimelineItem[] = Array.from(timestampMap.entries())
             .map(
-                ([timestamp, fileIdSet]) => ({
-                    timestamp,
-                    fileIds: Array.from(fileIdSet)
-                })
+                ([timestamp, fileIdSet]) => {
+                    const date = dateMap.get(timestamp);
+                    const fullTimestamp = date ? `${date} ${timestamp}` : timestamp;
+                    return {
+                        timestamp: fullTimestamp, // Combined date + time for display/key
+                        fileIds: Array.from(fileIdSet)
+                    };
+                }
             )
             .sort((a, b) => compareTimestamps(a.timestamp, b.timestamp));
 
@@ -104,62 +124,80 @@ function formatTimestamp(ts: string, precision: number): string | null {
 }
 
 function compareTimestamps(a: string, b: string): number {
-    // Simple string comparison might work if padded.
-    // "1:00" vs "11:00" -> "1:00" > "11:00" is FALSE. "1" < "11"? No, "1" vs "1" is same, next char ":" vs "1". ":" (58) vs "1" (49).
-    // So "1:..." > "11:..." ?
-    // '1'.charCodeAt(0) = 49
-    // ':'.charCodeAt(0) = 58
-    // So "1:" > "11" is true. This is wrong sort.
-    // We need to parse.
+    // Expected format: "MM/DD/YY HH:MM:SS.mmm" or just "HH:MM:SS.mmm"
+    // We can try to parse as Date if full format, or fallback to time comparison
 
+    // If both have dates (space check)
+    const hasDateA = a.includes(' ');
+    const hasDateB = b.includes(' ');
+
+    if (hasDateA && hasDateB) {
+        // Try parsing as full date objects
+        const dateA = new Date(a).getTime();
+        const dateB = new Date(b).getTime();
+        if (!isNaN(dateA) && !isNaN(dateB)) {
+             return dateA - dateB;
+        }
+    }
+    
+    // If mixed or parsing failed, fallback to raw string comparison or just time component
+    // If one has date and other doesn't, date one should conceptually be "more specific" or "later"?
+    // But usually in trace viewer, if date is missing it implies same day or unknown.
+    // Let's rely on parseToValue which currently handles Time only.
+    // If we passed full string "MDY HMS" to parseToValue, it would fail or return partial.
+    
+    // Updated parseToValue to handle potential date prefix?
+    // Actually, `parseToValue` logic below is specific to HH:MM:SS.
+    
+    // Let's update `parseToValue` to handle "MDY HMS".
     return parseToValue(a) - parseToValue(b);
 }
 
 function parseToValue(ts: string): number {
-    // Convert to ms or some comparable number
-    // HH:MM:SS.mmm
-    // Or HH:MM
-    // Or HH:MM:S
+    // check for date part
+    let timePart = ts;
+    let datePart = '';
+    
+    if (ts.includes(' ')) {
+        const split = ts.split(' ');
+        // Assuming last part is time? "12/05/2024 10:00:00"
+        timePart = split[split.length - 1];
+        datePart = split.slice(0, split.length - 1).join(' ');
+    }
 
-    const parts = ts.split(':');
+    // Convert time to seconds
+    const parts = timePart.split(':');
     const h = parseInt(parts[0] || '0', 10);
     const m = parseInt(parts[1] || '0', 10);
-
+    
     let s = 0;
-    let ms = 0;
-
+    
     if (parts.length > 2) {
         const secStr = parts[2];
-        // Check for decimal
         if (secStr.includes('.')) {
             const [sec, msStr] = secStr.split('.');
             s = parseInt(sec, 10);
-            // msStr can be "5", "51", "515"
-            // We need to normalize to ms value. "5" -> 500ms? "51" -> 510ms?
-            // Actually for sorting, we just need lexical order of the fractional part IF it was same length.
-            // But here "11:16:47.5" vs "11:16:47.51".
-            // 5 vs 51. 5 < 51.
-            // But time-wise, .5 is 500ms, .51 is 510ms.
-            // .5 < .51.
-            // String comparison of "5" vs "51": "5" > "51" is FALSE. "5" vs "5". Next char undefined vs "1".
-            // "5" < "51".
-            // So if we just treat the decimal part as a fraction, it works.
-
-            // Let's just use hours*3600 + min*60 + sec + fraction
             const fraction = parseFloat(`0.${msStr}`);
-            return h * 3600 + m * 60 + s + fraction;
+            s += fraction;
         } else {
-            // Handle "4" case (precision 4) where it might be single digit representing 10s?
-            // formatTimestamp(4) returns "HH:MM:S". "11:16:4".
-            // If we parse "4" as seconds, it becomes 4s. But it meant 40s bucket.
-            // BUT, for sorting, "11:16:4" vs "11:16:5". 4 < 5. Correct order.
-            // So treating it as seconds for sorting value is fine as long as we compare consistent precisions.
-            // But if we mix? The list is generated with SINGLE precision. So we compare items of SAME format.
-            // So simple parsing is fine.
-            s = parseInt(secStr, 10);
-            return h * 3600 + m * 60 + s;
+             s = parseInt(secStr, 10);
+        }
+    }
+    
+    let value = h * 3600 + m * 60 + s;
+
+    // Add date component if available
+    if (datePart) {
+        // Date.parse returns ms since epoch
+        const dateMs = Date.parse(datePart);
+        if (!isNaN(dateMs)) {
+            // Add date in seconds. Note: This might be huge, but consistent for sorting.
+            // time value is seconds from start of day (0-86400).
+            // dateMs is absolute.
+            // We can just use dateMs / 1000 + value.
+            return (dateMs / 1000) + value;
         }
     }
 
-    return h * 3600 + m * 60 + s;
+    return value;
 }
