@@ -79,13 +79,13 @@ interface ColorPickerPopupProps {
 // We also store the full class name for the background to ensure Tailwind generates it.
 const COLOR_GRID_Classes = [
     // Row 1
-    { name: undefined,     /**/ label: "None",     /**/ key: "q", bgClass: "bg-transparent", textClass: "text-muted-foreground" },
+    { name: undefined,     /**/ label: "None",     /**/ key: "q", bgClass: "bg-transparent", textClass: "text-foreground" },
     { name: "red-500",     /**/ label: "Red",    /**/ key: "w", bgClass: "bg-red-500", textClass: "text-white" },
     { name: "orange-500",  /**/ label: "Orange", /**/ key: "e", bgClass: "bg-orange-500", textClass: "text-black" },
     { name: "amber-500",   /**/ label: "Amber",    /**/ key: "r", bgClass: "bg-amber-500", textClass: "text-black" },
 
     // Row 2
-    { name: "yellow-500",  /**/ label: "Yellow", /**/ key: "t", bgClass: "bg-yellow-500", textClass: "text-black" },
+    { name: "yellow-300",  /**/ label: "Yellow", /**/ key: "t", bgClass: "bg-yellow-300", textClass: "text-black" },
     { name: "green-500",   /**/ label: "Green",  /**/ key: "y", bgClass: "bg-green-500", textClass: "text-black" },
     { name: "emerald-500", /**/ label: "Emerald",  /**/ key: "u", bgClass: "bg-emerald-500", textClass: "text-black" },
     { name: "cyan-500",    /**/ label: "Cyan",   /**/ key: "i", bgClass: "bg-cyan-500", textClass: "text-black" },
