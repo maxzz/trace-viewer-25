@@ -1,18 +1,16 @@
+import { type TraceLine } from '@/trace-viewer-core/9-core-types';
 import { type TimelineWorkerInput, type TimelineWorkerOutput, type TimelineItem } from '../workers/timeline-types';
 
 let worker: Worker | null = null;
 let currentReject: ((reason?: any) => void) | null = null;
 
-export function buildTimeline(
-    files: { id: string; lines: { timestamp?: string; lineIndex: number; date?: string; }[]; }[],
-    precision: number
-): Promise<TimelineItem[]> {
+type TimelineLine = Pick<TraceLine, 'timestamp' | 'lineIndex' | 'date'>;
+
+export function buildTimeline(files: { id: string; lines: TimelineLine[]; }[], precision: number): Promise<TimelineItem[]> {
     // Cancel any existing work
     cancelTimelineBuild();
 
-    worker = new Worker(new URL('../workers/timeline.worker.ts', import.meta.url), {
-        type: 'module'
-    });
+    worker = new Worker(new URL('../workers/timeline.worker.ts', import.meta.url), { type: 'module' });
 
     return new Promise(
         (resolve, reject) => {
@@ -38,7 +36,7 @@ export function buildTimeline(
             const filesData = files.map(
                 (f) => ({
                     id: f.id,
-                    lines: f.lines.map(l => ({ timestamp: l.timestamp, lineIndex: l.lineIndex, date: l.date }))
+                    lines: f.lines.map((l: TimelineLine) => ({ timestamp: l.timestamp, lineIndex: l.lineIndex, date: l.date }))
                 })
             );
 

@@ -31,33 +31,35 @@ export function FileList() {
         }
 
         // Debounce build
-        const timer = setTimeout(async () => {
-            traceStore.setTimelineLoading(true);
-            try {
-                // Prepare data
-                const inputFiles = files.map(
-                    (f) => ({
-                        id: f.id,
-                        lines: f.lines.map(
-                            (l) => ({ timestamp: l.timestamp, lineIndex: l.lineIndex, date: l.date })
-                        ) // Using viewLines (aliased as lines)
-                    })
-                );
+        const timer = setTimeout(
+            async () => {
+                traceStore.setTimelineLoading(true);
+                try {
+                    // Prepare data
+                    const inputFiles = files.map(
+                        (f) => ({
+                            id: f.id,
+                            lines: f.lines.map(
+                                (l) => ({ timestamp: l.timestamp, lineIndex: l.lineIndex, date: l.date })
+                            ) // Using viewLines (aliased as lines)
+                        })
+                    );
 
-                const items = await buildTimeline(inputFiles, timelinePrecision);
-                traceStore.setTimeline(items);
-                notice.success("Timeline built");
-            } catch (e: any) {
-                if (e.message === 'Timeline build cancelled') {
-                    // unexpected here unless we cancelled it
-                    notice.info("Timeline build cancelled");
-                } else {
-                    console.error("Timeline build failed", e);
-                    traceStore.setTimelineLoading(false); // Make sure to stop loading
-                    notice.error(`Timeline build failed: ${e.message}`);
+                    const items = await buildTimeline(inputFiles, timelinePrecision);
+                    traceStore.setTimeline(items);
+                    notice.success("Timeline built");
+                } catch (e: any) {
+                    if (e.message === 'Timeline build cancelled') {
+                        // unexpected here unless we cancelled it
+                        notice.info("Timeline build cancelled");
+                    } else {
+                        console.error("Timeline build failed", e);
+                        traceStore.setTimelineLoading(false); // Make sure to stop loading
+                        notice.error(`Timeline build failed: ${e.message}`);
+                    }
                 }
-            }
-        }, 300);
+            }, 300
+        );
 
         return () => {
             clearTimeout(timer);
