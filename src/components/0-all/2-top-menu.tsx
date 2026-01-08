@@ -1,16 +1,16 @@
 import { useCallback, useRef } from "react";
 import { useSetAtom, useAtom } from "jotai";
 import { useSnapshot } from "valtio";
-import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { notice } from "../ui/local-ui/7-toaster";
 import { extractTracesFromZip, isZipFile, cancelTimelineBuild } from "@/workers-client";
 import { traceStore } from "@/store/traces-store/0-state";
 import { Input } from "../ui/shadcn/input";
 import { Button } from "../ui/shadcn/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/shadcn/dialog";
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarShortcut, MenubarTrigger } from "../ui/shadcn/menubar";
-import { dialogFileHeaderOpenAtom, dialogAboutOpenAtom, dialogOptionsOpenAtom, dialogEditFiltersOpenAtom, dialogEditHighlightsOpenAtom, dialogTimelineCancelOpenAtom } from "@/store/2-ui-atoms";
+import { Loader2 } from "lucide-react";
 import { setAppTitle } from '@/store/3-ui-app-title';
+import { dialogFileHeaderOpenAtom, dialogAboutOpenAtom, dialogOptionsOpenAtom, dialogEditFiltersOpenAtom, dialogEditHighlightsOpenAtom, dialogTimelineCancelOpenAtom } from "@/store/2-ui-atoms";
 
 export function TopMenu() {
     const setOptionsOpen = useSetAtom(dialogOptionsOpenAtom);
@@ -83,51 +83,6 @@ export function TopMenu() {
     </>);
 }
 
-function TimelineProgress() {
-    const { isTimelineLoading } = useSnapshot(traceStore);
-    const [open, setOpen] = useAtom(dialogTimelineCancelOpenAtom);
-
-    if (!isTimelineLoading) return null;
-
-    return (
-        <>
-            <Button 
-                variant="ghost" 
-                size="sm" 
-                className="mr-2 h-8 px-2 text-xs"
-                onClick={() => setOpen(true)}
-                title="Building timeline... Click to cancel."
-            >
-                <Loader2 className="h-3 w-3 animate-spin mr-2" />
-                Building Timeline...
-            </Button>
-
-            <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Cancel Timeline Build?</DialogTitle>
-                        <DialogDescription>
-                            Are you sure you want to stop the timeline generation? The current progress will be lost.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter>
-                        <Button variant="secondary" onClick={() => setOpen(false)}>Continue</Button>
-                        <Button variant="destructive" onClick={() => {
-                            cancelTimelineBuild();
-                            traceStore.setTimelineLoading(false);
-                            traceStore.setTimeline([]);
-                            toast.info("Timeline build cancelled");
-                            setOpen(false);
-                        }}>
-                            Stop Build
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-        </>
-    );
-}
-
 // Legacy files input
 
 function TraceLoadInput({ inputRef }: { inputRef: React.RefObject<HTMLInputElement | null>; }) {
@@ -179,4 +134,52 @@ function TraceOpenMenuItem({ onClick }: { onClick: () => void; }) {
             <MenubarShortcut>Ctrl+O</MenubarShortcut>
         </MenubarItem>
     );
+}
+
+function TimelineProgress() {
+    const { isTimelineLoading } = useSnapshot(traceStore);
+    const [open, setOpen] = useAtom(dialogTimelineCancelOpenAtom);
+
+    if (!isTimelineLoading) return null;
+
+    return (<>
+        <Button
+            variant="ghost"
+            size="sm"
+            className="mr-2 h-8 px-2 text-xs"
+            onClick={() => setOpen(true)}
+            title="Building timeline... Click to cancel."
+        >
+            <Loader2 className="h-3 w-3 animate-spin mr-2" />
+            Building Timeline...
+        </Button>
+
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>
+                        Cancel Timeline Build?
+                    </DialogTitle>
+                    <DialogDescription>
+                        Are you sure you want to stop the timeline generation? The current progress will be lost.
+                    </DialogDescription>
+                </DialogHeader>
+
+                <DialogFooter>
+                    <Button variant="secondary" onClick={() => setOpen(false)}>Continue</Button>
+                    <Button variant="destructive" onClick={
+                        () => {
+                            cancelTimelineBuild();
+                            traceStore.setTimelineLoading(false);
+                            traceStore.setTimeline([]);
+                            notice.info("Timeline build cancelled");
+                            setOpen(false);
+                        }
+                    }>
+                        Stop Build
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    </>);
 }

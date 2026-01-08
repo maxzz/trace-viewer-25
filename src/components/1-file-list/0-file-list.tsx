@@ -1,12 +1,12 @@
 import { type RefObject, useEffect, useRef, useMemo } from "react";
 import { useSnapshot } from "valtio";
+import { notice } from "../ui/local-ui/7-toaster";
 import { appSettings } from "../../store/1-ui-settings";
 import { traceStore } from "../../store/traces-store/0-state";
 import { ScrollArea } from "../ui/shadcn/scroll-area";
 import { FileListRow } from "./1-file-list-row";
 import { TimelineList } from "./2-timeline-list";
 import { buildTimeline, cancelTimelineBuild } from "../../workers-client/timeline-client";
-import { toast } from "sonner";
 
 export function FileList() {
     const { files, selectedFileId } = useSnapshot(traceStore);
@@ -35,23 +35,26 @@ export function FileList() {
             traceStore.setTimelineLoading(true);
             try {
                 // Prepare data
-                const inputFiles = files.map(f => ({
-                    id: f.id,
-                    lines: f.lines // Using viewLines (aliased as lines)
-                        .map((l) => ({ timestamp: l.timestamp, lineIndex: l.lineIndex }))
-                }));
+                const inputFiles = files.map(
+                    (f) => ({
+                        id: f.id,
+                        lines: f.lines.map(
+                            (l) => ({ timestamp: l.timestamp, lineIndex: l.lineIndex })
+                        ) // Using viewLines (aliased as lines)
+                    })
+                );
 
                 const items = await buildTimeline(inputFiles, timelinePrecision);
                 traceStore.setTimeline(items);
-                toast.success("Timeline built");
+                notice.success("Timeline built");
             } catch (e: any) {
                 if (e.message === 'Timeline build cancelled') {
                     // unexpected here unless we cancelled it
-                    toast.info("Timeline build cancelled");
+                    notice.info("Timeline build cancelled");
                 } else {
                     console.error("Timeline build failed", e);
                     traceStore.setTimelineLoading(false); // Make sure to stop loading
-                    toast.error(`Timeline build failed: ${e.message}`);
+                    notice.error(`Timeline build failed: ${e.message}`);
                 }
             }
         }, 300);
