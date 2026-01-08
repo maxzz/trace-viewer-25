@@ -23,34 +23,40 @@ export function FullTimelineList() {
 
     return (
         <div className="flex flex-col h-full bg-muted/10 border-l w-28 select-none">
-            <div className="text-xs p-1 font-bold border-b text-center text-muted-foreground bg-muted/20">Timeline</div>
+            {/* <div className="text-xs p-1 font-bold border-b text-center text-muted-foreground bg-muted/20">
+                Timeline
+            </div> */}
+
             <ScrollArea className="flex-1">
                 <div className="flex flex-col py-1">
                     {timeline.map(
-                        (item, idx) => (
-                            <div
-                                key={idx}
-                                ref={el => {
-                                    if (el) itemRefs.current.set(item.timestamp, el);
-                                    else itemRefs.current.delete(item.timestamp);
-                                }}
-                                className={cn(
-                                    "text-[10px] px-2 py-0.5 cursor-pointer hover:bg-muted/50 truncate font-mono text-center",
-                                    item.timestamp === selectedTimelineTimestamp && "bg-primary text-primary-foreground hover:bg-primary/90"
-                                )}
-                                onClick={() => {
-                                    if (item.timestamp === selectedTimelineTimestamp) {
-                                        traceStore.selectTimelineTimestamp(null);
-                                    } else {
-                                        traceStore.selectTimelineTimestamp(item.timestamp);
-                                    }
-                                }}
-                                title={item.timestamp}
-                            >
-                                {item.timestamp}
-                            </div>
-                        )
+                        (item, idx) => {
+                            const isSelected = item.timestamp === selectedTimelineTimestamp;
+                            return (
+                                <div
+                                    className={cn(
+                                        "text-[10px] px-2 py-0.5 cursor-pointer hover:bg-muted/50 truncate font-mono text-center",
+                                        isSelected && "bg-primary text-primary-foreground hover:bg-primary/90"
+                                    )}
+                                    ref={(el) => {
+                                        if (el) {
+                                            itemRefs.current.set(item.timestamp, el);
+                                        } else {
+                                            itemRefs.current.delete(item.timestamp);
+                                        }
+                                    }}
+                                    onClick={() => {
+                                        traceStore.selectTimelineTimestamp(isSelected ? null : item.timestamp);
+                                    }}
+                                    title={item.timestamp}
+                                    key={idx}
+                                >
+                                    {item.timestamp}
+                                </div>
+                            );
+                        }
                     )}
+                    
                     {timeline.length === 0 && (
                         <div className="text-[10px] text-muted-foreground p-2 text-center">
                             No data
