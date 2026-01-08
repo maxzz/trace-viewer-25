@@ -10,7 +10,7 @@ export function ColorPickerPopup({ color, onChange, children }: ColorPickerPopup
 
             <DropdownMenuContent className="w-auto p-2" align="start">
                 <div className="grid grid-cols-4 gap-2">
-                    {COLOR_GRID.map(
+                    {COLOR_GRID_Classes.map(
                         (c) => (
                             <ColorSwatch
                                 key={c.key}
@@ -58,7 +58,7 @@ function ColorSwatch({ colorName, bgClass, label, letter, isSelected, onClick }:
 
             {/* Letter overlay */}
             <span className={cn(
-                "absolute inset-0 flex items-center justify-center text-[10px] font-mono font-bold uppercase pointer-events-none opacity-50",
+                "absolute inset-0 flex items-center justify-center text-[10px] font-mono font-bold pointer-events-none opacity-50",
                 colorName ? "text-white mix-blend-difference" : "text-muted-foreground"
             )}>
                 {letter}
@@ -75,25 +75,25 @@ interface ColorPickerPopupProps {
 
 // We store the color name (e.g. "red-500") as the value.
 // We also store the full class name for the background to ensure Tailwind generates it.
-const COLOR_GRID = [
+const COLOR_GRID_Classes = [
     // Row 1
-    { name: undefined, label: "None", key: "q", bgClass: "bg-transparent" },
-    { name: "red-500", label: "Red", key: "w", bgClass: "bg-red-500" },
-    { name: "orange-500", label: "Orange", key: "e", bgClass: "bg-orange-500" },
-    { name: "amber-500", label: "Amber", key: "r", bgClass: "bg-amber-500" },
+    { name: undefined,     /**/ label: "None",     /**/ key: "q", bgClass: "bg-transparent" },
+    { name: "red-500",     /**/ label: "Red",    /**/ key: "w", bgClass: "bg-red-500" },
+    { name: "orange-500",  /**/ label: "Orange", /**/ key: "e", bgClass: "bg-orange-500" },
+    { name: "amber-500",   /**/ label: "Amber",    /**/ key: "r", bgClass: "bg-amber-500" },
 
     // Row 2
-    { name: "yellow-500", label: "Yellow", key: "t", bgClass: "bg-yellow-500" },
-    { name: "green-500", label: "Green", key: "y", bgClass: "bg-green-500" },
-    { name: "emerald-500", label: "Emerald", key: "u", bgClass: "bg-emerald-500" },
-    { name: "cyan-500", label: "Cyan", key: "i", bgClass: "bg-cyan-500" },
+    { name: "yellow-500",  /**/ label: "Yellow", /**/ key: "t", bgClass: "bg-yellow-500" },
+    { name: "green-500",   /**/ label: "Green",  /**/ key: "y", bgClass: "bg-green-500" },
+    { name: "emerald-500", /**/ label: "Emerald",  /**/ key: "u", bgClass: "bg-emerald-500" },
+    { name: "cyan-500",    /**/ label: "Cyan",   /**/ key: "i", bgClass: "bg-cyan-500" },
 
     // Row 3
-    { name: "blue-500", label: "Blue", key: "o", bgClass: "bg-blue-500" },
-    { name: "indigo-500", label: "Indigo", key: "p", bgClass: "bg-indigo-500" },
-    { name: "violet-500", label: "Violet", key: "a", bgClass: "bg-violet-500" },
-    { name: "purple-500", label: "Purple", key: "s", bgClass: "bg-purple-500" },
+    { name: "blue-500",    /**/ label: "Blue",   /**/ key: "o", bgClass: "bg-blue-500" },
+    { name: "indigo-500",  /**/ label: "Indigo", /**/ key: "p", bgClass: "bg-indigo-500" },
+    { name: "violet-500",  /**/ label: "Violet", /**/ key: "a", bgClass: "bg-violet-500" },
+    { name: "purple-500",  /**/ label: "Purple", /**/ key: "s", bgClass: "bg-purple-500" },
 
     // Row 4
-    { name: "pink-500", label: "Pink", key: "d", bgClass: "bg-pink-500" },
+    { name: "pink-500",    /**/ label: "Pink", key: "d", bgClass: "bg-pink-500" },
 ];
