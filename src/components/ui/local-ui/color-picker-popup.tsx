@@ -43,8 +43,8 @@ function ColorSwatch({ colorName, bgClass, label, letter, isSelected, onClick }:
         <button
             className={cn(
                 "relative flex items-center justify-center size-8 rounded-md transition-all",
-                "hover:scale-110 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
-                isSelected && "ring-2 ring-primary ring-offset-2",
+                "hover:scale-110 focus:outline-none focus:ring focus:ring-ring focus:ring-offset-2",
+                isSelected && "ring ring-primary ring-offset-2",
                 !colorName && "bg-muted border border-border", // Transparent/None styling
             )}
             onClick={onClick}
@@ -58,7 +58,7 @@ function ColorSwatch({ colorName, bgClass, label, letter, isSelected, onClick }:
 
             {/* Letter overlay */}
             <span className={cn(
-                "absolute inset-0 flex items-center justify-center text-[10px] font-mono font-bold pointer-events-none opacity-50",
+                "absolute inset-0 px-1.5 py-1 text-[10px] font-mono pointer-events-none 1opacity-50 flex items-end justify-end",
                 colorName ? "text-white mix-blend-difference" : "text-muted-foreground"
             )}>
                 {letter}
