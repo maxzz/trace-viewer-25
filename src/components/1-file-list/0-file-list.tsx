@@ -1,12 +1,11 @@
 import { type RefObject, useEffect, useRef, useMemo } from "react";
 import { useSnapshot } from "valtio";
-import { notice } from "../ui/local-ui/7-toaster";
 import { appSettings } from "../../store/1-ui-settings";
 import { traceStore } from "../../store/traces-store/0-state";
 import { ScrollArea } from "../ui/shadcn/scroll-area";
 import { FileListRow } from "./1-file-list-row";
 import { TimelineList } from "./2-timeline-list";
-import { buildTimeline, cancelTimelineBuild } from "../../workers-client/timeline-client";
+import { cancelTimelineBuild } from "../../workers-client/timeline-client";
 
 export function FileList() {
     const { files, selectedFileId } = useSnapshot(traceStore);
@@ -32,33 +31,10 @@ export function FileList() {
 
         // Debounce build
         const timer = setTimeout(
-            async () => {
-                traceStore.setTimelineLoading(true);
-                try {
-                    // Prepare data
-                    const inputFiles = files.map(
-                        (f) => ({
-                            id: f.id,
-                            lines: f.lines.map(
-                                (l) => ({ timestamp: l.timestamp, lineIndex: l.lineIndex, date: l.date })
-                            ) // Using viewLines (aliased as lines)
-                        })
-                    );
-
-                    const items = await buildTimeline(inputFiles, timelinePrecision);
-                    traceStore.setTimeline(items);
-                    notice.success("Timeline built");
-                } catch (e: any) {
-                    if (e.message === 'Timeline build cancelled') {
-                        // unexpected here unless we cancelled it
-                        notice.info("Timeline build cancelled");
-                    } else {
-                        console.error("Timeline build failed", e);
-                        traceStore.setTimelineLoading(false); // Make sure to stop loading
-                        notice.error(`Timeline build failed: ${e.message}`);
-                    }
-                }
-            }, 300
+            () => {
+                traceStore.asyncBuildFullTimes(timelinePrecision);
+            },
+             300
         );
 
         return () => {

@@ -1,7 +1,9 @@
 import { proxy, subscribe } from "valtio";
+import { notice } from "../../components/ui/local-ui/7-toaster";
 import { type TraceLine, type TraceHeader } from "../../trace-viewer-core/9-core-types";
-import { parseTraceFile } from "./1-parse-trace-file";
 import { type TimelineItem } from "../../workers/timeline-types";
+import { parseTraceFile } from "./1-parse-trace-file";
+import { buildTimeline } from "../../workers-client/timeline-client";
 
 export interface TraceFile {
     id: string;
@@ -49,6 +51,7 @@ export interface TraceState {
     setTimeline: (items: TimelineItem[]) => void;
     setTimelineLoading: (loading: boolean) => void;
     selectTimelineTimestamp: (timestamp: string | null) => void;
+    asyncBuildFullTimes: (precision: number) => Promise<void>;
 }
 
 const emptyHeader = { magic: '' };
@@ -208,6 +211,34 @@ export const traceStore = proxy<TraceState>({
 
     selectTimelineTimestamp: (timestamp: string | null) => {
         traceStore.selectedTimelineTimestamp = timestamp;
+    },
+
+    asyncBuildFullTimes: async (precision: number) => {
+        traceStore.setTimelineLoading(true);
+        try {
+            // Prepare data
+            const inputFiles = traceStore.files.map(
+                (f) => ({
+                    id: f.id,
+                    lines: f.lines.map(
+                        (l) => ({ timestamp: l.timestamp, lineIndex: l.lineIndex, date: l.date })
+                    ) // Using viewLines (aliased as lines)
+                })
+            );
+
+            const items = await buildTimeline(inputFiles, precision);
+            traceStore.setTimeline(items);
+            notice.success("Timeline built");
+        } catch (e: any) {
+            if (e.message === 'Timeline build cancelled') {
+                // unexpected here unless we cancelled it
+                notice.info("Timeline build cancelled");
+            } else {
+                console.error("Timeline build failed", e);
+                traceStore.setTimelineLoading(false); // Make sure to stop loading
+                notice.error(`Timeline build failed: ${e.message}`);
+            }
+        }
     }
 });
 
