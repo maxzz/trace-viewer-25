@@ -38,7 +38,13 @@ export function TimelineList() {
                                     "text-[10px] px-2 py-0.5 cursor-pointer hover:bg-muted/50 truncate font-mono text-center",
                                     item.timestamp === selectedTimelineTimestamp && "bg-primary text-primary-foreground hover:bg-primary/90"
                                 )}
-                                onClick={() => traceStore.selectTimelineTimestamp(item.timestamp)}
+                                onClick={() => {
+                                    if (item.timestamp === selectedTimelineTimestamp) {
+                                        traceStore.selectTimelineTimestamp(null);
+                                    } else {
+                                        traceStore.selectTimelineTimestamp(item.timestamp);
+                                    }
+                                }}
                                 title={item.timestamp}
                             >
                                 {item.timestamp}
