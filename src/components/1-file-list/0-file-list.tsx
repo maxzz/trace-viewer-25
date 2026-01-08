@@ -1,7 +1,7 @@
 import { type RefObject, useEffect, useRef, useMemo } from "react";
 import { useSnapshot } from "valtio";
 import { appSettings, type FileFilter } from "../../store/1-ui-settings";
-import { traceStore, type TraceFile } from "../../store/traces-store/0-state";
+import { traceStore } from "../../store/traces-store/0-state";
 import { ScrollArea } from "../ui/shadcn/scroll-area";
 import { FileListRow } from "./1-file-list-row";
 import { FullTimelineList } from "./2-timeline-list";
@@ -40,8 +40,7 @@ export function FileList() {
 
     // Compute filtered files
     const filteredFiles = useMemo(
-        () => filterFiles(files, selectedFilterId, fileFilters),
-        [files, selectedFilterId, fileFilters]
+        () => filterFiles(files, selectedFilterId, fileFilters), [files, selectedFilterId, fileFilters]
     );
 
     // Effect to handle selection change when filter results change
@@ -154,22 +153,22 @@ function createFileListKeyDownHandler(containerRef: RefObject<HTMLDivElement | n
     };
 }
 
-function filterFiles<T extends { id: string; fileName: string; }>(files: ReadonlyArray<T>, selectedFilterId: string | null, fileFilters: ReadonlyArray<FileFilter>): T[] {
-    if (!selectedFilterId) {
-        return [...files];
+function filterFiles<T extends { id: string; fileName: string; }>(files: ReadonlyArray<T>, selectedFilterId: string | null, fileFilters: ReadonlyArray<FileFilter>): ReadonlyArray<T> {
+    const filter = !selectedFilterId ? null : fileFilters.find(f => f.id === selectedFilterId);
+    if (!filter) {
+        return files;
     }
 
-    const filter = fileFilters.find(f => f.id === selectedFilterId);
-    if (!filter) return [...files];
-
-    const pattern = filter.pattern;
+    const pattern = filter!.pattern;
 
     // Check if pattern is regex (starts and ends with /)
     if (pattern.startsWith('/') && pattern.endsWith('/') && pattern.length > 1) {
         try {
             const regexPattern = pattern.slice(1, -1);
             const regex = new RegExp(regexPattern, 'i');
-            return files.filter(file => regex.test(file.fileName));
+            return files.filter(
+                (file) => regex.test(file.fileName)
+            );
         } catch (e) {
             // Invalid regex, return empty or fallback
             console.warn('Invalid regex pattern:', pattern, e);
@@ -185,10 +184,14 @@ function filterFiles<T extends { id: string; fileName: string; }>(files: Readonl
         try {
             const regexStr = "^" + patternLower.split('*').map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('.*') + "$";
             const regex = new RegExp(regexStr, 'i');
-            return files.filter(file => regex.test(file.fileName));
+            return files.filter(
+                (file) => regex.test(file.fileName)
+            );
         } catch (e) {
             // fallback to contains
-            return files.filter(file => file.fileName.toLowerCase().includes(patternLower.replace(/\*/g, '')));
+            return files.filter(
+                (file) => file.fileName.toLowerCase().includes(patternLower.replace(/\*/g, ''))
+            );
         }
     }
 
