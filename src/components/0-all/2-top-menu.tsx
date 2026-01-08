@@ -1,13 +1,12 @@
 import { useCallback, useRef } from "react";
 import { useSetAtom } from "jotai";
 import { useSnapshot } from "valtio";
-import { traceStore } from "../../store/traces-store/0-state";
+import { extractTracesFromZip, isZipFile } from "@/workers-client";
+import { traceStore } from "@/store/traces-store/0-state";
 import { Input } from "../ui/shadcn/input";
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarShortcut, MenubarTrigger } from "../ui/shadcn/menubar";
-import { dialogFileHeaderOpenAtom, dialogAboutOpenAtom, dialogOptionsOpenAtom, dialogEditFiltersOpenAtom, dialogEditHighlightsOpenAtom } from "../../store/2-ui-atoms";
+import { dialogFileHeaderOpenAtom, dialogAboutOpenAtom, dialogOptionsOpenAtom, dialogEditFiltersOpenAtom, dialogEditHighlightsOpenAtom } from "@/store/2-ui-atoms";
 import { setAppTitle } from '@/store/3-ui-app-title';
-import { isZipFile } from "../../utils/file-utils";
-import { extractTracesFromZip } from "../../utils/zip-manager";
 
 export function TopMenu() {
     const setOptionsOpen = useSetAtom(dialogOptionsOpenAtom);

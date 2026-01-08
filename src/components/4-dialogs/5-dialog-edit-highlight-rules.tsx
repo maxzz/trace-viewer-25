@@ -11,7 +11,7 @@ import { dialogEditHighlightsOpenAtom } from "../../store/2-ui-atoms";
 import { highlightActions } from "../../store/5-highlight-rules";
 import { turnOffAutoComplete } from "@/utils/disable-hidden-children";
 import { notice } from "../ui/local-ui/7-toaster/7-toaster";
-import { ColorPickerPopup } from "../ui/color-picker-popup";
+import { ColorPickerPopup } from "../ui/local-ui/color-picker-popup";
 import { cn } from "@/utils/index";
 
 export function DialogEditHighlightRules() {

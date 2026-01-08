@@ -1,5 +1,5 @@
 import * as fflate from 'fflate';
-import type { ZipWorkerRequest, ZipWorkerResponse, ExtractedFile } from './zip-worker-types';
+import { type ZipWorkerRequest, type ZipWorkerResponse, type ExtractedFile } from './zip-worker-types';
 
 self.onmessage = async (e: MessageEvent<ZipWorkerRequest>) => {
     const { type, file } = e.data;
@@ -26,7 +26,7 @@ self.onmessage = async (e: MessageEvent<ZipWorkerRequest>) => {
             // fileData is Uint8Array
             extractedFiles.push({
                 name: filename.split('/').pop() || filename, // Use only the base name
-                buffer: fileData.buffer.slice(fileData.byteOffset, fileData.byteOffset + fileData.byteLength)
+                buffer: fileData.buffer.slice(fileData.byteOffset, fileData.byteOffset + fileData.byteLength) as ArrayBuffer
             });
         }
 

@@ -1,9 +1,7 @@
 import { traceStore } from "@/store/traces-store/0-state";
 import { atom } from "jotai";
-import { notice } from "../7-toaster";
 import { setAppTitle } from '@/store/3-ui-app-title';
-import { isTrc3File, isZipFile } from "../../../../utils/file-utils";
-import { extractTracesFromZip } from "../../../../utils/zip-manager";
+import { isTrc3File, isZipFile, extractTracesFromZip } from "@/workers-client";
 
 export type DoSetFilesFrom_Dnd_Atom = typeof doSetFilesFrom_Dnd_Atom;
 
@@ -109,6 +107,7 @@ async function processEntry(entry: FileSystemEntry, filesWithPaths: FileWithPath
         await collectFilesFromDirectory(entry as FileSystemDirectoryEntry, filesWithPaths);
     }
 }
+
 // TypeScript declarations for FileSystemEntry API (webkitGetAsEntry)
 
 interface FileSystemEntry {

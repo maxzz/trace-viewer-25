@@ -1,9 +1,9 @@
 import { getDefaultStore } from 'jotai';
-import { isZipProcessingAtom } from '../store/2-ui-atoms';
-import { traceStore } from '../store/traces-store/0-state';
-import { setAppTitle } from '../store/3-ui-app-title';
-import type { ZipWorkerRequest, ZipWorkerResponse } from '../workers/zip-worker-types';
-import ZipWorker from '../workers/zip.worker?worker';
+import { isZipProcessingAtom } from '@/store/2-ui-atoms';
+import { traceStore } from '@/store/traces-store/0-state';
+import { setAppTitle } from '@/store/3-ui-app-title';
+import { type ZipWorkerRequest, type ZipWorkerResponse } from '@/workers/zip-worker-types';
+import ZipWorker from '@/workers/zip.worker?worker';
 
 // Reuse the worker instance
 let workerInstance: Worker | null = null;
