@@ -94,7 +94,7 @@ export function DialogEditFilters() {
                             )}
                         </Reorder.Group>
 
-                        <Button className="mt-1 mx-5 h-7" variant="outline" size="xs" onClick={() => filterActions.addFilter("Filter name", "")}>
+                        <Button className="mt-1 mx-5 h-7" variant="outline" size="xs" onClick={() => filterActions.addFilter("", "")}>
                             <Plus className="size-3.5" />
                             Add Filter
                         </Button>

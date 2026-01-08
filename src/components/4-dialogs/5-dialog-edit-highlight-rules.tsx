@@ -92,7 +92,7 @@ export function DialogEditHighlightRules() {
                             )}
                         </Reorder.Group>
 
-                        <Button className="mt-1 mx-5 h-7" variant="outline" size="xs" onClick={() => highlightActions.addRule("Highlight name", "")}>
+                        <Button className="mt-1 mx-5 h-7" variant="outline" size="xs" onClick={() => highlightActions.addRule("", "")}>
                             <Plus className="size-3.5" />
                             Add Highlight Rule
                         </Button>
