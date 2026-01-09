@@ -220,31 +220,68 @@ export const traceStore = proxy<TraceState>({
         const lines = traceStore.viewLines;
         if (lines.length === 0) return;
 
-        // Find closest line (first line with timestamp >= target)
-        // Assuming lines are sorted by timestamp usually, but a linear scan is safer and fast enough for <1M lines
-        // Optimization: Binary search could be used if we guarantee sorted order
-        
+        // Parse target timestamp to ms for accurate comparison
+        // Format: HH:MM:SS.mmm
+        const parseTime = (t: string) => {
+            const [hms, ms] = t.split('.');
+            const [h, m, s] = hms.split(':').map(Number);
+            return (h * 3600 + m * 60 + s) * 1000 + (parseInt(ms || '0', 10));
+        };
+
+        const targetTime = parseTime(timestamp);
         let bestIndex = -1;
-        
-        // Simple linear scan for "closest" (first line >= timestamp)
-        // Since timestamps are strings (HH:MM:SS.mmm), lexicographical comparison works
-        for (let i = 0; i < lines.length; i++) {
-            const t = lines[i].timestamp;
-            if (t && t >= timestamp) {
-                bestIndex = i;
-                break;
+        let minDiff = Infinity;
+
+        // Binary search for the first element >= timestamp (lower_bound)
+        let low = 0;
+        let high = lines.length - 1;
+        let insertionIndex = lines.length;
+
+        // We assume lines are sorted by timestamp for binary search.
+        // Even if slightly unsorted, this heuristic gives a good starting point.
+        // We'll scan a small window around it if needed, or just rely on it.
+        while (low <= high) {
+            const mid = (low + high) >>> 1;
+            const tStr = lines[mid].timestamp;
+            if (!tStr) {
+                // If timestamp missing, heuristic: continue to next
+                low = mid + 1;
+                continue;
+            }
+
+            // String comparison is usually sufficient for ">= " check if format is fixed width (HH:MM:SS.mmm)
+            // But let's verify format. If length differs, use parsed value.
+            // For speed, try string compare first.
+            if (tStr >= timestamp) {
+                insertionIndex = mid;
+                high = mid - 1;
+            } else {
+                low = mid + 1;
             }
         }
 
-        // If no line is >= timestamp, maybe the last one is closest? 
-        // Or if we didn't find any, we do nothing.
-        // User asked for "closest". If we are past the end, the last line is closest in time (probably).
-        // But usually "closest" in logs means "the event that happened at or after".
-        // If all events are before, maybe we shouldn't scroll?
-        // Let's stick to "first at or after" as is standard for "goto time".
+        // Check candidates: insertionIndex and insertionIndex - 1
+        const candidates = [insertionIndex - 1, insertionIndex];
+        
+        for (const idx of candidates) {
+            if (idx >= 0 && idx < lines.length) {
+                const tStr = lines[idx].timestamp;
+                if (tStr) {
+                    const tVal = parseTime(tStr);
+                    const diff = Math.abs(tVal - targetTime);
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        bestIndex = idx;
+                    }
+                }
+            }
+        }
         
         if (bestIndex !== -1) {
             traceStore.currentLineIndex = bestIndex;
+        } else if (lines.length > 0) {
+            // Fallback: if we couldn't find close timestamp, maybe just select last one?
+            // This happens if all lines are missing timestamps (unlikely) or something went wrong.
         }
     },
 
