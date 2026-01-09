@@ -53,6 +53,8 @@ export function FileList() {
             className="h-full flex flex-row bg-muted/10 select-none outline-none focus-visible:ring-1 focus-visible:ring-ring"
             tabIndex={0}
         >
+            <CombinedTimelinePanel />
+
             <div className="flex-1 flex flex-col h-full min-w-0">
                 <ScrollArea className="flex-1" fixedWidth>
                     <div className="flex flex-col py-1">
@@ -69,8 +71,6 @@ export function FileList() {
                     </div>
                 </ScrollArea>
             </div>
-
-            <CombinedTimelinePanel />
         </div>
     );
 }

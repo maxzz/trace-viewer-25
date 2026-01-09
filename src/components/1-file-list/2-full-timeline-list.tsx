@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
 import { useSnapshot } from "valtio";
-import { cn } from "../../utils/classnames";
+import { cn } from "@/utils/classnames";
 import { ScrollArea } from "../ui/shadcn/scroll-area";
-import { traceStore } from "../../store/traces-store/0-state";
+import { traceStore } from "@/store/traces-store/0-state";
 import { appSettings } from "@/store/1-ui-settings";
 import { cancelFullTimelineBuild } from "@/workers-client/timeline-client";
 
@@ -47,7 +47,6 @@ function CombinedTimelineList() {
     return <FullTimelineList />;
 }
 
-
 function FullTimelineList() {
     const { timeline, selectedTimelineTimestamp } = useSnapshot(traceStore);
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -57,10 +56,7 @@ function FullTimelineList() {
     useEffect(
         () => {
             if (selectedTimelineTimestamp && itemRefs.current.has(selectedTimelineTimestamp)) {
-                itemRefs.current.get(selectedTimelineTimestamp)?.scrollIntoView({
-                    behavior: 'auto',
-                    block: 'center'
-                });
+                itemRefs.current.get(selectedTimelineTimestamp)?.scrollIntoView({ behavior: 'auto', block: 'center' });
             }
         }, [selectedTimelineTimestamp]
     );
