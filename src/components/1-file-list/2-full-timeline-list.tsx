@@ -64,13 +64,13 @@ function FullTimelineList() {
     let lastDate = "";
 
     return (
-        <div className="flex flex-col h-full bg-muted/10 border-l w-28 select-none">
+        <div className="w-max h-full bg-muted/10 border-r select-none flex flex-col">
             {/* <div className="text-xs p-1 font-bold border-b text-center text-muted-foreground bg-muted/20">
                 Timeline
             </div> */}
 
             <ScrollArea className="flex-1">
-                <div className="flex flex-col py-1">
+                <div className="py-1 flex flex-col">
                     {timeline.map(
                         (item, idx) => {
                             const isSelected = item.timestamp === selectedTimelineTimestamp;
@@ -95,13 +95,13 @@ function FullTimelineList() {
                             return (
                                 <div key={idx}>
                                     {showDateHeader && (
-                                        <div className="text-[10px] px-2 py-1 font-bold text-muted-foreground bg-muted/30 text-center sticky top-0 z-10">
+                                        <div className="mx-2 px-0.5 py-1 text-[10px] text-center font-bold text-foreground border border-muted-foreground/20 rounded shadow bg-sky-200">
                                             {currentDate}
                                         </div>
                                     )}
                                     <div
                                         className={cn(
-                                            "text-[10px] px-2 py-0.5 cursor-pointer hover:bg-muted/50 truncate font-mono text-center",
+                                            "text-[10px] px-1 py-0.5 cursor-pointer hover:bg-muted/50 truncate font-mono text-center",
                                             isSelected && "bg-primary text-primary-foreground hover:bg-primary/90"
                                         )}
                                         ref={(el) => {
