@@ -71,7 +71,14 @@ export function FileListRow({ file, isSelected }: FileListItemProps) {
 
                     {/* Timeline Marker */}
                     {isMarked && (
-                        <div className="ml-auto shrink-0 z-10">
+                        <div
+                            className="ml-auto shrink-0 z-10 hover:scale-125 transition-transform"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                traceStore.selectFile(file.id);
+                                traceStore.scrollToTimestamp(selectedTimelineTimestamp);
+                            }}
+                        >
                             <div className="size-2 rounded-full bg-orange-500 ring-1 ring-background" title="Present in selected timeline" />
                         </div>
                     )}

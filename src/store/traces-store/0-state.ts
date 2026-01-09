@@ -51,6 +51,7 @@ export interface TraceState {
     setFullTimeline: (items: FullTimelineItem[]) => void;
     setTimelineLoading: (loading: boolean) => void;
     selectTimelineTimestamp: (timestamp: string | null) => void;
+    scrollToTimestamp: (timestamp: string | null) => void;
     asyncBuildFullTimes: (precision: number) => Promise<void>;
 }
 
@@ -211,6 +212,40 @@ export const traceStore = proxy<TraceState>({
 
     selectTimelineTimestamp: (timestamp: string | null) => {
         traceStore.selectedTimelineTimestamp = timestamp;
+    },
+
+    scrollToTimestamp: (timestamp: string | null) => {
+        if (!timestamp) return;
+        
+        const lines = traceStore.viewLines;
+        if (lines.length === 0) return;
+
+        // Find closest line (first line with timestamp >= target)
+        // Assuming lines are sorted by timestamp usually, but a linear scan is safer and fast enough for <1M lines
+        // Optimization: Binary search could be used if we guarantee sorted order
+        
+        let bestIndex = -1;
+        
+        // Simple linear scan for "closest" (first line >= timestamp)
+        // Since timestamps are strings (HH:MM:SS.mmm), lexicographical comparison works
+        for (let i = 0; i < lines.length; i++) {
+            const t = lines[i].timestamp;
+            if (t && t >= timestamp) {
+                bestIndex = i;
+                break;
+            }
+        }
+
+        // If no line is >= timestamp, maybe the last one is closest? 
+        // Or if we didn't find any, we do nothing.
+        // User asked for "closest". If we are past the end, the last line is closest in time (probably).
+        // But usually "closest" in logs means "the event that happened at or after".
+        // If all events are before, maybe we shouldn't scroll?
+        // Let's stick to "first at or after" as is standard for "goto time".
+        
+        if (bestIndex !== -1) {
+            traceStore.currentLineIndex = bestIndex;
+        }
     },
 
     asyncBuildFullTimes: async (precision: number) => {

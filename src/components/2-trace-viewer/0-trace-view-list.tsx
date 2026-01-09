@@ -64,7 +64,7 @@ export function TraceList() {
                 scrollRef.current.scrollTop = targetBottom - containerHeight;
             }
         }
-    }, [currentLineIndex, containerHeight]);
+    }, [currentLineIndex, containerHeight, selectedFileId]);
 
     const onScroll = (e: React.UIEvent<HTMLDivElement>) => {
         setScrollTop(e.currentTarget.scrollTop);
