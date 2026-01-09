@@ -37,6 +37,16 @@ export function TraceList() {
     useEffect(() => {
         if (!pendingScrollTimestamp || viewLines.length === 0) return;
 
+        // Clean timestamp (remove date if present)
+        // Expected formats: "MM/DD/YYYY HH:MM:SS.mmm" or "HH:MM:SS.mmm"
+        let targetTimestampStr = pendingScrollTimestamp;
+        if (targetTimestampStr.includes(' ')) {
+            const parts = targetTimestampStr.split(' ');
+            if (parts.length >= 2) {
+                targetTimestampStr = parts[parts.length - 1];
+            }
+        }
+
         // Parse target timestamp to ms for accurate comparison
         const parseTime = (t: string) => {
             const [hms, msPart] = t.split('.');
@@ -47,11 +57,11 @@ export function TraceList() {
             return ((h || 0) * 3600 + (m || 0) * 60 + (s || 0)) * 1000 + (ms || 0);
         };
 
-        const targetTime = parseTime(pendingScrollTimestamp);
+        const targetTime = parseTime(targetTimestampStr);
         let bestIndex = -1;
         let minDiff = Infinity;
 
-        // Binary search for insertion point
+        // Binary search for insertion point (first line >= targetTimestampStr)
         let low = 0;
         let high = viewLines.length - 1;
         let insertionIndex = viewLines.length;
@@ -63,7 +73,8 @@ export function TraceList() {
                 low = mid + 1;
                 continue;
             }
-            if (tStr >= pendingScrollTimestamp) {
+            // Use string comparison on cleaned timestamp
+            if (tStr >= targetTimestampStr) {
                 insertionIndex = mid;
                 high = mid - 1;
             } else {
@@ -71,21 +82,33 @@ export function TraceList() {
             }
         }
 
-        // Check candidates around insertion point
-        const candidates = [];
-        const range = 10;
-        for (let i = Math.max(0, insertionIndex - range); i <= Math.min(viewLines.length - 1, insertionIndex + range); i++) {
-            candidates.push(i);
+        // Priority 1: Check for prefix match (starts with) starting from insertionIndex
+        // We look at insertionIndex because it's the first one >= target.
+        // If it starts with target, it's the perfect match (e.g. 690 starts with 69).
+        if (insertionIndex < viewLines.length) {
+             const tStr = viewLines[insertionIndex].timestamp;
+             if (tStr && tStr.startsWith(targetTimestampStr)) {
+                 bestIndex = insertionIndex;
+             }
         }
 
-        for (const idx of candidates) {
-            const tStr = viewLines[idx].timestamp;
-            if (tStr) {
-                const tVal = parseTime(tStr);
-                const diff = Math.abs(tVal - targetTime);
-                if (diff < minDiff) {
-                    minDiff = diff;
-                    bestIndex = idx;
+        // Priority 2: If no prefix match, look for closest by time difference
+        if (bestIndex === -1) {
+            const candidates = [];
+            const range = 5;
+            for (let i = Math.max(0, insertionIndex - range); i <= Math.min(viewLines.length - 1, insertionIndex + range); i++) {
+                candidates.push(i);
+            }
+
+            for (const idx of candidates) {
+                const tStr = viewLines[idx].timestamp;
+                if (tStr) {
+                    const tVal = parseTime(tStr);
+                    const diff = Math.abs(tVal - targetTime);
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        bestIndex = idx;
+                    }
                 }
             }
         }

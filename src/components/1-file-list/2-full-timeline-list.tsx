@@ -102,7 +102,7 @@ function FullTimelineList() {
                                     )}
                                     <div
                                         className={cn(
-                                            "text-[10px] px-1 py-0.5 cursor-pointer hover:bg-muted/50 truncate font-mono text-center",
+                                            "text-[10px] px-2.5 py-0.5 cursor-pointer hover:bg-muted/50 truncate font-mono text-center",
                                             isSelected && "bg-primary text-primary-foreground hover:bg-primary/90"
                                         )}
                                         ref={(el) => {
