@@ -5,7 +5,7 @@ import { appSettings } from "../../store/1-ui-settings";
 import { ITEM_HEIGHT, renderRow } from "./1-trace-view-row";
 
 export function TraceList() {
-    const { viewLines, currentLineIndex, uniqueThreadIds, selectedFileId } = useSnapshot(traceStore);
+    const { viewLines, currentLineIndex, uniqueThreadIds, selectedFileId, pendingScrollTimestamp } = useSnapshot(traceStore);
     const { useIconsForEntryExit, showLineNumbers } = useSnapshot(appSettings);
     const scrollRef = useRef<HTMLDivElement>(null);
     const [scrollTop, setScrollTop] = useState(0);
@@ -32,6 +32,73 @@ export function TraceList() {
             scrollRef.current.scrollTop = 0;
         }
     }, [selectedFileId]);
+
+    // Handle pending timestamp scroll
+    useEffect(() => {
+        if (!pendingScrollTimestamp || viewLines.length === 0) return;
+
+        // Parse target timestamp to ms for accurate comparison
+        const parseTime = (t: string) => {
+            const [hms, msPart] = t.split('.');
+            if (!hms) return 0;
+            const [h, m, s] = hms.split(':').map(Number);
+            // Pad milliseconds to ensure proper decimal comparison (e.g. .5 -> 500ms, .05 -> 50ms)
+            const ms = parseInt((msPart || '').padEnd(3, '0').slice(0, 3), 10);
+            return ((h || 0) * 3600 + (m || 0) * 60 + (s || 0)) * 1000 + (ms || 0);
+        };
+
+        const targetTime = parseTime(pendingScrollTimestamp);
+        let bestIndex = -1;
+        let minDiff = Infinity;
+
+        // Binary search for insertion point
+        let low = 0;
+        let high = viewLines.length - 1;
+        let insertionIndex = viewLines.length;
+
+        while (low <= high) {
+            const mid = (low + high) >>> 1;
+            const tStr = viewLines[mid].timestamp;
+            if (!tStr) {
+                low = mid + 1;
+                continue;
+            }
+            if (tStr >= pendingScrollTimestamp) {
+                insertionIndex = mid;
+                high = mid - 1;
+            } else {
+                low = mid + 1;
+            }
+        }
+
+        // Check candidates around insertion point
+        const candidates = [];
+        const range = 10;
+        for (let i = Math.max(0, insertionIndex - range); i <= Math.min(viewLines.length - 1, insertionIndex + range); i++) {
+            candidates.push(i);
+        }
+
+        for (const idx of candidates) {
+            const tStr = viewLines[idx].timestamp;
+            if (tStr) {
+                const tVal = parseTime(tStr);
+                const diff = Math.abs(tVal - targetTime);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    bestIndex = idx;
+                }
+            }
+        }
+
+        // Apply selection
+        if (bestIndex !== -1) {
+            traceStore.currentLineIndex = bestIndex;
+        }
+
+        // Clear pending timestamp
+        traceStore.pendingScrollTimestamp = null;
+
+    }, [pendingScrollTimestamp, viewLines]);
 
     // Keyboard navigation
     useEffect(() => {

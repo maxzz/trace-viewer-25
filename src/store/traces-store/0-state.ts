@@ -41,6 +41,7 @@ export interface TraceState {
     isTimelineLoading: boolean;
     timelineError: string | null;
     selectedTimelineTimestamp: string | null;
+    pendingScrollTimestamp: string | null;
 
     // Actions
     loadTrace: (file: File) => Promise<void>;
@@ -80,6 +81,7 @@ export const traceStore = proxy<TraceState>({
     isTimelineLoading: false,
     timelineError: null,
     selectedTimelineTimestamp: null,
+    pendingScrollTimestamp: null,
 
     loadTrace: async (file: File) => {
         const id = Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
@@ -215,79 +217,7 @@ export const traceStore = proxy<TraceState>({
     },
 
     scrollToTimestamp: (timestamp: string | null) => {
-        if (!timestamp) return;
-        
-        const lines = traceStore.viewLines;
-        if (lines.length === 0) return;
-
-        // Parse target timestamp to ms for accurate comparison
-        // Format: HH:MM:SS.mmm
-        const parseTime = (t: string) => {
-            const [hms, ms] = t.split('.');
-            const [h, m, s] = hms.split(':').map(Number);
-            return (h * 3600 + m * 60 + s) * 1000 + (parseInt(ms || '0', 10));
-        };
-
-        const targetTime = parseTime(timestamp);
-        let bestIndex = -1;
-        let minDiff = Infinity;
-
-        // Binary search for the first element >= timestamp (lower_bound)
-        let low = 0;
-        let high = lines.length - 1;
-        let insertionIndex = lines.length;
-
-        // We assume lines are sorted by timestamp for binary search.
-        // Even if slightly unsorted, this heuristic gives a good starting point.
-        // We'll scan a small window around it if needed, or just rely on it.
-        while (low <= high) {
-            const mid = (low + high) >>> 1;
-            const tStr = lines[mid].timestamp;
-            if (!tStr) {
-                // If timestamp missing, heuristic: continue to next
-                low = mid + 1;
-                continue;
-            }
-
-            // String comparison is usually sufficient for ">= " check if format is fixed width (HH:MM:SS.mmm)
-            // But let's verify format. If length differs, use parsed value.
-            // For speed, try string compare first.
-            if (tStr >= timestamp) {
-                insertionIndex = mid;
-                high = mid - 1;
-            } else {
-                low = mid + 1;
-            }
-        }
-
-        // Check candidates around insertion point (look ahead and behind)
-        // because "closest" could be the one slightly before or slightly after
-        // or a few lines away if there are timestamp duplicates or slight disorder
-        const candidates = [];
-        for (let i = Math.max(0, insertionIndex - 5); i <= Math.min(lines.length - 1, insertionIndex + 5); i++) {
-            candidates.push(i);
-        }
-        
-        for (const idx of candidates) {
-            const tStr = lines[idx].timestamp;
-            if (tStr) {
-                const tVal = parseTime(tStr);
-                const diff = Math.abs(tVal - targetTime);
-                if (diff < minDiff) {
-                    minDiff = diff;
-                    bestIndex = idx;
-                } else if (diff === minDiff && bestIndex !== -1) {
-                   // If diff is same, prefer the earlier one (or whatever stable sort preference)
-                   // usually we don't need to change anything if we want first occurrence
-                }
-            }
-        }
-        
-        if (bestIndex !== -1) {
-            traceStore.currentLineIndex = bestIndex;
-        } else if (lines.length > 0) {
-            // Fallback: if we couldn't find close timestamp, do nothing or select start
-        }
+        traceStore.pendingScrollTimestamp = timestamp;
     },
 
     asyncBuildFullTimes: async (precision: number) => {
