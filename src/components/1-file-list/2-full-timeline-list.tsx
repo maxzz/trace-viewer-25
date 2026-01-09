@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useSnapshot } from "valtio";
-import { cn } from "@/utils/classnames";
+import { classNames, cn } from "@/utils/classnames";
 import { ScrollArea } from "../ui/shadcn/scroll-area";
 import { traceStore } from "@/store/traces-store/0-state";
 import { appSettings } from "@/store/1-ui-settings";
@@ -48,6 +48,7 @@ function CombinedTimelineList() {
 }
 
 function FullTimelineList() {
+    const { combinedOnLeft } = useSnapshot(appSettings);
     const { timeline, selectedTimelineTimestamp } = useSnapshot(traceStore);
     const scrollRef = useRef<HTMLDivElement>(null);
     const itemRefs = useRef<Map<string, HTMLDivElement>>(new Map());
@@ -64,7 +65,7 @@ function FullTimelineList() {
     let lastDate = "";
 
     return (
-        <div className="w-max h-full bg-muted/10 border-r select-none flex flex-col">
+        <div className={classNames("w-max h-full bg-muted/10 select-none flex flex-col", combinedOnLeft ? "border-r" : "border-l")}>
             {/* <div className="text-xs p-1 font-bold border-b text-center text-muted-foreground bg-muted/20">
                 Timeline
             </div> */}
