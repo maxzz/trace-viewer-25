@@ -79,7 +79,7 @@ export function FileListRow({ file, isSelected }: FileListItemProps) {
                                 traceStore.scrollToTimestamp(selectedTimelineTimestamp);
                             }}
                         >
-                            <div className="size-2 rounded-full bg-orange-500 ring-1 ring-background" title="Present in selected timeline" />
+                            <div className="size-2 rounded-full bg-green-500 ring-1 ring-background" title="Present in selected timeline" />
                         </div>
                     )}
                 </div>
