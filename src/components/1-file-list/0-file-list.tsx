@@ -64,7 +64,6 @@ export function FileList() {
                                     key={file.id}
                                     file={file as any}
                                     isSelected={file.id === selectedFileId}
-                                    onClick={() => traceStore.selectFile(file.id)}
                                 />
                             )
                         )}

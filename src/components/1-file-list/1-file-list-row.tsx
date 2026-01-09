@@ -10,10 +10,9 @@ import { dialogFileHeaderOpenAtom } from "@/store/2-ui-atoms";
 interface FileListItemProps {
     file: TraceFile;
     isSelected: boolean;
-    onClick: () => void;
 }
 
-export function FileListRow({ file, isSelected, onClick }: FileListItemProps) {
+export function FileListRow({ file, isSelected }: FileListItemProps) {
     const hasError = file.errorCount > 0 || !!file.error;
     const { highlightRules, highlightEnabled } = useSnapshot(appSettings);
     const { timeline, selectedTimelineTimestamp } = useSnapshot(traceStore);
@@ -36,7 +35,7 @@ export function FileListRow({ file, isSelected, onClick }: FileListItemProps) {
     return (
         <ContextMenu>
             <ContextMenuTrigger>
-                <div className={getRowClasses(isSelected, hasError)} onClick={onClick}>
+                <div className={getRowClasses(isSelected, hasError)} onClick={() => traceStore.selectFile(file.id)}>
                     {/* Highlight Background Layer */}
                     {!isSelected && highlightColor && (
                         <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundColor: `var(--color-${highlightColor})` }} />
