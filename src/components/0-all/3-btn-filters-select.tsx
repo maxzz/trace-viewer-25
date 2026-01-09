@@ -99,14 +99,14 @@ export function ButtonHighlightToggle() {
 
     return (
         <Button 
-            className="size-6 rounded" 
-            variant={highlightEnabled ? "ghost" : "ghost"} 
+            className={`size-6 rounded` + (highlightEnabled ? " dark:bg-foreground/20" : "")}
+            variant="outline"
             size="icon" 
             onClick={highlightActions.toggleHighlight}
             disabled={!hasRules}
             title={highlightEnabled ? "Disable highlighting" : "Enable highlighting"}
         >
-            <Highlighter className={`size-3.5 ${highlightEnabled ? "text-primary opacity-100" : "opacity-40"}`} />
+            <Highlighter className={`size-3.5 ${highlightEnabled ? "text-foreground dark:text-sky-300 fill-sky-200 dark:fill-sky-500 opacity-100" : "opacity-40"}`} />
         </Button>
     );
 }

@@ -35,8 +35,8 @@ export function TraceViewerApp() {
 function TopMenuToolbar() {
     return (
         <div className="px-2 flex items-center gap-2">
-            <FileFilterDropdown />
             <ButtonHighlightToggle />
+            <FileFilterDropdown />
             <ButtonThemeToggle />
         </div>
     );

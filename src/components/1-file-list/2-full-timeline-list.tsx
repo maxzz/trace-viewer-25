@@ -95,7 +95,7 @@ function FullTimelineList() {
                             return (
                                 <div key={idx}>
                                     {showDateHeader && (
-                                        <div className="mx-2 px-0.5 py-1 text-[10px] text-center font-bold text-foreground border border-muted-foreground/20 rounded shadow bg-sky-200">
+                                        <div className="mx-2 px-0.5 py-1 text-[10px] text-center font-bold text-foreground dark:text-background border border-muted-foreground/20 rounded shadow bg-sky-200">
                                             {currentDate}
                                         </div>
                                     )}
