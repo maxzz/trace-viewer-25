@@ -260,19 +260,25 @@ export const traceStore = proxy<TraceState>({
             }
         }
 
-        // Check candidates: insertionIndex and insertionIndex - 1
-        const candidates = [insertionIndex - 1, insertionIndex];
+        // Check candidates around insertion point (look ahead and behind)
+        // because "closest" could be the one slightly before or slightly after
+        // or a few lines away if there are timestamp duplicates or slight disorder
+        const candidates = [];
+        for (let i = Math.max(0, insertionIndex - 5); i <= Math.min(lines.length - 1, insertionIndex + 5); i++) {
+            candidates.push(i);
+        }
         
         for (const idx of candidates) {
-            if (idx >= 0 && idx < lines.length) {
-                const tStr = lines[idx].timestamp;
-                if (tStr) {
-                    const tVal = parseTime(tStr);
-                    const diff = Math.abs(tVal - targetTime);
-                    if (diff < minDiff) {
-                        minDiff = diff;
-                        bestIndex = idx;
-                    }
+            const tStr = lines[idx].timestamp;
+            if (tStr) {
+                const tVal = parseTime(tStr);
+                const diff = Math.abs(tVal - targetTime);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    bestIndex = idx;
+                } else if (diff === minDiff && bestIndex !== -1) {
+                   // If diff is same, prefer the earlier one (or whatever stable sort preference)
+                   // usually we don't need to change anything if we want first occurrence
                 }
             }
         }
@@ -280,8 +286,7 @@ export const traceStore = proxy<TraceState>({
         if (bestIndex !== -1) {
             traceStore.currentLineIndex = bestIndex;
         } else if (lines.length > 0) {
-            // Fallback: if we couldn't find close timestamp, maybe just select last one?
-            // This happens if all lines are missing timestamps (unlikely) or something went wrong.
+            // Fallback: if we couldn't find close timestamp, do nothing or select start
         }
     },
 
