@@ -6,8 +6,16 @@ import { FullTimelineList } from "./2-full-timeline-list";
 import { cancelFullTimelineBuild } from "../../workers-client/timeline-client";
 
 export function CombinedTimelinePanel() {
+    const { showCombinedTimeline } = useSnapshot(appSettings);
+    if (!showCombinedTimeline) {
+        return null;
+    }
+
+    return <CombinedTimelineList />;
+}
+
+function CombinedTimelineList() {
     const { showCombinedTimeline, timelinePrecision } = useSnapshot(appSettings);
-    // Subscribe to files changes to trigger rebuild
     const { files } = useSnapshot(traceStore);
 
     // Timeline build effect
@@ -34,8 +42,6 @@ export function CombinedTimelinePanel() {
             cancelFullTimelineBuild();
         };
     }, [showCombinedTimeline, timelinePrecision, files]); // files dependency: if files loaded/added/removed
-
-    if (!showCombinedTimeline) return null;
 
     return <FullTimelineList />;
 }
