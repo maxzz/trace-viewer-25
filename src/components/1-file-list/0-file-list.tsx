@@ -4,7 +4,7 @@ import { appSettings, type FileFilter } from "../../store/1-ui-settings";
 import { traceStore } from "../../store/traces-store/0-state";
 import { ScrollArea } from "../ui/shadcn/scroll-area";
 import { FileListRow } from "./1-file-list-row";
-import { CombinedTimelinePanel } from "./3-combined-timeline-panel";
+import { CombinedTimelinePanel } from "./2-full-timeline-list";
 
 export function FileList() {
     const { files, selectedFileId } = useSnapshot(traceStore);
