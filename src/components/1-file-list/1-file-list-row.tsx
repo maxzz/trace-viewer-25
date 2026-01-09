@@ -60,6 +60,7 @@ export function FileListRow({ file, isSelected, onClick }: FileListItemProps) {
                         )}
                     </div>
 
+                    {/* File name */}
                     <span className="flex-1 truncate z-10" title={file.fileName}>
                         {file.fileName}
                     </span>
@@ -119,7 +120,9 @@ text-[0.5rem] \
 font-mono \
 text-red-700 \
 bg-red-100 \
-dark:text-red-300 \
-dark:bg-red-900/30 \
-border-[1.5px] border-red-500/50 \
+dark:text-black \
+dark:bg-red-400 \
+border-red-500/50 \
+dark:border-red-600 \
+border-[1.5px] \
 rounded-full";
