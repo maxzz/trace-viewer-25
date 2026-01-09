@@ -10,18 +10,23 @@ export function TraceMainView() {
     const defaultTracePanelSize = savedSizes?.[1] ?? 80;
 
     const handleLayout = useCallback(
-        (sizes: number[]) => {
+        (layout: { [key: string]: number }) => {
+            const sizes = [
+                layout["file-list"],
+                layout["trace-view"]
+            ];
             appSettings.panelSizes = sizes;
         }, []
     );
 
     return (
-        <ResizablePanelGroup className="h-full border-t" direction="horizontal" onLayout={handleLayout}
+        <ResizablePanelGroup className="h-full border-t" orientation="horizontal" onLayoutChange={handleLayout}
         >
             <ResizablePanel
-                defaultSize={defaultFilePanelSize}
-                minSize={15}
-                maxSize={40}
+                id="file-list"
+                defaultSize={`${defaultFilePanelSize}`}
+                minSize="15"
+                maxSize="40"
                 className="min-w-[200px]"
             >
                 <FileList />
@@ -29,7 +34,10 @@ export function TraceMainView() {
 
             <ResizableHandle withHandle />
 
-            <ResizablePanel defaultSize={defaultTracePanelSize}>
+            <ResizablePanel
+                id="trace-view"
+                defaultSize={`${defaultTracePanelSize}`}
+            >
                 <div className="h-full overflow-hidden flex flex-col">
                     <TraceList />
                 </div>

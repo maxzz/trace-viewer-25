@@ -2,25 +2,26 @@
 import * as React from "react";
 import { cn } from "@/utils/index";
 import { GripVerticalIcon } from "lucide-react";
-import * as ResizablePrimitive from "react-resizable-panels";
+import { Group, Panel, Separator } from "react-resizable-panels";
 
-export function ResizablePanelGroup({ className, ...props }: React.ComponentProps<typeof ResizablePrimitive.PanelGroup>) {
+export function ResizablePanelGroup({ className, ...props }: React.ComponentProps<typeof Group>) {
     return (
-        <ResizablePrimitive.PanelGroup
+        <Group
             data-slot="resizable-panel-group"
-            className={cn("w-full h-full flex data-[panel-group-direction=vertical]:flex-col", className)}
+            className={cn("w-full h-full flex data-[panel-group-direction=vertical]:flex-col group/panel-group", className)}
+            data-panel-group-direction={props.orientation}
             {...props}
         />
     );
 }
 
-export function ResizablePanel({ ...props }: React.ComponentProps<typeof ResizablePrimitive.Panel>) {
-    return <ResizablePrimitive.Panel data-slot="resizable-panel" {...props} />;
+export function ResizablePanel({ ...props }: React.ComponentProps<typeof Panel>) {
+    return <Panel data-slot="resizable-panel" {...props} />;
 }
 
-export function ResizableHandle({ withHandle, className, ...props }: React.ComponentProps<typeof ResizablePrimitive.PanelResizeHandle> & { withHandle?: boolean; }) {
+export function ResizableHandle({ withHandle, className, ...props }: React.ComponentProps<typeof Separator> & { withHandle?: boolean; }) {
     return (
-        <ResizablePrimitive.PanelResizeHandle
+        <Separator
             data-slot="resizable-handle"
             className={cn(
                 resizableLineClasses,
@@ -33,7 +34,7 @@ export function ResizableHandle({ withHandle, className, ...props }: React.Compo
                     <GripVerticalIcon className="size-2.5" />
                 </div>
             )}
-        </ResizablePrimitive.PanelResizeHandle>
+        </Separator>
     );
 }
 
@@ -60,17 +61,17 @@ focus-visible:ring-1 \
 focus-visible:ring-offset-1 \
 focus-visible:outline-hidden \
 \
-data-[panel-group-direction=vertical]:pb-0 \
-data-[panel-group-direction=vertical]:w-full \
-data-[panel-group-direction=vertical]:h-px \
-data-[panel-group-direction=vertical]:items-center \
+group-data-[panel-group-direction=vertical]/panel-group:pb-0 \
+group-data-[panel-group-direction=vertical]/panel-group:w-full \
+group-data-[panel-group-direction=vertical]/panel-group:h-px \
+group-data-[panel-group-direction=vertical]/panel-group:items-center \
 \
-data-[panel-group-direction=vertical]:after:left-0 \
-data-[panel-group-direction=vertical]:after:h-1 \
-data-[panel-group-direction=vertical]:after:w-full \
-data-[panel-group-direction=vertical]:after:translate-x-0 \
-data-[panel-group-direction=vertical]:after:-translate-y-1/2 \
+group-data-[panel-group-direction=vertical]/panel-group:after:left-0 \
+group-data-[panel-group-direction=vertical]/panel-group:after:h-1 \
+group-data-[panel-group-direction=vertical]/panel-group:after:w-full \
+group-data-[panel-group-direction=vertical]/panel-group:after:translate-x-0 \
+group-data-[panel-group-direction=vertical]/panel-group:after:-translate-y-1/2 \
 \
-[&[data-panel-group-direction=vertical]>div]:rotate-90 \
+group-data-[panel-group-direction=vertical]/panel-group:[&>div]:rotate-90 \
 \
 flex items-end justify-center";
