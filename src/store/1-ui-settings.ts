@@ -36,6 +36,7 @@ export interface AppSettings {
 
     // Timeline
     showCombinedTimeline: boolean;
+    combinedOnLeft: boolean;
     timelinePrecision: number; // 0-5 digits to hide/round
 }
 
@@ -50,6 +51,7 @@ const DEFAULT_SETTINGS: AppSettings = {
     highlightRules: [],
     highlightEnabled: true,
     showCombinedTimeline: false,
+    combinedOnLeft: true,
     timelinePrecision: 2,
 };
 

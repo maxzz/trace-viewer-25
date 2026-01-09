@@ -29,33 +29,17 @@ export function FileListRow({ file, isSelected, onClick }: FileListItemProps) {
         }
     }
 
-    const isMarked = selectedTimelineTimestamp 
-        ? timeline.find(t => t.timestamp === selectedTimelineTimestamp)?.fileIds.includes(file.id) 
+    const isMarked = selectedTimelineTimestamp
+        ? timeline.find(t => t.timestamp === selectedTimelineTimestamp)?.fileIds.includes(file.id)
         : false;
 
     return (
         <ContextMenu>
             <ContextMenuTrigger>
-                <div
-                    className={cn(
-                        "relative flex items-center gap-2 px-3 py-0.5 text-xs cursor-pointer transition-colors border-l-2 select-none group",
-                        isSelected
-                            ? "bg-muted-foreground/20 border-primary outline -outline-offset-1 outline-primary"
-                            : "text-muted-foreground hover:text-foreground hover:bg-muted-foreground/10 border-transparent",
-                        hasError
-                            ? !isSelected
-                                ? "text-red-600 dark:text-red-400"
-                                : "text-red-600 dark:text-red-400"
-                            : ""
-                    )}
-                    onClick={onClick}
-                >
+                <div className={getRowClasses(isSelected, hasError)} onClick={onClick}>
                     {/* Highlight Background Layer */}
                     {!isSelected && highlightColor && (
-                        <div 
-                            className="absolute inset-0 opacity-20 pointer-events-none"
-                            style={{ backgroundColor: `var(--color-${highlightColor})` }} 
-                        />
+                        <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundColor: `var(--color-${highlightColor})` }} />
                     )}
 
                     {/* File icon */}
@@ -68,47 +52,17 @@ export function FileListRow({ file, isSelected, onClick }: FileListItemProps) {
                             </div>
                         )}
 
+                        {/* Error count badge */}
                         {file.errorCount > 0 && (
-                            <span className={cn("\
-                            absolute -top-1 -right-1 \
-                            px-1 py-px \
-                            text-[0.5rem] \
-                            font-mono \
-                            text-red-700 \
-                            bg-red-100 \
-                            dark:text-red-300 \
-                            dark:bg-red-900/30 \
-                            border-[1.5px] border-red-500/50 \
-                            rounded-full \
-                            ")}>
+                            <span className={errorCountBadgeClasses}>
                                 {file.errorCount}
                             </span>
                         )}
-
                     </div>
 
                     <span className="flex-1 truncate z-10" title={file.fileName}>
                         {file.fileName}
                     </span>
-
-                    {/* Error count badge */}
-                    {/* {file.errorCount > 0 && (
-                        <span className={cn("\
-                            shrink-0 \
-                            px-1 \
-                            py-px \
-                            text-[0.5rem] \
-                            font-mono \
-                            text-red-700 \
-                            bg-red-100 \
-                            dark:text-red-300 \
-                            dark:bg-red-900/30 \
-                            border border-red-500/30 \
-                            rounded-full \
-                            ")}>
-                            {file.errorCount}
-                        </span>
-                    )} */}
 
                     {/* Loading indicator */}
                     {file.isLoading && (
@@ -132,13 +86,12 @@ export function FileListRow({ file, isSelected, onClick }: FileListItemProps) {
                     Show File Header
                 </ContextMenuItem>
                 <ContextMenuSeparator />
-                <ContextMenuItem onClick={() => traceStore.closeFile(file.id)} className="text-red-600 focus:text-red-600 focus:bg-red-100 dark:focus:bg-red-900/20">
+                <ContextMenuItem onClick={() => traceStore.closeFile(file.id)}>
                     Close
                 </ContextMenuItem>
                 <ContextMenuItem onClick={() => traceStore.closeOtherFiles(file.id)}>
                     Close Others
                 </ContextMenuItem>
-                <ContextMenuSeparator />
                 <ContextMenuItem onClick={() => traceStore.closeAllFiles()}>
                     Close All
                 </ContextMenuItem>
@@ -146,3 +99,27 @@ export function FileListRow({ file, isSelected, onClick }: FileListItemProps) {
         </ContextMenu>
     );
 }
+
+function getRowClasses(isSelected: boolean, hasError: boolean) {
+    return cn(
+        "relative flex items-center gap-2 px-3 py-0.5 text-xs cursor-pointer transition-colors border-l-2 select-none group",
+        isSelected
+            ? "bg-muted-foreground/20 border-primary outline -outline-offset-1 outline-primary"
+            : "text-muted-foreground hover:text-foreground hover:bg-muted-foreground/10 border-transparent",
+        hasError
+            ? "text-red-600 dark:text-red-400"
+            : ""
+    );
+}
+
+const errorCountBadgeClasses = "\
+absolute -top-1 -right-1 \
+px-1 py-px \
+text-[0.5rem] \
+font-mono \
+text-red-700 \
+bg-red-100 \
+dark:text-red-300 \
+dark:bg-red-900/30 \
+border-[1.5px] border-red-500/50 \
+rounded-full";

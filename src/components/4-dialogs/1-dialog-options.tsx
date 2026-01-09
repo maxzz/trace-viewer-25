@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/shadcn/label';
 
 export function DialogOptions() {
     const [open, onOpenChange] = useAtom(dialogOptionsOpenAtom);
-    const { showFooter, useIconsForEntryExit, showLineNumbers, extraInFooter, showCombinedTimeline, timelinePrecision } = useSnapshot(appSettings);
+    const { showFooter, useIconsForEntryExit, showLineNumbers, extraInFooter, showCombinedTimeline, combinedOnLeft, timelinePrecision } = useSnapshot(appSettings);
 
     const handleShowFooterChange = (checked: boolean) => {
         appSettings.showFooter = checked;
@@ -32,6 +32,10 @@ export function DialogOptions() {
         appSettings.showCombinedTimeline = checked;
     };
 
+    const handleCombinedOnLeftChange = (checked: boolean) => {
+        appSettings.combinedOnLeft = checked;
+    };
+
     const handleTimelinePrecisionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = parseInt(e.target.value, 10);
         if (!isNaN(val) && val >= 0 && val <= 5) {
@@ -48,8 +52,8 @@ export function DialogOptions() {
                     </DialogTitle>
                 </DialogHeader>
 
-                <div className="py-4 text-xs grid gap-2">
-                    Trace viewer options:
+                <div className="py-2 text-xs grid gap-2">
+                    <div className="font-semibold">Trace viewer options:</div>
 
                     <Label className="text-xs font-normal flex items-center space-x-1">
                         <Checkbox className="size-5" checked={useIconsForEntryExit} onCheckedChange={handleUseIconsChange} />
@@ -61,28 +65,26 @@ export function DialogOptions() {
                         Show Line numbers
                     </Label>
 
-                    Timeline options:
+                    <div className="mt-2 font-semibold">Combined timeline options:</div>
 
                     <Label className="text-xs font-normal flex items-center space-x-1">
                         <Checkbox className="size-5" checked={showCombinedTimeline} onCheckedChange={handleShowTimelineChange} />
-                        Show Combined Timeline
+                        Show combined timeline
                     </Label>
 
-                    <div className="flex items-center space-x-2 pl-6">
-                        <Label className="text-xs font-normal">
-                            Precision (0-5 digits to hide):
+                    <Label className="text-xs font-normal flex items-center space-x-1">
+                        <Checkbox className="size-5" checked={combinedOnLeft} onCheckedChange={handleCombinedOnLeftChange} />
+                        Show on the left of the file list
+                    </Label>
+
+                    <div className="-mt-1 pl-7 flex items-center space-x-2">
+                        <Label className="text-xs font-normal text-balance">
+                            Combined timeline precision
                         </Label>
-                        <Input
-                            type="number"
-                            className="w-12 h-6 text-xs p-1"
-                            min={0}
-                            max={5}
-                            value={timelinePrecision}
-                            onChange={handleTimelinePrecisionChange}
-                        />
+                        <Input className="w-12 h-6 text-xs p-1" value={timelinePrecision} onChange={handleTimelinePrecisionChange} min={0} max={5} type="number" />
                     </div>
 
-                    Footer options:
+                    <div className="mt-2 font-semibold">Footer options:</div>
 
                     <Label className="text-xs font-normal flex items-center space-x-1">
                         <Checkbox className="size-5" checked={showFooter} onCheckedChange={handleShowFooterChange} />
@@ -95,8 +97,8 @@ export function DialogOptions() {
                     </Label>
                 </div>
 
-                <DialogFooter>
-                    <Button onClick={() => onOpenChange(false)}>Close</Button>
+                <DialogFooter className="justify-center!">
+                    <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
                 </DialogFooter>
 
             </DialogContent>
