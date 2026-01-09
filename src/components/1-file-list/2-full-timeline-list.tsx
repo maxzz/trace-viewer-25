@@ -61,6 +61,8 @@ function FullTimelineList() {
         }, [selectedTimelineTimestamp]
     );
 
+    let lastDate = "";
+
     return (
         <div className="flex flex-col h-full bg-muted/10 border-l w-28 select-none">
             {/* <div className="text-xs p-1 font-bold border-b text-center text-muted-foreground bg-muted/20">
@@ -72,26 +74,50 @@ function FullTimelineList() {
                     {timeline.map(
                         (item, idx) => {
                             const isSelected = item.timestamp === selectedTimelineTimestamp;
+                            
+                            // Parse timestamp to separate date and time
+                            // Expected format: "MM/DD/YYYY HH:MM:SS.mmm" or "HH:MM:SS.mmm"
+                            let displayTime = item.timestamp;
+                            let currentDate = "";
+
+                            if (item.timestamp.includes(' ')) {
+                                const parts = item.timestamp.split(' ');
+                                // Assuming format "Date Time"
+                                if (parts.length >= 2) {
+                                    currentDate = parts.slice(0, parts.length - 1).join(' ');
+                                    displayTime = parts[parts.length - 1];
+                                }
+                            }
+
+                            const showDateHeader = currentDate && currentDate !== lastDate;
+                            if (currentDate) lastDate = currentDate;
+
                             return (
-                                <div
-                                    className={cn(
-                                        "text-[10px] px-2 py-0.5 cursor-pointer hover:bg-muted/50 truncate font-mono text-center",
-                                        isSelected && "bg-primary text-primary-foreground hover:bg-primary/90"
+                                <div key={idx}>
+                                    {showDateHeader && (
+                                        <div className="text-[10px] px-2 py-1 font-bold text-muted-foreground bg-muted/30 text-center sticky top-0 z-10">
+                                            {currentDate}
+                                        </div>
                                     )}
-                                    ref={(el) => {
-                                        if (el) {
-                                            itemRefs.current.set(item.timestamp, el);
-                                        } else {
-                                            itemRefs.current.delete(item.timestamp);
-                                        }
-                                    }}
-                                    onClick={() => {
-                                        traceStore.selectTimelineTimestamp(isSelected ? null : item.timestamp);
-                                    }}
-                                    title={item.timestamp}
-                                    key={idx}
-                                >
-                                    {item.timestamp}
+                                    <div
+                                        className={cn(
+                                            "text-[10px] px-2 py-0.5 cursor-pointer hover:bg-muted/50 truncate font-mono text-center",
+                                            isSelected && "bg-primary text-primary-foreground hover:bg-primary/90"
+                                        )}
+                                        ref={(el) => {
+                                            if (el) {
+                                                itemRefs.current.set(item.timestamp, el);
+                                            } else {
+                                                itemRefs.current.delete(item.timestamp);
+                                            }
+                                        }}
+                                        onClick={() => {
+                                            traceStore.selectTimelineTimestamp(isSelected ? null : item.timestamp);
+                                        }}
+                                        title={item.timestamp}
+                                    >
+                                        {displayTime}
+                                    </div>
                                 </div>
                             );
                         }
