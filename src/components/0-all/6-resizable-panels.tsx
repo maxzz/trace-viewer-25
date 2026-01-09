@@ -25,9 +25,9 @@ export function TraceMainView() {
             <ResizablePanel
                 id="file-list"
                 defaultSize={`${defaultFilePanelSize}`}
-                minSize="15"
-                maxSize="40"
-                className="min-w-[200px]"
+                minSize="132px" // width of full timeline list (68px) + min file list width (64px) = 132px
+                maxSize="90%"
+                //className="min-w-[200px]"
             >
                 <FileList />
             </ResizablePanel>
