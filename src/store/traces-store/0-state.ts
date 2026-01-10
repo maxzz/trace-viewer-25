@@ -4,25 +4,10 @@ import { type TraceLine, type TraceHeader } from "../../trace-viewer-core/9-core
 import { type FullTimelineItem } from "../../workers/timeline-types";
 import { parseTraceFile } from "./1-parse-trace-file";
 import { buildFullTimeline as buildFullTimeline } from "../../workers-client/timeline-client";
-
-export interface TraceFile {
-    id: string;
-    fileName: string;
-    rawLines: TraceLine[];
-    viewLines: TraceLine[];
-    lines: TraceLine[]; // Alias for viewLines
-    uniqueThreadIds: number[];
-    header: TraceHeader;
-    errorCount: number;
-    isLoading: boolean;
-    error: string | null;
-    currentLineIndex: number;
-    matchedFilterIds: string[]; // Cache for FILTERS that match this file (for hiding)
-    matchedHighlightIds: string[]; // Cache for HIGHLIGHT rules that match this file (for coloring)
-}
+import { filesStore, type TraceFile } from "./2-files-store";
 
 export interface TraceState {
-    traceFiles: TraceFile[];
+    // traceFiles moved to filesStore
     selectedFileId: string | null;
 
     // Active file properties (mirrored from selected file for backward compatibility)
@@ -62,7 +47,6 @@ import { recomputeFilterMatches } from "../4-file-filters";
 import { recomputeHighlightMatches } from "../5-highlight-rules";
 
 export const traceStore = proxy<TraceState>({
-    traceFiles: [],
     selectedFileId: null,
 
     // Initial empty state
@@ -104,7 +88,7 @@ export const traceStore = proxy<TraceState>({
         };
 
         // Add to store immediately
-        traceStore.traceFiles.push(newFile);
+        filesStore.traceFiles.push(newFile);
 
         // Select it (this will update loading state in UI)
         traceStore.selectFile(id);
@@ -113,9 +97,9 @@ export const traceStore = proxy<TraceState>({
             const parsedData = await parseTraceFile(file);
 
             // Find the file in store
-            const fileIndex = traceStore.traceFiles.findIndex(f => f.id === id);
+            const fileIndex = filesStore.traceFiles.findIndex(f => f.id === id);
             if (fileIndex !== -1) {
-                const updatedFile = traceStore.traceFiles[fileIndex];
+                const updatedFile = filesStore.traceFiles[fileIndex];
                 updatedFile.rawLines = parsedData.rawLines;
                 updatedFile.viewLines = parsedData.viewLines;
                 updatedFile.lines = parsedData.viewLines;
@@ -135,12 +119,12 @@ export const traceStore = proxy<TraceState>({
             }
         } catch (e: any) {
             console.error("Failed to load trace", e);
-            const fileIndex = traceStore.traceFiles.findIndex(f => f.id === id);
+            const fileIndex = filesStore.traceFiles.findIndex(f => f.id === id);
             if (fileIndex !== -1) {
-                traceStore.traceFiles[fileIndex].error = e.message || "Unknown error";
-                traceStore.traceFiles[fileIndex].isLoading = false;
+                filesStore.traceFiles[fileIndex].error = e.message || "Unknown error";
+                filesStore.traceFiles[fileIndex].isLoading = false;
                 if (traceStore.selectedFileId === id) {
-                    traceStore.error = traceStore.traceFiles[fileIndex].error;
+                    traceStore.error = filesStore.traceFiles[fileIndex].error;
                     traceStore.isLoading = false;
                 }
             }
@@ -151,7 +135,7 @@ export const traceStore = proxy<TraceState>({
         traceStore.selectedFileId = id;
 
         if (id) {
-            const file = traceStore.traceFiles.find(f => f.id === id);
+            const file = filesStore.traceFiles.find(f => f.id === id);
             if (file) {
                 syncActiveFile(file);
             }
@@ -170,16 +154,16 @@ export const traceStore = proxy<TraceState>({
     },
 
     closeFile: (id: string) => {
-        const index = traceStore.traceFiles.findIndex(f => f.id === id);
+        const index = filesStore.traceFiles.findIndex(f => f.id === id);
         if (index !== -1) {
-            traceStore.traceFiles.splice(index, 1);
+            filesStore.traceFiles.splice(index, 1);
 
             // If closed file was selected, select another one
             if (traceStore.selectedFileId === id) {
-                if (traceStore.traceFiles.length > 0) {
+                if (filesStore.traceFiles.length > 0) {
                     // Select the next file, or the previous one if we closed the last one
-                    const nextIndex = Math.min(index, traceStore.traceFiles.length - 1);
-                    traceStore.selectFile(traceStore.traceFiles[nextIndex].id);
+                    const nextIndex = Math.min(index, filesStore.traceFiles.length - 1);
+                    traceStore.selectFile(filesStore.traceFiles[nextIndex].id);
                 } else {
                     traceStore.selectFile(null);
                 }
@@ -188,14 +172,14 @@ export const traceStore = proxy<TraceState>({
     },
 
     closeOtherFiles: (id: string) => {
-        traceStore.traceFiles = traceStore.traceFiles.filter(f => f.id === id);
+        filesStore.traceFiles = filesStore.traceFiles.filter(f => f.id === id);
         if (traceStore.selectedFileId !== id) {
             traceStore.selectFile(id);
         }
     },
 
     closeAllFiles: () => {
-        traceStore.traceFiles = [];
+        filesStore.traceFiles = [];
         traceStore.selectFile(null);
     },
 
@@ -224,7 +208,7 @@ export const traceStore = proxy<TraceState>({
         traceStore.setTimelineLoading(true);
         try {
             // Prepare data
-            const inputFiles = traceStore.traceFiles.map(
+            const inputFiles = filesStore.traceFiles.map(
                 (f) => ({
                     id: f.id,
                     lines: f.lines.map(
@@ -265,7 +249,7 @@ function syncActiveFile(file: TraceFile) {
 subscribe(traceStore,
     () => {
         if (traceStore.selectedFileId) {
-            const file = traceStore.traceFiles.find(f => f.id === traceStore.selectedFileId);
+            const file = filesStore.traceFiles.find(f => f.id === traceStore.selectedFileId);
             // Only update if changed to avoid infinite loops if syncActiveFile triggers this
             if (file && file.currentLineIndex !== traceStore.currentLineIndex) {
                 file.currentLineIndex = traceStore.currentLineIndex;

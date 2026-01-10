@@ -1,6 +1,7 @@
 import { useSnapshot } from "valtio";
 import { appSettings } from "../../store/1-ui-settings";
 import { traceStore } from "../../store/traces-store/0-state";
+import { filesStore } from "../../store/traces-store/2-files-store";
 import { TopMenu } from "./2-top-menu";
 import { TraceMainView } from "./6-resizable-panels";
 import { TraceEmptyState } from "../2-trace-viewer/7-trace-empty-state";
@@ -9,7 +10,8 @@ import { FileFilterDropdown, ButtonHighlightToggle } from "./3-btn-filters-selec
 import { ButtonThemeToggle } from "./3-btn-theme-toggle";
 
 export function TraceViewerApp() {
-    const { traceFiles: files, error } = useSnapshot(traceStore);
+    const { traceFiles: files } = useSnapshot(filesStore);
+    const { error } = useSnapshot(traceStore);
     const { showFooter } = useSnapshot(appSettings);
     const hasFile = files.length > 0;
 

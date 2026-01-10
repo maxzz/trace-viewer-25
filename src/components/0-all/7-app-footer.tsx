@@ -1,10 +1,12 @@
 import { useSnapshot } from "valtio";
 import { traceStore } from "../../store/traces-store/0-state";
+import { filesStore } from "../../store/traces-store/2-files-store";
 import { appSettings } from "../../store/1-ui-settings";
 import { Cpu, Clock, AlertCircle } from "lucide-react";
 
 export function TraceFooter() {
-    const { lines, header, error, traceFiles: files, selectedFileId } = useSnapshot(traceStore);
+    const { lines, header, error, selectedFileId } = useSnapshot(traceStore);
+    const { traceFiles: files } = useSnapshot(filesStore);
     const { extraInFooter } = useSnapshot(appSettings);
     const selectedFile = selectedFileId ? files.find(f => f.id === selectedFileId) : null;
     const errorCount = selectedFile?.errorCount || 0;

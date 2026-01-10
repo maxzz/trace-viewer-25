@@ -4,6 +4,7 @@ import { useSnapshot } from "valtio";
 import { notice } from "../ui/local-ui/7-toaster";
 import { extractTracesFromZip, isZipFile, cancelFullTimelineBuild } from "@/workers-client";
 import { traceStore } from "@/store/traces-store/0-state";
+import { filesStore } from "@/store/traces-store/2-files-store";
 import { Input } from "../ui/shadcn/input";
 import { Button } from "../ui/shadcn/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/shadcn/dialog";
@@ -20,7 +21,8 @@ export function TopMenu() {
     const setEditHighlightsOpen = useSetAtom(dialogEditHighlightsOpenAtom);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const { traceFiles: files, selectedFileId } = useSnapshot(traceStore);
+    const { traceFiles: files } = useSnapshot(filesStore);
+    const { selectedFileId } = useSnapshot(traceStore);
     const hasFile = files.length > 0;
     const hasActiveFile = !!selectedFileId;
 

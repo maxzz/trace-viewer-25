@@ -2,12 +2,14 @@ import { type RefObject, useEffect, useRef, useMemo } from "react";
 import { useSnapshot } from "valtio";
 import { appSettings, type FileFilter } from "../../store/1-ui-settings";
 import { traceStore } from "../../store/traces-store/0-state";
+import { filesStore } from "../../store/traces-store/2-files-store";
 import { ScrollArea } from "../ui/shadcn/scroll-area";
 import { FileListRow } from "./1-file-list-row";
 import { CombinedTimelinePanel } from "./2-full-timeline-list";
 
 export function FileList() {
-    const { traceFiles: files, selectedFileId } = useSnapshot(traceStore);
+    const { traceFiles: files } = useSnapshot(filesStore);
+    const { selectedFileId } = useSnapshot(traceStore);
     const { fileFilters, selectedFilterId, combinedOnLeft } = useSnapshot(appSettings);
     const containerRef = useRef<HTMLDivElement>(null);
 

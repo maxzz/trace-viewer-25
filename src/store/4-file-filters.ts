@@ -1,11 +1,11 @@
 import { type FileFilter, appSettings } from './1-ui-settings';
-import { traceStore } from './traces-store/0-state';
+import { filesStore } from './traces-store/2-files-store';
 import { isFileNameMatch } from '@/utils/filter-match';
 
 // Use this for FILTERING (Hiding files)
 export function recomputeFilterMatches() {
     const filters = appSettings.fileFilters;
-    const files = traceStore.traceFiles;
+    const files = filesStore.traceFiles;
 
     if (files.length === 0) return;
 

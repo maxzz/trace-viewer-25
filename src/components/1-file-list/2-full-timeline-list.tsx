@@ -3,6 +3,7 @@ import { useSnapshot } from "valtio";
 import { classNames, cn } from "@/utils/classnames";
 import { ScrollArea } from "../ui/shadcn/scroll-area";
 import { traceStore } from "@/store/traces-store/0-state";
+import { filesStore } from "@/store/traces-store/2-files-store";
 import { appSettings } from "@/store/1-ui-settings";
 import { cancelFullTimelineBuild } from "@/workers-client/timeline-client";
 
@@ -17,7 +18,7 @@ export function CombinedTimelinePanel() {
 
 function CombinedTimelineList() {
     const { showCombinedTimeline, timelinePrecision } = useSnapshot(appSettings);
-    const { traceFiles: files } = useSnapshot(traceStore);
+    const { traceFiles: files } = useSnapshot(filesStore);
 
     // Timeline build effect
     useEffect(() => {

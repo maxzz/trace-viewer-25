@@ -6,11 +6,11 @@ import { Button } from "@/components/ui/shadcn/button";
 import { Input } from "@/components/ui/shadcn/input";
 import { ScrollArea } from "@/components/ui/shadcn/scroll-area";
 import { dialogFileHeaderOpenAtom } from "@/store/2-ui-atoms";
-import { traceStore } from "@/store/traces-store/0-state";
+import { filesStore } from "@/store/traces-store/2-files-store";
 
 export function DialogFileHeader() {
     const [fileId, setFileId] = useAtom(dialogFileHeaderOpenAtom);
-    const { traceFiles: files } = useSnapshot(traceStore);
+    const { traceFiles: files } = useSnapshot(filesStore);
     
     const file = fileId ? files.find(f => f.id === fileId) : null;
     const header = file?.header;
