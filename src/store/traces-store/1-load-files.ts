@@ -1,4 +1,4 @@
-import { extractTracesFromZip, isZipFile } from "@/workers-client";
+import { extractTracesFromZipInWorker, isZipFile } from "@/workers-client";
 import { traceStore } from "./0-state";
 
 export async function asyncLoadAnyFiles(files: File[]) {
@@ -7,7 +7,7 @@ export async function asyncLoadAnyFiles(files: File[]) {
 
     // Load new files
     for (const file of zipFiles) {
-        await extractTracesFromZip(file);
+        await extractTracesFromZipInWorker(file);
     }
 
     asyncLoadFilesFromZip(nonZipFiles);

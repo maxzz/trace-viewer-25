@@ -47,6 +47,18 @@ export interface TraceLine {
     textColor?: string; // Hex color override (e.g. "#FF0000")
 }
 
+// For internal flow tracking
+export interface TraceLineDescriptor {
+    headerOffset: number;
+    lineFileNumber: number;
+    lineIndent: number;
+    threadId: number;
+    code: LineCode;
+    strLength: number;
+}
+
+// File Header
+
 export interface TraceHeader {
     magic: string; // "trace3"
     compiled?: string;
@@ -61,12 +73,4 @@ export interface TraceHeader {
     rawText?: string;
 }
 
-// For internal flow tracking
-export interface TraceLineDescriptor {
-    headerOffset: number;
-    lineFileNumber: number;
-    lineIndent: number;
-    threadId: number;
-    code: LineCode;
-    strLength: number;
-}
+export const emptyFileHeader: TraceHeader = { magic: '' };

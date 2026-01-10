@@ -131,7 +131,7 @@ function TraceOpenMenuItem({ onClick }: { onClick: () => void; }) {
 function TimelineProgress() {
     const [open, setOpen] = useAtom(dialogTimelineCancelOpenAtom);
 
-    const { isFullTimelineLoading } = useSnapshot(traceStore);
+    const { isAllTimesLoading: isFullTimelineLoading } = useSnapshot(traceStore);
     if (!isFullTimelineLoading) {
         return null;
     }
@@ -159,7 +159,7 @@ function TimelineProgress() {
                         onClick={
                             () => {
                                 cancelFullTimelineBuild();
-                                traceStore.setTimelineLoading(false);
+                                traceStore.setAllTimesLoading(false);
                                 traceStore.setFullTimeline([]);
                                 notice.info("Timeline build cancelled");
                                 setOpen(false);

@@ -3,7 +3,7 @@ import { subscribe } from "valtio";
 import { appSettings } from "../1-ui-settings";
 import { traceStore } from "./0-state";
 import { filesStore } from "./9-types-files-store";
-import { cancelFullTimelineBuild } from "../../workers-client/timeline-client";
+import { cancelFullTimelineBuild } from "../../workers-client/all-times-client";
 
 export const listenerToBuildFullTimelineAtom = atomEffect(
     (get, set) => {
@@ -42,5 +42,5 @@ export function runBuildFullTimeline() {
         return;
     }
 
-    traceStore.asyncBuildFullTimes(timelinePrecision);
+    traceStore.asyncBuildAllTimes(timelinePrecision);
 }

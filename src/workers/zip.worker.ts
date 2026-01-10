@@ -1,7 +1,7 @@
 import * as fflate from 'fflate';
-import { type ZipWorkerRequest, type ZipWorkerResponse, type ExtractedFile } from './zip-worker-types';
+import { type ExtractedFile, type ZipWorkerRequest, type ZipWorkerResponse } from './zip-worker-types';
 
-self.onmessage = async (e: MessageEvent<ZipWorkerRequest>) => {
+self.onmessage = async function handleZipExtract(e: MessageEvent<ZipWorkerRequest>) {
     const { type, file } = e.data;
 
     if (type !== 'EXTRACT') {

@@ -1,23 +1,23 @@
 import { type TraceLine } from '@/trace-viewer-core/9-core-types';
-import { type TimelineWorkerInput, type TimelineWorkerOutput, type FullTimelineItem } from '../workers/timeline-types';
+import { type AllTimesWorkerInput, type AllTimesWorkerOutput, type AllTimesItem } from '../workers/all-times-worker-types';
 
 let worker: Worker | null = null;
 let currentReject: ((reason?: any) => void) | null = null;
 
 type LineForFullTimeline = Pick<TraceLine, 'timestamp' | 'lineIndex' | 'date'>;
 
-export function buildFullTimeline(files: { id: string; lines: LineForFullTimeline[]; }[], precision: number): Promise<FullTimelineItem[]> {
+export function buildAllTimesInWorker(files: { id: string; lines: LineForFullTimeline[]; }[], precision: number): Promise<AllTimesItem[]> {
     // Cancel any existing work
     cancelFullTimelineBuild();
 
-    worker = new Worker(new URL('../workers/timeline.worker.ts', import.meta.url), { type: 'module' });
+    worker = new Worker(new URL('../workers/all-times.worker.ts', import.meta.url), { type: 'module' });
 
     return new Promise(
         (resolve, reject) => {
             currentReject = reject;
 
-            worker!.onmessage = (e: MessageEvent<TimelineWorkerOutput>) => {
-                const { type, timeline, error } = e.data;
+            worker!.onmessage = (e: MessageEvent<AllTimesWorkerOutput>) => {
+                const { type, allTimes: timeline, error } = e.data;
                 if (type === 'SUCCESS' && timeline) {
                     resolve(timeline);
                     cleanup();
@@ -40,7 +40,7 @@ export function buildFullTimeline(files: { id: string; lines: LineForFullTimelin
                 })
             );
 
-            const msg: TimelineWorkerInput = {
+            const msg: AllTimesWorkerInput = {
                 type: 'BUILD',
                 files: filesData,
                 precision

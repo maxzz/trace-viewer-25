@@ -1,7 +1,7 @@
 import { traceStore } from "@/store/traces-store/0-state";
 import { atom } from "jotai";
 import { setAppTitle } from '@/store/3-ui-app-title';
-import { isTrc3File, isZipFile, extractTracesFromZip } from "@/workers-client";
+import { isTrc3File, isZipFile, extractTracesFromZipInWorker } from "@/workers-client";
 
 export type DoSetFilesFrom_Dnd_Atom = typeof doSetFilesFrom_Dnd_Atom;
 
@@ -83,7 +83,7 @@ export const doSetFilesFrom_Dnd_Atom = atom(                    // used by DropI
         // Load new files
         for (const file of files) {
             if (isZipFile(file)) {
-                await extractTracesFromZip(file);
+                await extractTracesFromZipInWorker(file);
             } else {
                 traceStore.loadTrace(file);
             }

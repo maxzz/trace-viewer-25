@@ -15,7 +15,7 @@ function getWorker(): Worker {
     return workerInstance;
 }
 
-export async function extractTracesFromZip(file: File): Promise<void> {
+export async function extractTracesFromZipInWorker(file: File): Promise<void> {
     const store = getDefaultStore();
 
     // Set loading state

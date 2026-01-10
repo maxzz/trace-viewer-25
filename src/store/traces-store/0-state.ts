@@ -1,12 +1,12 @@
 import { proxy, ref, subscribe } from "valtio";
 import { notice } from "../../components/ui/local-ui/7-toaster";
-import { type TraceLine, type TraceHeader } from "../../trace-viewer-core/9-core-types";
-import { type FullTimelineItem } from "../../workers/timeline-types";
+import { type TraceLine, type TraceHeader, emptyFileHeader } from "../../trace-viewer-core/9-core-types";
+import { type FileState, type FileData, filesStore } from "./9-types-files-store";
+import { type AllTimesItem } from "../../workers/all-times-worker-types";
 import { parseTraceFile } from "./2-parse-trace-file";
-import { buildFullTimeline as buildFullTimeline } from "../../workers-client/timeline-client";
-import { filesStore, type FileState, type FileData } from "./9-types-files-store";
+import { buildAllTimesInWorker } from "../../workers-client/all-times-client";
 
-export interface TraceState {
+export interface TraceStore {
     // traceFiles moved to filesStore
     selectedFileId: string | null;
 
@@ -22,8 +22,8 @@ export interface TraceState {
     currentLineIndex: number;
 
     // Full timeline
-    fullTimeline: FullTimelineItem[];                  // Full timeline items
-    isFullTimelineLoading: boolean;                    // Whether the full timeline is loading
+    fullTimeline: AllTimesItem[];                  // Full timeline items
+    isAllTimesLoading: boolean;                    // Whether the full timeline is loading
     timelineError: string | null;                      // Error message for the full timeline
     fullTimelineSelectedTimestamp: string | null;      // Timestamp of the selected item in the full timeline
     pendingScrollTimestamp: string | null;             // Timestamp to scroll TraceList to when the full timeline is selected
@@ -34,20 +34,18 @@ export interface TraceState {
     closeFile: (id: string) => void;
     closeOtherFiles: (id: string) => void;
     closeAllFiles: () => void;
-    setFullTimeline: (items: FullTimelineItem[]) => void;
-    setTimelineLoading: (loading: boolean) => void;
+    setFullTimeline: (items: AllTimesItem[]) => void;
+    setAllTimesLoading: (loading: boolean) => void;
     selectTimelineTimestamp: (timestamp: string | null) => void;
     scrollToTimestamp: (timestamp: string | null) => void;
-    asyncBuildFullTimes: (precision: number) => Promise<void>;
+    asyncBuildAllTimes: (precision: number) => Promise<void>;
 }
-
-const emptyHeader = { magic: '' };
 
 import { recomputeFilterMatches } from "../4-file-filters";
 import { recomputeHighlightMatches } from "../5-highlight-rules";
 import { runBuildFullTimeline } from "./8-timeline-listener";
 
-export const traceStore = proxy<TraceState>({
+export const traceStore = proxy<TraceStore>({
     selectedFileId: null,
 
     // Initial empty state
@@ -55,7 +53,7 @@ export const traceStore = proxy<TraceState>({
     rawLines: [],
     viewLines: [],
     uniqueThreadIds: [],
-    header: emptyHeader,
+    header: emptyFileHeader,
     fileName: null,
     isLoading: false,
     error: null,
@@ -63,7 +61,7 @@ export const traceStore = proxy<TraceState>({
 
     // Timeline
     fullTimeline: [],
-    isFullTimelineLoading: false,
+    isAllTimesLoading: false,
     timelineError: null,
     fullTimelineSelectedTimestamp: null,
     pendingScrollTimestamp: null,
@@ -77,9 +75,8 @@ export const traceStore = proxy<TraceState>({
             fileName: file.name,
             rawLines: [],
             viewLines: [],
-            lines: [],
             uniqueThreadIds: [],
-            header: emptyHeader,
+            header: emptyFileHeader,
             errorCount: 0,
             isLoading: true,
             error: null,
@@ -111,7 +108,6 @@ export const traceStore = proxy<TraceState>({
                 const updatedFileData = filesStore.filesData[id];
                 updatedFileData.rawLines = parsedData.rawLines;
                 updatedFileData.viewLines = parsedData.viewLines;
-                updatedFileData.lines = parsedData.viewLines;
                 updatedFileData.uniqueThreadIds = parsedData.uniqueThreadIds;
                 updatedFileData.header = parsedData.header;
                 updatedFileData.errorCount = parsedData.errorCount;
@@ -160,7 +156,7 @@ export const traceStore = proxy<TraceState>({
             traceStore.rawLines = [];
             traceStore.viewLines = [];
             traceStore.uniqueThreadIds = [];
-            traceStore.header = emptyHeader;
+            traceStore.header = emptyFileHeader;
             traceStore.fileName = null;
             traceStore.isLoading = false;
             traceStore.error = null;
@@ -207,14 +203,14 @@ export const traceStore = proxy<TraceState>({
         traceStore.selectFile(null);
     },
 
-    setFullTimeline: (items: FullTimelineItem[]) => {
+    setFullTimeline: (items: AllTimesItem[]) => {
         traceStore.fullTimeline = items;
-        traceStore.isFullTimelineLoading = false;
+        traceStore.isAllTimesLoading = false;
         traceStore.timelineError = null;
     },
 
-    setTimelineLoading: (loading: boolean) => {
-        traceStore.isFullTimelineLoading = loading;
+    setAllTimesLoading: (loading: boolean) => {
+        traceStore.isAllTimesLoading = loading;
         if (loading) {
             traceStore.timelineError = null;
         }
@@ -228,20 +224,19 @@ export const traceStore = proxy<TraceState>({
         traceStore.pendingScrollTimestamp = timestamp;
     },
 
-    asyncBuildFullTimes: async (precision: number) => {
-        traceStore.setTimelineLoading(true);
+    asyncBuildAllTimes: async (precision: number) => {
+        traceStore.setAllTimesLoading(true);
         try {
-            // Prepare data
             const inputFiles = filesStore.filesState.map(
-                (f) => ({
+                (f: FileState) => ({
                     id: f.id,
-                    lines: f.data.lines.map(
-                        (l) => ({ timestamp: l.timestamp, lineIndex: l.lineIndex, date: l.date })
-                    ) // Using viewLines (aliased as lines)
+                    lines: f.data.viewLines.map(
+                        (l: TraceLine) => ({ timestamp: l.timestamp, lineIndex: l.lineIndex, date: l.date })
+                    )
                 })
             );
 
-            const items = await buildFullTimeline(inputFiles, precision);
+            const items = await buildAllTimesInWorker(inputFiles, precision);
             traceStore.setFullTimeline(items);
             notice.success("Timeline built");
         } catch (e: any) {
@@ -250,7 +245,7 @@ export const traceStore = proxy<TraceState>({
                 notice.info("Timeline build cancelled");
             } else {
                 console.error("Timeline build failed", e);
-                traceStore.setTimelineLoading(false); // Make sure to stop loading
+                traceStore.setAllTimesLoading(false); // Make sure to stop loading
                 notice.error(`Timeline build failed: ${e.message}`);
             }
         }
@@ -258,7 +253,6 @@ export const traceStore = proxy<TraceState>({
 });
 
 function syncActiveFile(file: FileState) {
-    traceStore.lines = file.data.lines;
     traceStore.rawLines = file.data.rawLines;
     traceStore.viewLines = file.data.viewLines;
     traceStore.uniqueThreadIds = file.data.uniqueThreadIds;

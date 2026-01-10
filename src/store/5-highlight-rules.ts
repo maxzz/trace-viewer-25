@@ -2,28 +2,6 @@ import { type HighlightRule, appSettings } from './1-ui-settings';
 import { filesStore } from './traces-store/9-types-files-store';
 import { isFileNameMatch } from '@/utils/filter-match';
 
-// Use this for HIGHLIGHTING (Coloring files)
-export function recomputeHighlightMatches() {
-    const rules = appSettings.highlightRules;
-    const files = filesStore.filesState;
-
-    if (files.length === 0) return;
-
-    files.forEach(file => {
-        const matchedIds: string[] = [];
-        rules.forEach(rule => {
-            if (isFileNameMatch(file.data.fileName, rule.pattern)) {
-                matchedIds.push(rule.id);
-            }
-        });
-        
-        // Update only if changed to avoid unnecessary renders
-        if (JSON.stringify(file.matchedHighlightIds) !== JSON.stringify(matchedIds)) {
-            file.matchedHighlightIds = matchedIds;
-        }
-    });
-}
-
 export const highlightActions = {
     addRule: (name: string, pattern: string, color?: string) => {
         const id = Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
@@ -60,3 +38,25 @@ export const highlightActions = {
         appSettings.highlightEnabled = !appSettings.highlightEnabled;
     }
 };
+
+// Use this for HIGHLIGHTING (Coloring files)
+export function recomputeHighlightMatches() {
+    const rules = appSettings.highlightRules;
+    const files = filesStore.filesState;
+
+    if (files.length === 0) return;
+
+    files.forEach(file => {
+        const matchedIds: string[] = [];
+        rules.forEach(rule => {
+            if (isFileNameMatch(file.data.fileName, rule.pattern)) {
+                matchedIds.push(rule.id);
+            }
+        });
+        
+        // Update only if changed to avoid unnecessary renders
+        if (JSON.stringify(file.matchedHighlightIds) !== JSON.stringify(matchedIds)) {
+            file.matchedHighlightIds = matchedIds;
+        }
+    });
+}

@@ -1,8 +1,6 @@
-import { type TimelineWorkerInput, type TimelineWorkerOutput, type FullTimelineItem } from './timeline-types';
+import { type AllTimesItem, type AllTimesWorkerInput, type AllTimesWorkerOutput } from './all-times-worker-types';
 
-self.onmessage = handleTimelineBuild;
-
-function handleTimelineBuild(e: MessageEvent<TimelineWorkerInput>) {
+self.onmessage = function handleAllTimesBuild(e: MessageEvent<AllTimesWorkerInput>) {
     const { type, files, precision } = e.data;
 
     if (type !== 'BUILD') return;
@@ -40,7 +38,7 @@ function handleTimelineBuild(e: MessageEvent<TimelineWorkerInput>) {
             }
         }
 
-        const timeline: FullTimelineItem[] = Array.from(timestampMap.entries())
+        const allTimes: AllTimesItem[] = Array.from(timestampMap.entries())
             .map(
                 ([timestamp, fileIdSet]) => {
                     const date = dateMap.get(timestamp);
@@ -55,11 +53,11 @@ function handleTimelineBuild(e: MessageEvent<TimelineWorkerInput>) {
                 (a, b) => compareTimestamps(a.timestamp, b.timestamp)
             );
 
-        const response: TimelineWorkerOutput = { type: 'SUCCESS', timeline };
+        const response: AllTimesWorkerOutput = { type: 'SUCCESS', allTimes };
         self.postMessage(response);
     }
     catch (error: any) {
-        const response: TimelineWorkerOutput = { type: 'ERROR', error: error.message || 'Unknown error during timeline build' };
+        const response: AllTimesWorkerOutput = { type: 'ERROR', error: error.message || 'Unknown error during timeline build' };
         self.postMessage(response);
     }
 };

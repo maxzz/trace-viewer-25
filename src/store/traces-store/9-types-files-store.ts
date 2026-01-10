@@ -6,7 +6,6 @@ export interface FileData  {
     fileName: string;
     rawLines: TraceLine[];
     viewLines: TraceLine[];
-    lines: TraceLine[]; // Alias for viewLines
     uniqueThreadIds: number[];
     header: TraceHeader;
     errorCount: number;

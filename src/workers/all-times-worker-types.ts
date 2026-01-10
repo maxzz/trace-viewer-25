@@ -1,4 +1,4 @@
-export interface TimelineWorkerInput {
+export interface AllTimesWorkerInput {
     type: 'BUILD';
     files: {
         id: string;
@@ -7,13 +7,13 @@ export interface TimelineWorkerInput {
     precision: number;
 }
 
-export interface TimelineWorkerOutput {
+export interface AllTimesWorkerOutput {
     type: 'SUCCESS' | 'ERROR' | 'CANCELLED';
-    timeline?: FullTimelineItem[];
+    allTimes?: AllTimesItem[];
     error?: string;
 }
 
-export interface FullTimelineItem {
+export interface AllTimesItem {
     timestamp: string;
     fileIds: string[];
 }
