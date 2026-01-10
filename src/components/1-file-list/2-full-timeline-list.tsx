@@ -18,32 +18,34 @@ export function CombinedTimelinePanel() {
 
 function CombinedTimelineList() {
     const { showCombinedTimeline, timelinePrecision } = useSnapshot(appSettings);
-    const { traceFiles: files } = useSnapshot(filesStore);
+    const { traceFiles } = useSnapshot(filesStore);
 
     // Timeline build effect
-    useEffect(() => {
-        if (!showCombinedTimeline) {
-            traceStore.setFullTimeline([]);
-            return;
-        }
+    useEffect(
+        () => {
+            if (!showCombinedTimeline) {
+                traceStore.setFullTimeline([]);
+                return;
+            }
 
-        // Check if any file is still loading
-        const isLoading = files.some(f => f.isLoading);
-        if (isLoading) return;
+            // Check if any file is still loading
+            const isLoading = traceFiles.some(f => f.isLoading);
+            if (isLoading) return;
 
-        if (files.length === 0) {
-            traceStore.setFullTimeline([]);
-            return;
-        }
+            if (traceFiles.length === 0) {
+                traceStore.setFullTimeline([]);
+                return;
+            }
 
-        // Debounce build
-        const timer = setTimeout(() => { traceStore.asyncBuildFullTimes(timelinePrecision); }, 300);
+            // Debounce build
+            const timer = setTimeout(() => { traceStore.asyncBuildFullTimes(timelinePrecision); }, 300);
 
-        return () => {
-            clearTimeout(timer);
-            cancelFullTimelineBuild();
-        };
-    }, [showCombinedTimeline, timelinePrecision, files]); // files dependency: if files loaded/added/removed
+            return () => {
+                clearTimeout(timer);
+                cancelFullTimelineBuild();
+            };
+        }, [showCombinedTimeline, timelinePrecision, traceFiles] // files dependency: if files loaded/added/removed
+    );
 
     return <FullTimelineList />;
 }
@@ -76,7 +78,7 @@ function FullTimelineList() {
                     {timeline.map(
                         (item, idx) => {
                             const isSelected = item.timestamp === selectedTimelineTimestamp;
-                            
+
                             // Parse timestamp to separate date and time
                             // Expected format: "MM/DD/YYYY HH:MM:SS.mmm" or "HH:MM:SS.mmm"
                             let displayTime = item.timestamp;
@@ -124,7 +126,7 @@ function FullTimelineList() {
                             );
                         }
                     )}
-                    
+
                     {timeline.length === 0 && (
                         <div className="text-[10px] text-muted-foreground p-2 text-center">
                             No data

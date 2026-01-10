@@ -1,18 +1,14 @@
-import { type TraceFile, traceStore } from "../../store/traces-store/0-state";
-import { cn } from "@/utils/index";
-import { AlertCircle, FileText } from "lucide-react";
-import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger, } from "../ui/shadcn/context-menu";
-import { useSnapshot } from "valtio";
-import { appSettings } from "@/store/1-ui-settings";
 import { useSetAtom } from "jotai";
+import { useSnapshot } from "valtio";
+import { cn } from "@/utils/index";
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger, } from "../ui/shadcn/context-menu";
+import { appSettings } from "@/store/1-ui-settings";
+import { type TraceFile } from "../../store/traces-store/2-files-store";
+import { traceStore } from "../../store/traces-store/0-state";
+import { AlertCircle, FileText } from "lucide-react";
 import { dialogFileHeaderOpenAtom } from "@/store/2-ui-atoms";
 
-interface FileListItemProps {
-    file: TraceFile;
-    isSelected: boolean;
-}
-
-export function FileListRow({ file, isSelected }: FileListItemProps) {
+export function FileListRow({ file, isSelected }: { file: TraceFile; isSelected: boolean; }) {
     const hasError = file.errorCount > 0 || !!file.error;
     const { highlightRules, highlightEnabled } = useSnapshot(appSettings);
     const { fullTimeline: timeline, fullTimelineSelectedTimestamp: selectedTimelineTimestamp } = useSnapshot(traceStore);

@@ -21,9 +21,9 @@ export function TopMenu() {
     const setEditHighlightsOpen = useSetAtom(dialogEditHighlightsOpenAtom);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const { traceFiles: files } = useSnapshot(filesStore);
+    const { traceFiles } = useSnapshot(filesStore);
     const { selectedFileId } = useSnapshot(traceStore);
-    const hasFile = files.length > 0;
+    const hasFile = traceFiles.length > 0;
     const hasActiveFile = !!selectedFileId;
 
     return (<>

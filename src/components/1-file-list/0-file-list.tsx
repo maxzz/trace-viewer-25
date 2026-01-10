@@ -8,20 +8,20 @@ import { FileListRow } from "./1-file-list-row";
 import { CombinedTimelinePanel } from "./2-full-timeline-list";
 
 export function FileList() {
-    const { traceFiles: files } = useSnapshot(filesStore);
+    const { traceFiles } = useSnapshot(filesStore);
     const { selectedFileId } = useSnapshot(traceStore);
     const { fileFilters, selectedFilterId, combinedOnLeft } = useSnapshot(appSettings);
     const containerRef = useRef<HTMLDivElement>(null);
 
     // Compute filtered files
     const filteredFiles = useMemo(
-        () => filterFiles(files, selectedFilterId, fileFilters), [files, selectedFilterId, fileFilters]
+        () => filterFiles(traceFiles, selectedFilterId, fileFilters), [traceFiles, selectedFilterId, fileFilters]
     );
 
     // Effect to handle selection change when filter results change
     useEffect(
         () => {
-            if (files.length === 0) return;
+            if (traceFiles.length === 0) return;
 
             // Check if currently selected file is in the filtered list
             const isSelectedInFiltered = filteredFiles.some(f => f.id === selectedFileId);
@@ -35,7 +35,7 @@ export function FileList() {
                     traceStore.selectFile(null);
                 }
             }
-        }, [filteredFiles, selectedFileId, files.length]
+        }, [filteredFiles, selectedFileId, traceFiles.length]
     );
 
     // Keyboard navigation

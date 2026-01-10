@@ -10,10 +10,10 @@ import { FileFilterDropdown, ButtonHighlightToggle } from "./3-btn-filters-selec
 import { ButtonThemeToggle } from "./3-btn-theme-toggle";
 
 export function TraceViewerApp() {
-    const { traceFiles: files } = useSnapshot(filesStore);
+    const { traceFiles } = useSnapshot(filesStore);
     const { error } = useSnapshot(traceStore);
     const { showFooter } = useSnapshot(appSettings);
-    const hasFile = files.length > 0;
+    const hasFile = traceFiles.length > 0;
 
     return (
         <div className="h-full text-xs flex flex-col overflow-hidden">
