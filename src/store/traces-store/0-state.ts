@@ -1,10 +1,10 @@
-import { proxy, subscribe } from "valtio";
+import { proxy, ref, subscribe } from "valtio";
 import { notice } from "../../components/ui/local-ui/7-toaster";
 import { type TraceLine, type TraceHeader } from "../../trace-viewer-core/9-core-types";
 import { type FullTimelineItem } from "../../workers/timeline-types";
 import { parseTraceFile } from "./1-parse-trace-file";
 import { buildFullTimeline as buildFullTimeline } from "../../workers-client/timeline-client";
-import { filesStore, type TraceFile } from "./2-files-store";
+import { filesStore, type TraceFile, type TraceFileData } from "./2-files-store";
 
 export interface TraceState {
     // traceFiles moved to filesStore
@@ -70,8 +70,8 @@ export const traceStore = proxy<TraceState>({
     loadTrace: async (file: File) => {
         const id = Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
 
-        // Create new file entry
-        const newFile: TraceFile = {
+        // Create new file data entry
+        const newFileData: TraceFileData = {
             id,
             fileName: file.name,
             rawLines: [],
@@ -82,12 +82,21 @@ export const traceStore = proxy<TraceState>({
             errorCount: 0,
             isLoading: true,
             error: null,
+        };
+
+        // Create file state entry with reference to data
+        const newFile: TraceFile = {
+            id,
+            data: newFileData, // Placeholder, will update after adding to store
             currentLineIndex: -1,
             matchedFilterIds: [],
             matchedHighlightIds: []
         };
 
         // Add to store immediately
+        filesStore.traceFilesData[id] = ref(newFileData);
+        // Update reference to point to the proxy in the store
+        newFile.data = filesStore.traceFilesData[id];
         filesStore.traceFiles.push(newFile);
 
         // Select it (this will update loading state in UI)
@@ -96,21 +105,23 @@ export const traceStore = proxy<TraceState>({
         try {
             const parsedData = await parseTraceFile(file);
 
-            // Find the file in store
-            const fileIndex = filesStore.traceFiles.findIndex(f => f.id === id);
-            if (fileIndex !== -1) {
-                const updatedFile = filesStore.traceFiles[fileIndex];
-                updatedFile.rawLines = parsedData.rawLines;
-                updatedFile.viewLines = parsedData.viewLines;
-                updatedFile.lines = parsedData.viewLines;
-                updatedFile.uniqueThreadIds = parsedData.uniqueThreadIds;
-                updatedFile.header = parsedData.header;
-                updatedFile.errorCount = parsedData.errorCount;
-                updatedFile.isLoading = false;
+            // Find the file data in store
+            if (filesStore.traceFilesData[id]) {
+                const updatedFileData = filesStore.traceFilesData[id];
+                updatedFileData.rawLines = parsedData.rawLines;
+                updatedFileData.viewLines = parsedData.viewLines;
+                updatedFileData.lines = parsedData.viewLines;
+                updatedFileData.uniqueThreadIds = parsedData.uniqueThreadIds;
+                updatedFileData.header = parsedData.header;
+                updatedFileData.errorCount = parsedData.errorCount;
+                updatedFileData.isLoading = false;
 
                 // If this is still the selected file, update the top-level properties
                 if (traceStore.selectedFileId === id) {
-                    syncActiveFile(updatedFile);
+                    const traceFile = filesStore.traceFiles.find(f => f.id === id);
+                    if (traceFile) {
+                        syncActiveFile(traceFile);
+                    }
                 }
                 
                 // Recompute filters and highlights for the new file
@@ -119,12 +130,12 @@ export const traceStore = proxy<TraceState>({
             }
         } catch (e: any) {
             console.error("Failed to load trace", e);
-            const fileIndex = filesStore.traceFiles.findIndex(f => f.id === id);
-            if (fileIndex !== -1) {
-                filesStore.traceFiles[fileIndex].error = e.message || "Unknown error";
-                filesStore.traceFiles[fileIndex].isLoading = false;
+            if (filesStore.traceFilesData[id]) {
+                filesStore.traceFilesData[id].error = e.message || "Unknown error";
+                filesStore.traceFilesData[id].isLoading = false;
+                
                 if (traceStore.selectedFileId === id) {
-                    traceStore.error = filesStore.traceFiles[fileIndex].error;
+                    traceStore.error = filesStore.traceFilesData[id].error;
                     traceStore.isLoading = false;
                 }
             }
@@ -157,6 +168,7 @@ export const traceStore = proxy<TraceState>({
         const index = filesStore.traceFiles.findIndex(f => f.id === id);
         if (index !== -1) {
             filesStore.traceFiles.splice(index, 1);
+            delete filesStore.traceFilesData[id];
 
             // If closed file was selected, select another one
             if (traceStore.selectedFileId === id) {
@@ -173,6 +185,13 @@ export const traceStore = proxy<TraceState>({
 
     closeOtherFiles: (id: string) => {
         filesStore.traceFiles = filesStore.traceFiles.filter(f => f.id === id);
+        const keys = Object.keys(filesStore.traceFilesData);
+        keys.forEach(key => {
+            if (key !== id) {
+                delete filesStore.traceFilesData[key];
+            }
+        });
+        
         if (traceStore.selectedFileId !== id) {
             traceStore.selectFile(id);
         }
@@ -180,6 +199,7 @@ export const traceStore = proxy<TraceState>({
 
     closeAllFiles: () => {
         filesStore.traceFiles = [];
+        filesStore.traceFilesData = {};
         traceStore.selectFile(null);
     },
 
@@ -211,7 +231,7 @@ export const traceStore = proxy<TraceState>({
             const inputFiles = filesStore.traceFiles.map(
                 (f) => ({
                     id: f.id,
-                    lines: f.lines.map(
+                    lines: f.data.lines.map(
                         (l) => ({ timestamp: l.timestamp, lineIndex: l.lineIndex, date: l.date })
                     ) // Using viewLines (aliased as lines)
                 })
@@ -234,14 +254,14 @@ export const traceStore = proxy<TraceState>({
 });
 
 function syncActiveFile(file: TraceFile) {
-    traceStore.lines = file.lines;
-    traceStore.rawLines = file.rawLines;
-    traceStore.viewLines = file.viewLines;
-    traceStore.uniqueThreadIds = file.uniqueThreadIds;
-    traceStore.header = file.header;
-    traceStore.fileName = file.fileName;
-    traceStore.isLoading = file.isLoading;
-    traceStore.error = file.error;
+    traceStore.lines = file.data.lines;
+    traceStore.rawLines = file.data.rawLines;
+    traceStore.viewLines = file.data.viewLines;
+    traceStore.uniqueThreadIds = file.data.uniqueThreadIds;
+    traceStore.header = file.data.header;
+    traceStore.fileName = file.data.fileName;
+    traceStore.isLoading = file.data.isLoading;
+    traceStore.error = file.data.error;
     traceStore.currentLineIndex = file.currentLineIndex;
 }
 

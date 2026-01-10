@@ -12,7 +12,7 @@ export function recomputeFilterMatches() {
     files.forEach(file => {
         const matchedIds: string[] = [];
         filters.forEach(filter => {
-            if (isFileNameMatch(file.fileName, filter.pattern)) {
+            if (isFileNameMatch(file.data.fileName, filter.pattern)) {
                 matchedIds.push(filter.id);
             }
         });

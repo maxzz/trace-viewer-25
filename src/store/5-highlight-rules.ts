@@ -12,7 +12,7 @@ export function recomputeHighlightMatches() {
     files.forEach(file => {
         const matchedIds: string[] = [];
         rules.forEach(rule => {
-            if (isFileNameMatch(file.fileName, rule.pattern)) {
+            if (isFileNameMatch(file.data.fileName, rule.pattern)) {
                 matchedIds.push(rule.id);
             }
         });

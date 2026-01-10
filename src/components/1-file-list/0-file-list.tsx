@@ -82,7 +82,7 @@ export function FileList() {
 
 interface FileListItem {
     id: string;
-    fileName: string;
+    data: { fileName: string; };
 }
 
 function createFileListKeyDownHandler(containerRef: RefObject<HTMLDivElement | null>, filteredFiles: ReadonlyArray<FileListItem>, selectedFileId: string | null) {
@@ -129,7 +129,7 @@ function createFileListKeyDownHandler(containerRef: RefObject<HTMLDivElement | n
     };
 }
 
-function filterFiles<T extends { id: string; fileName: string; }>(files: ReadonlyArray<T>, selectedFilterId: string | null, fileFilters: ReadonlyArray<FileFilter>): ReadonlyArray<T> {
+function filterFiles<T extends { id: string; data: { fileName: string; } }>(files: ReadonlyArray<T>, selectedFilterId: string | null, fileFilters: ReadonlyArray<FileFilter>): ReadonlyArray<T> {
     const filter = !selectedFilterId ? null : fileFilters.find(f => f.id === selectedFilterId);
     if (!filter) {
         return files;
@@ -143,7 +143,7 @@ function filterFiles<T extends { id: string; fileName: string; }>(files: Readonl
             const regexPattern = pattern.slice(1, -1);
             const regex = new RegExp(regexPattern, 'i');
             return files.filter(
-                (file) => regex.test(file.fileName)
+                (file) => regex.test(file.data.fileName)
             );
         } catch (e) {
             // Invalid regex, return empty or fallback
@@ -161,15 +161,15 @@ function filterFiles<T extends { id: string; fileName: string; }>(files: Readonl
             const regexStr = "^" + patternLower.split('*').map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('.*') + "$";
             const regex = new RegExp(regexStr, 'i');
             return files.filter(
-                (file) => regex.test(file.fileName)
+                (file) => regex.test(file.data.fileName)
             );
         } catch (e) {
             // fallback to contains
             return files.filter(
-                (file) => file.fileName.toLowerCase().includes(patternLower.replace(/\*/g, ''))
+                (file) => file.data.fileName.toLowerCase().includes(patternLower.replace(/\*/g, ''))
             );
         }
     }
 
-    return files.filter(file => file.fileName.toLowerCase().includes(patternLower));
+    return files.filter(file => file.data.fileName.toLowerCase().includes(patternLower));
 }

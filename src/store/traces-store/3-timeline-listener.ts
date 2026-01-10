@@ -10,8 +10,9 @@ export const timelineBuildListenerAtom = atomEffect(
         let timer: ReturnType<typeof setTimeout>;
 
         function runBuild() {
+            console.log("runBuild");
             const { showCombinedTimeline, timelinePrecision } = appSettings;
-            const { traceFiles } = filesStore;
+            const { traceFilesData  } = filesStore;
 
             if (!showCombinedTimeline) {
                 traceStore.setFullTimeline([]);
@@ -20,10 +21,10 @@ export const timelineBuildListenerAtom = atomEffect(
             }
 
             // Check if any file is still loading
-            const isLoading = traceFiles.some(f => f.isLoading);
+            const isLoading = Object.values(traceFilesData).some(f => f.isLoading);
             if (isLoading) return;
 
-            if (traceFiles.length === 0) {
+            if (Object.values(traceFilesData).length === 0) {
                 traceStore.setFullTimeline([]);
                 return;
             }
@@ -39,7 +40,7 @@ export const timelineBuildListenerAtom = atomEffect(
         // Subscribe to stores
         // subscribe returns an unsubscribe function
         const unsub1 = subscribe(appSettings, runBuild);
-        const unsub2 = subscribe(filesStore, runBuild);
+        const unsub2 = subscribe(filesStore.traceFilesData, runBuild);
 
         return () => {
             unsub1();

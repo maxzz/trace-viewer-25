@@ -9,7 +9,7 @@ import { AlertCircle, FileText } from "lucide-react";
 import { dialogFileHeaderOpenAtom } from "@/store/2-ui-atoms";
 
 export function FileListRow({ file, isSelected }: { file: TraceFile; isSelected: boolean; }) {
-    const hasError = file.errorCount > 0 || !!file.error;
+    const hasError = file.data.errorCount > 0 || !!file.data.error;
     const { highlightRules, highlightEnabled } = useSnapshot(appSettings);
     const { fullTimeline: timeline, fullTimelineSelectedTimestamp: selectedTimelineTimestamp } = useSnapshot(traceStore);
     const setFileHeaderOpen = useSetAtom(dialogFileHeaderOpenAtom);
@@ -41,27 +41,27 @@ export function FileListRow({ file, isSelected }: { file: TraceFile; isSelected:
                     <div className="relative shrink-0 z-10">
                         <FileText className={cn("size-4", isSelected ? "text-primary" : "opacity-70", hasError && "text-red-600 dark:text-red-400")} />
 
-                        {file.errorCount === 0 && !!file.error && (
+                        {file.data.errorCount === 0 && !!file.data.error && (
                             <div className="absolute -top-1 -right-1 bg-background rounded-full">
                                 <AlertCircle className="size-3 text-red-500 fill-background" />
                             </div>
                         )}
 
                         {/* Error count badge */}
-                        {file.errorCount > 0 && (
+                        {file.data.errorCount > 0 && (
                             <span className={errorCountBadgeClasses}>
-                                {file.errorCount}
+                                {file.data.errorCount}
                             </span>
                         )}
                     </div>
 
                     {/* File name */}
-                    <span className="flex-1 truncate z-10" title={file.fileName}>
-                        {file.fileName}
+                    <span className="flex-1 truncate z-10" title={file.data.fileName}>
+                        {file.data.fileName}
                     </span>
 
                     {/* Loading indicator */}
-                    {file.isLoading && (
+                    {file.data.isLoading && (
                         <span className="size-2 rounded-full bg-blue-500 animate-pulse shrink-0 z-10" />
                     )}
 

@@ -14,16 +14,21 @@ export interface TraceFileData  {
     error: string | null;
 }
 
-export interface TraceFile extends TraceFileData {
+export interface TraceFile {
+    id: string;
+    data: TraceFileData;
+    
     currentLineIndex: number;
     matchedFilterIds: string[]; // Cache for FILTERS that match this file (for hiding)
     matchedHighlightIds: string[]; // Cache for HIGHLIGHT rules that match this file (for coloring)
 }
 
 export interface FilesState {
+    traceFilesData: Record<string, TraceFileData>;
     traceFiles: TraceFile[];
 }
 
 export const filesStore = proxy<FilesState>({
+    traceFilesData: {},
     traceFiles: [],
 });

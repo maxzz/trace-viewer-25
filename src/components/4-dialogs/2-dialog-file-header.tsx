@@ -13,8 +13,8 @@ export function DialogFileHeader() {
     const { traceFiles } = useSnapshot(filesStore);
     
     const file = fileId ? traceFiles.find(f => f.id === fileId) : null;
-    const header = file?.header;
-    const fileName = file?.fileName;
+    const header = file?.data.header;
+    const fileName = file?.data.fileName;
 
     return (
         <Dialog open={!!fileId} onOpenChange={(open) => !open && setFileId(null)}>

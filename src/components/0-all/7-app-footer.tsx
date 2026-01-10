@@ -9,7 +9,7 @@ export function TraceFooter() {
     const { traceFiles } = useSnapshot(filesStore);
     const { extraInFooter } = useSnapshot(appSettings);
     const selectedFile = selectedFileId ? traceFiles.find(f => f.id === selectedFileId) : null;
-    const errorCount = selectedFile?.errorCount || 0;
+    const errorCount = selectedFile?.data.errorCount || 0;
 
     return (
         <div className="text-xs text-muted-foreground bg-background border-t">
