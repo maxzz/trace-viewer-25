@@ -7,7 +7,7 @@ import { FileListRow } from "./1-file-list-row";
 import { CombinedTimelinePanel } from "./2-full-timeline-list";
 
 export function FileList() {
-    const { files, selectedFileId } = useSnapshot(traceStore);
+    const { traceFiles: files, selectedFileId } = useSnapshot(traceStore);
     const { fileFilters, selectedFilterId, combinedOnLeft } = useSnapshot(appSettings);
     const containerRef = useRef<HTMLDivElement>(null);
 

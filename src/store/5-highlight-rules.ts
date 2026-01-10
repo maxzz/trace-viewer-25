@@ -5,7 +5,7 @@ import { isFileNameMatch } from '@/utils/filter-match';
 // Use this for HIGHLIGHTING (Coloring files)
 export function recomputeHighlightMatches() {
     const rules = appSettings.highlightRules;
-    const files = traceStore.files;
+    const files = traceStore.traceFiles;
 
     if (files.length === 0) return;
 

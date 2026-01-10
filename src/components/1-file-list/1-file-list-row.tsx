@@ -15,7 +15,7 @@ interface FileListItemProps {
 export function FileListRow({ file, isSelected }: FileListItemProps) {
     const hasError = file.errorCount > 0 || !!file.error;
     const { highlightRules, highlightEnabled } = useSnapshot(appSettings);
-    const { timeline, selectedTimelineTimestamp } = useSnapshot(traceStore);
+    const { fullTimeline: timeline, fullTimelineSelectedTimestamp: selectedTimelineTimestamp } = useSnapshot(traceStore);
     const setFileHeaderOpen = useSetAtom(dialogFileHeaderOpenAtom);
 
     let highlightColor = undefined;

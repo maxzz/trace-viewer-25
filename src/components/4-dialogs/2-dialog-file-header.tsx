@@ -10,7 +10,7 @@ import { traceStore } from "@/store/traces-store/0-state";
 
 export function DialogFileHeader() {
     const [fileId, setFileId] = useAtom(dialogFileHeaderOpenAtom);
-    const { files } = useSnapshot(traceStore);
+    const { traceFiles: files } = useSnapshot(traceStore);
     
     const file = fileId ? files.find(f => f.id === fileId) : null;
     const header = file?.header;

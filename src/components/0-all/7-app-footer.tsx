@@ -4,7 +4,7 @@ import { appSettings } from "../../store/1-ui-settings";
 import { Cpu, Clock, AlertCircle } from "lucide-react";
 
 export function TraceFooter() {
-    const { lines, header, error, files, selectedFileId } = useSnapshot(traceStore);
+    const { lines, header, error, traceFiles: files, selectedFileId } = useSnapshot(traceStore);
     const { extraInFooter } = useSnapshot(appSettings);
     const selectedFile = selectedFileId ? files.find(f => f.id === selectedFileId) : null;
     const errorCount = selectedFile?.errorCount || 0;

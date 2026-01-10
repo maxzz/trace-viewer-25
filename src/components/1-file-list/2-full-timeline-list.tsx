@@ -17,7 +17,7 @@ export function CombinedTimelinePanel() {
 
 function CombinedTimelineList() {
     const { showCombinedTimeline, timelinePrecision } = useSnapshot(appSettings);
-    const { files } = useSnapshot(traceStore);
+    const { traceFiles: files } = useSnapshot(traceStore);
 
     // Timeline build effect
     useEffect(() => {
@@ -49,7 +49,7 @@ function CombinedTimelineList() {
 
 function FullTimelineList() {
     const { combinedOnLeft } = useSnapshot(appSettings);
-    const { timeline, selectedTimelineTimestamp } = useSnapshot(traceStore);
+    const { fullTimeline: timeline, fullTimelineSelectedTimestamp: selectedTimelineTimestamp } = useSnapshot(traceStore);
     const scrollRef = useRef<HTMLDivElement>(null);
     const itemRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 

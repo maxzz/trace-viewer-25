@@ -20,7 +20,7 @@ export function TopMenu() {
     const setEditHighlightsOpen = useSetAtom(dialogEditHighlightsOpenAtom);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const { files, selectedFileId } = useSnapshot(traceStore);
+    const { traceFiles: files, selectedFileId } = useSnapshot(traceStore);
     const hasFile = files.length > 0;
     const hasActiveFile = !!selectedFileId;
 
@@ -137,7 +137,7 @@ function TraceOpenMenuItem({ onClick }: { onClick: () => void; }) {
 }
 
 function TimelineProgress() {
-    const { isTimelineLoading } = useSnapshot(traceStore);
+    const { isFullTimelineLoading: isTimelineLoading } = useSnapshot(traceStore);
     const [open, setOpen] = useAtom(dialogTimelineCancelOpenAtom);
 
     if (!isTimelineLoading) return null;
