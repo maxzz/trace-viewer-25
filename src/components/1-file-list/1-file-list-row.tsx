@@ -1,4 +1,4 @@
-import { useSetAtom } from "jotai";
+import { useSetAtom, useAtomValue } from "jotai";
 import { useSnapshot } from "valtio";
 import { cn } from "@/utils/index";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger, } from "../ui/shadcn/context-menu";
@@ -13,12 +13,13 @@ export function FileListRow({ file, isSelected }: { file: TraceFile; isSelected:
     const { highlightRules, highlightEnabled } = useSnapshot(appSettings);
     const { fullTimeline: timeline, fullTimelineSelectedTimestamp: selectedTimelineTimestamp } = useSnapshot(traceStore);
     const setFileHeaderOpen = useSetAtom(dialogFileHeaderOpenAtom);
+    const matchedHighlightIds = useAtomValue(file.matchedHighlightIdsAtom);
 
     let highlightColor = undefined;
-    if (highlightEnabled && file.matchedHighlightIds && file.matchedHighlightIds.length > 0) {
+    if (highlightEnabled && matchedHighlightIds && matchedHighlightIds.length > 0) {
         // Find the first rule in appSettings that matches one of the file's matched IDs
         // We iterate through highlightRules to preserve order priority
-        const rule = highlightRules.find(r => file.matchedHighlightIds.includes(r.id));
+        const rule = highlightRules.find(r => matchedHighlightIds.includes(r.id));
         if (rule && rule.color) {
             highlightColor = rule.color;
         }

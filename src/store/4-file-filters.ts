@@ -1,3 +1,4 @@
+import { getDefaultStore } from 'jotai';
 import { type FileFilter, appSettings } from './1-ui-settings';
 import { filesStore } from './traces-store/2-files-store';
 import { isFileNameMatch } from '@/utils/filter-match';
@@ -6,6 +7,7 @@ import { isFileNameMatch } from '@/utils/filter-match';
 export function recomputeFilterMatches() {
     const filters = appSettings.fileFilters;
     const files = filesStore.traceFiles;
+    const store = getDefaultStore();
 
     if (files.length === 0) return;
 
@@ -18,8 +20,9 @@ export function recomputeFilterMatches() {
         });
         
         // Update only if changed to avoid unnecessary renders
-        if (JSON.stringify(file.matchedFilterIds) !== JSON.stringify(matchedIds)) {
-            file.matchedFilterIds = matchedIds;
+        const currentMatchedIds = store.get(file.matchedFilterIdsAtom);
+        if (JSON.stringify(currentMatchedIds) !== JSON.stringify(matchedIds)) {
+            store.set(file.matchedFilterIdsAtom, matchedIds);
         }
     });
 }
