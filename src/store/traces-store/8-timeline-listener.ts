@@ -7,26 +7,22 @@ import { cancelFullTimelineBuild } from "../../workers-client/timeline-client";
 
 export const listenerToBuildFullTimelineAtom = atomEffect(
     (get, set) => {
-        // Initial run
-        //runBuild();
-
-        // Subscribe to stores
-        // subscribe returns an unsubscribe function
-        const unsub1 = subscribe(appSettings, runBuildFullTimeline);
-        const unsub2 = subscribe(filesStore.traceFilesData, runBuildFullTimeline);
+        const unsubSettings = subscribe(appSettings, runBuildFullTimeline);
+        const unsubFilesData = subscribe(filesStore, runBuildFullTimeline);
 
         return () => {
-            unsub1();
-            unsub2();
+            unsubSettings();
+            unsubFilesData();
             cancelFullTimelineBuild();
         };
     }
 );
 
 export function runBuildFullTimeline() {
-    console.log("runBuild");
+    console.log("runBuildFullTimeline");
+
     const { showCombinedTimeline, timelinePrecision } = appSettings;
-    const { traceFilesData  } = filesStore;
+    const { filesData } = filesStore;
 
     if (!showCombinedTimeline) {
         traceStore.setFullTimeline([]);
@@ -34,16 +30,17 @@ export function runBuildFullTimeline() {
         return;
     }
 
-    // Check if any file is still loading
-    const isLoading = Object.values(traceFilesData).some(f => f.isLoading);
-    if (isLoading) return;
+    const files = Object.values(filesData);
 
-    if (Object.values(traceFilesData).length === 0) {
-        traceStore.setFullTimeline([]);
+    const someFileIsLoading = files.some(f => f.isLoading);
+    if (someFileIsLoading) {
         return;
     }
 
-    // Debounce build
+    if (files.length === 0) {
+        traceStore.setFullTimeline([]);
+        return;
+    }
 
     traceStore.asyncBuildFullTimes(timelinePrecision);
 }

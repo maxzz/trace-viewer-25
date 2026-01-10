@@ -5,7 +5,7 @@ import { isFileNameMatch } from '@/utils/filter-match';
 // Use this for FILTERING (Hiding files)
 export function recomputeFilterMatches() {
     const filters = appSettings.fileFilters;
-    const files = filesStore.traceFiles;
+    const files = filesStore.filesState;
 
     if (files.length === 0) return;
 

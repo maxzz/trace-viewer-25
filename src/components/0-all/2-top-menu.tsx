@@ -5,7 +5,6 @@ import { notice } from "../ui/local-ui/7-toaster";
 import { cancelFullTimelineBuild } from "@/workers-client";
 import { traceStore } from "@/store/traces-store/0-state";
 import { asyncLoadAnyFiles } from "@/store/traces-store/1-load-files";
-import { filesStore } from "@/store/traces-store/9-types-files-store";
 import { Input } from "../ui/shadcn/input";
 import { Button } from "../ui/shadcn/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/shadcn/dialog";
@@ -22,13 +21,10 @@ export function TopMenu() {
     const setEditHighlightsOpen = useSetAtom(dialogEditHighlightsOpenAtom);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const { traceFiles } = useSnapshot(filesStore);
     const { selectedFileId } = useSnapshot(traceStore);
-    const hasFile = traceFiles.length > 0;
-    const hasActiveFile = !!selectedFileId;
 
     return (<>
-        <TraceLoadInput inputRef={fileInputRef} />
+        <InputWatchFilesLoad inputRef={fileInputRef} />
 
         <div className="border-b flex items-center justify-between bg-background">
             <Menubar className="px-2 border-none shadow-none rounded-none bg-transparent">
@@ -63,7 +59,7 @@ export function TopMenu() {
                             Highlight Rules...
                         </MenubarItem>
                         <MenubarSeparator />
-                        <MenubarItem onClick={() => setFileHeaderOpen(selectedFileId)} disabled={!hasActiveFile}>
+                        <MenubarItem onClick={() => setFileHeaderOpen(selectedFileId)} disabled={!selectedFileId}>
                             Show File Header ...
                         </MenubarItem>
                     </MenubarContent>
@@ -88,7 +84,7 @@ export function TopMenu() {
 
 // Legacy files input
 
-function TraceLoadInput({ inputRef }: { inputRef: React.RefObject<HTMLInputElement | null>; }) {
+function InputWatchFilesLoad({ inputRef }: { inputRef: React.RefObject<HTMLInputElement | null>; }) {
     // const { isLoading } = useSnapshot(traceStore);
 
     const handleFileChange = useCallback(
@@ -133,19 +129,15 @@ function TraceOpenMenuItem({ onClick }: { onClick: () => void; }) {
 }
 
 function TimelineProgress() {
-    const { isFullTimelineLoading: isTimelineLoading } = useSnapshot(traceStore);
     const [open, setOpen] = useAtom(dialogTimelineCancelOpenAtom);
 
-    if (!isTimelineLoading) return null;
+    const { isFullTimelineLoading } = useSnapshot(traceStore);
+    if (!isFullTimelineLoading) {
+        return null;
+    }
 
     return (<>
-        <Button
-            variant="ghost"
-            size="sm"
-            className="mr-2 h-8 px-2 text-xs"
-            onClick={() => setOpen(true)}
-            title="Building timeline... Click to cancel."
-        >
+        <Button className="mr-2 h-8 px-2 text-xs" variant="ghost" size="sm" onClick={() => setOpen(true)} title="Building timeline... Click to cancel.">
             <Loader2 className="h-3 w-3 animate-spin mr-2" />
             Building Timeline...
         </Button>
@@ -163,15 +155,17 @@ function TimelineProgress() {
 
                 <DialogFooter>
                     <Button variant="secondary" onClick={() => setOpen(false)}>Continue</Button>
-                    <Button variant="destructive" onClick={
-                        () => {
-                            cancelFullTimelineBuild();
-                            traceStore.setTimelineLoading(false);
-                            traceStore.setFullTimeline([]);
-                            notice.info("Timeline build cancelled");
-                            setOpen(false);
+                    <Button variant="destructive"
+                        onClick={
+                            () => {
+                                cancelFullTimelineBuild();
+                                traceStore.setTimelineLoading(false);
+                                traceStore.setFullTimeline([]);
+                                notice.info("Timeline build cancelled");
+                                setOpen(false);
+                            }
                         }
-                    }>
+                    >
                         Stop Build
                     </Button>
                 </DialogFooter>

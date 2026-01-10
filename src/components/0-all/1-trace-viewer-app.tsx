@@ -14,11 +14,11 @@ import { listenerToBuildFullTimelineAtom } from "@/store/traces-store/8-timeline
 
 export function TraceViewerApp() {
     useAtomValue(listenerToBuildFullTimelineAtom);
-    
-    const { traceFiles } = useSnapshot(filesStore);
-    const { error } = useSnapshot(traceStore);
-    const { showFooter } = useSnapshot(appSettings);
-    const hasFile = traceFiles.length > 0;
+
+    const { filesData } = useSnapshot(filesStore);
+    const hasFile = Object.keys(filesData).length > 0;
+
+    //const { error } = useSnapshot(traceStore);
 
     return (
         <div className="h-full text-xs flex flex-col overflow-hidden">
@@ -34,7 +34,7 @@ export function TraceViewerApp() {
                 }
             </div>
 
-            {showFooter && hasFile && <TraceFooter />}
+            <Footer hasFile={hasFile} />
         </div>
     );
 }
@@ -47,4 +47,11 @@ function TopMenuToolbar() {
             <ButtonThemeToggle />
         </div>
     );
+}
+
+function Footer({ hasFile }: { hasFile: boolean }) {
+    const { showFooter } = useSnapshot(appSettings);
+   return (<>
+        {showFooter && hasFile && <TraceFooter />}
+    </>);
 }

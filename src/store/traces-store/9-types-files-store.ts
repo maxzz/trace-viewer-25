@@ -1,7 +1,7 @@
 import { proxy } from "valtio";
 import { type TraceLine, type TraceHeader } from "../../trace-viewer-core/9-core-types";
 
-export interface TraceFileData  {
+export interface FileData  {
     id: string;
     fileName: string;
     rawLines: TraceLine[];
@@ -14,21 +14,23 @@ export interface TraceFileData  {
     error: string | null;
 }
 
-export interface TraceFile {
+export interface FileState {
     id: string;
-    data: TraceFileData;
+    data: FileData;
     
     currentLineIndex: number;
     matchedFilterIds: string[]; // Cache for FILTERS that match this file (for hiding)
     matchedHighlightIds: string[]; // Cache for HIGHLIGHT rules that match this file (for coloring)
 }
 
-export interface FilesState {
-    traceFilesData: Record<string, TraceFileData>;
-    traceFiles: TraceFile[];
+// Store
+
+interface FilesStore {
+    filesData: Record<string, FileData>;
+    filesState: FileState[];
 }
 
-export const filesStore = proxy<FilesState>({
-    traceFilesData: {},
-    traceFiles: [],
+export const filesStore = proxy<FilesStore>({
+    filesData: {},
+    filesState: [],
 });

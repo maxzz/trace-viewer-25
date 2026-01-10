@@ -6,9 +6,9 @@ import { Cpu, Clock, AlertCircle } from "lucide-react";
 
 export function TraceFooter() {
     const { lines, header, error, selectedFileId } = useSnapshot(traceStore);
-    const { traceFiles } = useSnapshot(filesStore);
+    const { filesState } = useSnapshot(filesStore);
     const { extraInFooter } = useSnapshot(appSettings);
-    const selectedFile = selectedFileId ? traceFiles.find(f => f.id === selectedFileId) : null;
+    const selectedFile = selectedFileId ? filesState.find(f => f.id === selectedFileId) : null;
     const errorCount = selectedFile?.data.errorCount || 0;
 
     return (
@@ -27,7 +27,7 @@ export function TraceFooter() {
                 <div className="flex items-center gap-1">
                     <div className="ml-2 flex items-center gap-1">
                         <span>Loaded:</span>
-                        <span className="py-0.5 rounded text-[10px]">{traceFiles.length}</span>
+                        <span className="py-0.5 rounded text-[10px]">{filesState.length}</span>
                     </div>
 
                     {extraInFooter && (<>
