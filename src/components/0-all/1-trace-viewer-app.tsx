@@ -10,10 +10,11 @@ import { FileFilterDropdown, ButtonHighlightToggle } from "./3-btn-filters-selec
 import { ButtonThemeToggle } from "./3-btn-theme-toggle";
 
 import { useAtomValue } from "jotai";
-import { timelineBuildListenerAtom } from "@/store/traces-store/8-timeline-listener";
+import { listenerToBuildFullTimelineAtom } from "@/store/traces-store/8-timeline-listener";
 
 export function TraceViewerApp() {
-    useAtomValue(timelineBuildListenerAtom);
+    useAtomValue(listenerToBuildFullTimelineAtom);
+    
     const { traceFiles } = useSnapshot(filesStore);
     const { error } = useSnapshot(traceStore);
     const { showFooter } = useSnapshot(appSettings);

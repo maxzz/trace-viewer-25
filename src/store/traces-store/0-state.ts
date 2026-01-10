@@ -45,6 +45,7 @@ const emptyHeader = { magic: '' };
 
 import { recomputeFilterMatches } from "../4-file-filters";
 import { recomputeHighlightMatches } from "../5-highlight-rules";
+import { runBuildFullTimeline } from "./8-timeline-listener";
 
 export const traceStore = proxy<TraceState>({
     selectedFileId: null,
@@ -139,7 +140,10 @@ export const traceStore = proxy<TraceState>({
                     traceStore.isLoading = false;
                 }
             }
+        } finally {
+            runBuildFullTimeline();
         }
+
     },
 
     selectFile: (id: string | null) => {
