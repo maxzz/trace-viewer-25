@@ -1,7 +1,7 @@
 import { useSnapshot } from "valtio";
 import { appSettings } from "../../store/1-ui-settings";
 import { traceStore } from "../../store/traces-store/0-state";
-import { filesStore } from "../../store/traces-store/2-files-store";
+import { filesStore } from "../../store/traces-store/9-types-files-store";
 import { TopMenu } from "./2-top-menu";
 import { TraceMainView } from "./6-resizable-panels";
 import { TraceEmptyState } from "../2-trace-viewer/7-trace-empty-state";
@@ -10,7 +10,7 @@ import { FileFilterDropdown, ButtonHighlightToggle } from "./3-btn-filters-selec
 import { ButtonThemeToggle } from "./3-btn-theme-toggle";
 
 import { useAtomValue } from "jotai";
-import { timelineBuildListenerAtom } from "@/store/traces-store/3-timeline-listener";
+import { timelineBuildListenerAtom } from "@/store/traces-store/8-timeline-listener";
 
 export function TraceViewerApp() {
     useAtomValue(timelineBuildListenerAtom);

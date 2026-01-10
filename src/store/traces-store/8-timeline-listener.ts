@@ -2,7 +2,7 @@ import { atomEffect } from "jotai-effect";
 import { subscribe } from "valtio";
 import { appSettings } from "../1-ui-settings";
 import { traceStore } from "./0-state";
-import { filesStore } from "./2-files-store";
+import { filesStore } from "./9-types-files-store";
 import { cancelFullTimelineBuild } from "../../workers-client/timeline-client";
 
 export const timelineBuildListenerAtom = atomEffect(

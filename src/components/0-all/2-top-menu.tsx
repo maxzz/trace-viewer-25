@@ -2,9 +2,10 @@ import { useCallback, useRef } from "react";
 import { useSetAtom, useAtom } from "jotai";
 import { useSnapshot } from "valtio";
 import { notice } from "../ui/local-ui/7-toaster";
-import { extractTracesFromZip, isZipFile, cancelFullTimelineBuild } from "@/workers-client";
+import { cancelFullTimelineBuild } from "@/workers-client";
 import { traceStore } from "@/store/traces-store/0-state";
-import { filesStore } from "@/store/traces-store/2-files-store";
+import { asyncLoadAnyFiles } from "@/store/traces-store/1-load-files";
+import { filesStore } from "@/store/traces-store/9-types-files-store";
 import { Input } from "../ui/shadcn/input";
 import { Button } from "../ui/shadcn/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/shadcn/dialog";
@@ -102,14 +103,7 @@ function TraceLoadInput({ inputRef }: { inputRef: React.RefObject<HTMLInputEleme
                 // Update title
                 setAppTitle(fileList);
 
-                // Load new files
-                for (const file of fileList) {
-                    if (isZipFile(file)) {
-                        await extractTracesFromZip(file);
-                    } else {
-                        traceStore.loadTrace(file);
-                    }
-                }
+                asyncLoadAnyFiles(fileList);
             }
             // Reset input so same file can be selected again if needed
             e.target.value = '';

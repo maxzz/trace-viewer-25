@@ -1,6 +1,6 @@
 import { useSnapshot } from "valtio";
 import { traceStore } from "../../store/traces-store/0-state";
-import { filesStore } from "../../store/traces-store/2-files-store";
+import { filesStore } from "../../store/traces-store/9-types-files-store";
 import { appSettings } from "../../store/1-ui-settings";
 import { Cpu, Clock, AlertCircle } from "lucide-react";
 

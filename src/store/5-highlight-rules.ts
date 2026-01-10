@@ -1,5 +1,5 @@
 import { type HighlightRule, appSettings } from './1-ui-settings';
-import { filesStore } from './traces-store/2-files-store';
+import { filesStore } from './traces-store/9-types-files-store';
 import { isFileNameMatch } from '@/utils/filter-match';
 
 // Use this for HIGHLIGHTING (Coloring files)

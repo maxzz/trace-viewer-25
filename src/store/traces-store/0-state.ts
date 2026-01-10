@@ -2,9 +2,9 @@ import { proxy, ref, subscribe } from "valtio";
 import { notice } from "../../components/ui/local-ui/7-toaster";
 import { type TraceLine, type TraceHeader } from "../../trace-viewer-core/9-core-types";
 import { type FullTimelineItem } from "../../workers/timeline-types";
-import { parseTraceFile } from "./1-parse-trace-file";
+import { parseTraceFile } from "./2-parse-trace-file";
 import { buildFullTimeline as buildFullTimeline } from "../../workers-client/timeline-client";
-import { filesStore, type TraceFile, type TraceFileData } from "./2-files-store";
+import { filesStore, type TraceFile, type TraceFileData } from "./9-types-files-store";
 
 export interface TraceState {
     // traceFiles moved to filesStore
