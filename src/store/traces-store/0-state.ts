@@ -1,5 +1,4 @@
 import { proxy, subscribe } from "valtio";
-import { atom, getDefaultStore } from "jotai";
 import { notice } from "../../components/ui/local-ui/7-toaster";
 import { type TraceLine, type TraceHeader } from "../../trace-viewer-core/9-core-types";
 import { type FullTimelineItem } from "../../workers/timeline-types";
@@ -83,9 +82,9 @@ export const traceStore = proxy<TraceState>({
             errorCount: 0,
             isLoading: true,
             error: null,
-            currentLineIndexAtom: atom(-1),
-            matchedFilterIdsAtom: atom<string[]>([]),
-            matchedHighlightIdsAtom: atom<string[]>([])
+            currentLineIndex: -1,
+            matchedFilterIds: [],
+            matchedHighlightIds: []
         };
 
         // Add to store immediately
@@ -243,9 +242,7 @@ function syncActiveFile(file: TraceFile) {
     traceStore.fileName = file.fileName;
     traceStore.isLoading = file.isLoading;
     traceStore.error = file.error;
-    
-    // Sync atom value to valtio state
-    traceStore.currentLineIndex = getDefaultStore().get(file.currentLineIndexAtom);
+    traceStore.currentLineIndex = file.currentLineIndex;
 }
 
 // Subscribe to currentLineIndex changes to update the file state
@@ -254,11 +251,8 @@ subscribe(traceStore,
         if (traceStore.selectedFileId) {
             const file = filesStore.traceFiles.find(f => f.id === traceStore.selectedFileId);
             // Only update if changed to avoid infinite loops if syncActiveFile triggers this
-            if (file) {
-                const atomVal = getDefaultStore().get(file.currentLineIndexAtom);
-                if (atomVal !== traceStore.currentLineIndex) {
-                    getDefaultStore().set(file.currentLineIndexAtom, traceStore.currentLineIndex);
-                }
+            if (file && file.currentLineIndex !== traceStore.currentLineIndex) {
+                file.currentLineIndex = traceStore.currentLineIndex;
             }
         }
     }
