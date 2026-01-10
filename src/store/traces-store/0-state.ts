@@ -5,13 +5,15 @@ import { type FileState, type FileData, filesStore } from "./9-types-files-store
 import { type AllTimesItem } from "../../workers/all-times-worker-types";
 import { parseTraceFile } from "./2-parse-trace-file";
 import { buildAllTimesInWorker } from "../../workers-client/all-times-client";
+import { recomputeFilterMatches } from "../4-file-filters";
+import { recomputeHighlightMatches } from "../5-highlight-rules";
+import { runBuildAlltimes } from "./8-timeline-listener";
 
 export interface TraceStore {
     // traceFiles moved to filesStore
     selectedFileId: string | null;
 
     // Active file properties (mirrored from selected file for backward compatibility)
-    lines: TraceLine[];
     rawLines: TraceLine[];
     viewLines: TraceLine[];
     uniqueThreadIds: number[];
@@ -21,12 +23,12 @@ export interface TraceStore {
     error: string | null;
     currentLineIndex: number;
 
-    // Full timeline
-    fullTimeline: AllTimesItem[];                  // Full timeline items
-    isAllTimesLoading: boolean;                    // Whether the full timeline is loading
-    timelineError: string | null;                      // Error message for the full timeline
-    fullTimelineSelectedTimestamp: string | null;      // Timestamp of the selected item in the full timeline
-    pendingScrollTimestamp: string | null;             // Timestamp to scroll TraceList to when the full timeline is selected
+    // All times
+    allTimes: AllTimesItem[];                          // All times items
+    isAllTimesLoading: boolean;                        // Whether the all times is loading
+    allTimesError: string | null;                      // Error message for the all times
+    allTimesSelectedTimestamp: string | null;          // Timestamp of the selected item in the all times
+    pendingScrollTimestamp: string | null;             // Timestamp to scroll TraceList to when the all times item is selected
 
     // Actions
     loadTrace: (file: File) => Promise<void>;
@@ -36,20 +38,15 @@ export interface TraceStore {
     closeAllFiles: () => void;
     setFullTimeline: (items: AllTimesItem[]) => void;
     setAllTimesLoading: (loading: boolean) => void;
-    selectTimelineTimestamp: (timestamp: string | null) => void;
-    scrollToTimestamp: (timestamp: string | null) => void;
+    setAllTimesSelectedTimestamp: (timestamp: string | null) => void;
+    setPendingScrollTimestamp: (timestamp: string | null) => void;
     asyncBuildAllTimes: (precision: number) => Promise<void>;
 }
-
-import { recomputeFilterMatches } from "../4-file-filters";
-import { recomputeHighlightMatches } from "../5-highlight-rules";
-import { runBuildFullTimeline } from "./8-timeline-listener";
 
 export const traceStore = proxy<TraceStore>({
     selectedFileId: null,
 
     // Initial empty state
-    lines: [],
     rawLines: [],
     viewLines: [],
     uniqueThreadIds: [],
@@ -60,36 +57,20 @@ export const traceStore = proxy<TraceStore>({
     currentLineIndex: -1,
 
     // Timeline
-    fullTimeline: [],
+    allTimes: [],
     isAllTimesLoading: false,
-    timelineError: null,
-    fullTimelineSelectedTimestamp: null,
+    allTimesError: null,
+    allTimesSelectedTimestamp: null,
     pendingScrollTimestamp: null,
 
     loadTrace: async (file: File) => {
-        const id = Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
+        const id = MakeUuid();
 
         // Create new file data entry
-        const newFileData: FileData = {
-            id,
-            fileName: file.name,
-            rawLines: [],
-            viewLines: [],
-            uniqueThreadIds: [],
-            header: emptyFileHeader,
-            errorCount: 0,
-            isLoading: true,
-            error: null,
-        };
+        const newFileData = createNewFileData(id, file.name);
 
         // Create file state entry with reference to data
-        const newFile: FileState = {
-            id,
-            data: newFileData, // Placeholder, will update after adding to store
-            currentLineIndex: -1,
-            matchedFilterIds: [],
-            matchedHighlightIds: []
-        };
+        const newFile = createNewFileState(id, newFileData);
 
         // Add to store immediately
         filesStore.filesData[id] = ref(newFileData);
@@ -137,7 +118,7 @@ export const traceStore = proxy<TraceStore>({
                 }
             }
         } finally {
-            runBuildFullTimeline();
+            runBuildAlltimes();
         }
 
     },
@@ -152,7 +133,6 @@ export const traceStore = proxy<TraceStore>({
             }
         } else {
             // Reset to empty
-            traceStore.lines = [];
             traceStore.rawLines = [];
             traceStore.viewLines = [];
             traceStore.uniqueThreadIds = [];
@@ -204,23 +184,23 @@ export const traceStore = proxy<TraceStore>({
     },
 
     setFullTimeline: (items: AllTimesItem[]) => {
-        traceStore.fullTimeline = items;
+        traceStore.allTimes = items;
         traceStore.isAllTimesLoading = false;
-        traceStore.timelineError = null;
+        traceStore.allTimesError = null;
     },
 
     setAllTimesLoading: (loading: boolean) => {
         traceStore.isAllTimesLoading = loading;
         if (loading) {
-            traceStore.timelineError = null;
+            traceStore.allTimesError = null;
         }
     },
 
-    selectTimelineTimestamp: (timestamp: string | null) => {
-        traceStore.fullTimelineSelectedTimestamp = timestamp;
+    setAllTimesSelectedTimestamp: (timestamp: string | null) => {
+        traceStore.allTimesSelectedTimestamp = timestamp;
     },
 
-    scrollToTimestamp: (timestamp: string | null) => {
+    setPendingScrollTimestamp: (timestamp: string | null) => {
         traceStore.pendingScrollTimestamp = timestamp;
     },
 
@@ -251,6 +231,36 @@ export const traceStore = proxy<TraceStore>({
         }
     }
 });
+
+// Utilities
+
+function MakeUuid(): string {
+    return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
+}
+
+function createNewFileData(id: string, fileName: string): FileData {
+    return {
+        id,
+        fileName,
+        rawLines: [],
+        viewLines: [],
+        uniqueThreadIds: [],
+        header: emptyFileHeader,
+        errorCount: 0,
+        isLoading: true,
+        error: null,
+    };
+}
+
+function createNewFileState(id: string, data: FileData): FileState {
+    return {
+        id,
+        data, // Placeholder, will update after adding to store
+        currentLineIndex: -1,
+        matchedFilterIds: [],
+        matchedHighlightIds: []
+    };
+}
 
 function syncActiveFile(file: FileState) {
     traceStore.rawLines = file.data.rawLines;

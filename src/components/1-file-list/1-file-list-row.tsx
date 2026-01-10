@@ -11,7 +11,7 @@ import { dialogFileHeaderOpenAtom } from "@/store/2-ui-atoms";
 export function FileListRow({ file, isSelected }: { file: FileState; isSelected: boolean; }) {
     const hasError = file.data.errorCount > 0 || !!file.data.error;
     const { highlightRules, highlightEnabled } = useSnapshot(appSettings);
-    const { fullTimeline: timeline, fullTimelineSelectedTimestamp: selectedTimelineTimestamp } = useSnapshot(traceStore);
+    const { allTimes: timeline, allTimesSelectedTimestamp: selectedTimelineTimestamp } = useSnapshot(traceStore);
     const setFileHeaderOpen = useSetAtom(dialogFileHeaderOpenAtom);
 
     let highlightColor = undefined;
@@ -72,7 +72,7 @@ export function FileListRow({ file, isSelected }: { file: FileState; isSelected:
                             onClick={(e) => {
                                 e.stopPropagation();
                                 traceStore.selectFile(file.id);
-                                traceStore.scrollToTimestamp(selectedTimelineTimestamp);
+                                traceStore.setPendingScrollTimestamp(selectedTimelineTimestamp);
                             }}
                         >
                             <div className="size-2 rounded-full bg-green-500 ring-1 ring-background" title="Present in selected timeline" />

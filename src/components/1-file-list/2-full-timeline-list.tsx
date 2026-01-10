@@ -20,7 +20,7 @@ function CombinedTimelineList() {
 
 function FullTimelineList() {
     const { combinedOnLeft } = useSnapshot(appSettings);
-    const { fullTimeline: timeline, fullTimelineSelectedTimestamp: selectedTimelineTimestamp } = useSnapshot(traceStore);
+    const { allTimes: timeline, allTimesSelectedTimestamp: selectedTimelineTimestamp } = useSnapshot(traceStore);
     const scrollRef = useRef<HTMLDivElement>(null);
     const itemRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
@@ -84,7 +84,7 @@ function FullTimelineList() {
                                             }
                                         }}
                                         onClick={() => {
-                                            traceStore.selectTimelineTimestamp(isSelected ? null : item.timestamp);
+                                            traceStore.setAllTimesSelectedTimestamp(isSelected ? null : item.timestamp);
                                         }}
                                         title={item.timestamp}
                                     >

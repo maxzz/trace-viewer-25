@@ -2,10 +2,10 @@ import { useSnapshot } from "valtio";
 import { traceStore } from "../../store/traces-store/0-state";
 import { filesStore } from "../../store/traces-store/9-types-files-store";
 import { appSettings } from "../../store/1-ui-settings";
-import { Cpu, Clock, AlertCircle } from "lucide-react";
+import { Cpu } from "lucide-react";
 
 export function TraceFooter() {
-    const { lines, header, error, selectedFileId } = useSnapshot(traceStore);
+    const { viewLines, header, error, selectedFileId } = useSnapshot(traceStore);
     const { filesState } = useSnapshot(filesStore);
     const { extraInFooter } = useSnapshot(appSettings);
     const selectedFile = selectedFileId ? filesState.find(f => f.id === selectedFileId) : null;
@@ -55,7 +55,7 @@ export function TraceFooter() {
                     <div className="ml-2 flex items-center">
                         <Cpu className="mr-1 size-3" />
                         <span className="mr-1 font-semibold">File:</span>
-                        <span>{lines.length.toLocaleString()} {plural(lines.length, 'line')}</span>
+                        <span>{viewLines.length.toLocaleString()} {plural(viewLines.length, 'line')}</span>
 
                         {errorCount > 0 && (<>
                             <span>, {errorCount.toLocaleString()} {plural(errorCount, 'error')}</span>
