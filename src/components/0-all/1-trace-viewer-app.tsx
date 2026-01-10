@@ -9,7 +9,11 @@ import { TraceFooter } from "./7-app-footer";
 import { FileFilterDropdown, ButtonHighlightToggle } from "./3-btn-filters-select";
 import { ButtonThemeToggle } from "./3-btn-theme-toggle";
 
+import { useAtomValue } from "jotai";
+import { timelineBuildListenerAtom } from "@/store/traces-store/3-timeline-listener";
+
 export function TraceViewerApp() {
+    useAtomValue(timelineBuildListenerAtom);
     const { traceFiles } = useSnapshot(filesStore);
     const { error } = useSnapshot(traceStore);
     const { showFooter } = useSnapshot(appSettings);

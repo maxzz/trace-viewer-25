@@ -3,9 +3,7 @@ import { useSnapshot } from "valtio";
 import { classNames, cn } from "@/utils/classnames";
 import { ScrollArea } from "../ui/shadcn/scroll-area";
 import { traceStore } from "@/store/traces-store/0-state";
-import { filesStore } from "@/store/traces-store/2-files-store";
 import { appSettings } from "@/store/1-ui-settings";
-import { cancelFullTimelineBuild } from "@/workers-client/timeline-client";
 
 export function CombinedTimelinePanel() {
     const { showCombinedTimeline } = useSnapshot(appSettings);
@@ -17,36 +15,6 @@ export function CombinedTimelinePanel() {
 }
 
 function CombinedTimelineList() {
-    const { showCombinedTimeline, timelinePrecision } = useSnapshot(appSettings);
-    const { traceFiles } = useSnapshot(filesStore);
-
-    // Timeline build effect
-    useEffect(
-        () => {
-            if (!showCombinedTimeline) {
-                traceStore.setFullTimeline([]);
-                return;
-            }
-
-            // Check if any file is still loading
-            const isLoading = traceFiles.some(f => f.isLoading);
-            if (isLoading) return;
-
-            if (traceFiles.length === 0) {
-                traceStore.setFullTimeline([]);
-                return;
-            }
-
-            // Debounce build
-            const timer = setTimeout(() => { traceStore.asyncBuildFullTimes(timelinePrecision); }, 300);
-
-            return () => {
-                clearTimeout(timer);
-                cancelFullTimelineBuild();
-            };
-        }, [showCombinedTimeline, timelinePrecision, traceFiles] // files dependency: if files loaded/added/removed
-    );
-
     return <FullTimelineList />;
 }
 
