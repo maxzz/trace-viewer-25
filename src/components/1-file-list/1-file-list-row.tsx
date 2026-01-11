@@ -9,7 +9,7 @@ import { AlertCircle, FileText } from "lucide-react";
 import { dialogFileHeaderOpenAtom } from "@/store/2-ui-atoms";
 
 export function FileListRow({ file, isSelected }: { file: FileState; isSelected: boolean; }) {
-    const hasError = file.data.errorCount > 0 || !!file.data.error;
+    const hasError = file.data.errorCount > 0 || !!file.data.errorLoadingFile;
     const { highlightRules, highlightEnabled } = useSnapshot(appSettings);
     const { allTimes: timeline, allTimesSelectedTimestamp: selectedTimelineTimestamp } = useSnapshot(traceStore);
     const setFileHeaderOpen = useSetAtom(dialogFileHeaderOpenAtom);
@@ -41,7 +41,7 @@ export function FileListRow({ file, isSelected }: { file: FileState; isSelected:
                     <div className="relative shrink-0 z-10">
                         <FileText className={cn("size-4", isSelected ? "text-primary" : "opacity-70", hasError && "text-red-600 dark:text-red-400")} />
 
-                        {file.data.errorCount === 0 && !!file.data.error && (
+                        {file.data.errorCount === 0 && !!file.data.errorLoadingFile && (
                             <div className="absolute -top-1 -right-1 bg-background rounded-full">
                                 <AlertCircle className="size-3 text-red-500 fill-background" />
                             </div>

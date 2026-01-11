@@ -6,7 +6,7 @@ import { appSettings } from "../../store/1-ui-settings";
 import { Cpu } from "lucide-react";
 
 export function TraceFooter() {
-    const { viewLines, header, error } = useSnapshot(traceStore);
+    const { viewLines, header, errorLoadingFile: error } = useSnapshot(traceStore);
     const { selectedFileId } = useSnapshot(selectionStore);
     const { filesState } = useSnapshot(filesStore);
     const { extraInFooter } = useSnapshot(appSettings);

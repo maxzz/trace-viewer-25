@@ -3,15 +3,16 @@ import { type TraceLine, type TraceHeader } from "../../trace-viewer-core/9-core
 
 export interface FileData  {
     id: string;
+    
     fileName: string;
     rawLines: TraceLine[];
     viewLines: TraceLine[];
     uniqueThreadIds: number[];
     header: TraceHeader;
-    
     errorCount: number;
+    
     isLoading: boolean;
-    error: string | null;
+    errorLoadingFile: string | null;
 }
 
 export interface FileState {

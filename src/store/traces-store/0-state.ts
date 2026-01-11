@@ -16,13 +16,15 @@ export interface TraceStore {
     // selectedFileId moved to selectionStore
 
     // Active file properties (mirrored from selected file for backward compatibility)
+    fileName: string | null;
     rawLines: TraceLine[];
     viewLines: TraceLine[];
     uniqueThreadIds: number[];
     header: TraceHeader;
-    fileName: string | null;
+
     isLoading: boolean;
-    error: string | null;
+    errorLoadingFile: string | null;
+    
     currentLineIndex: number;
 
     // All times
@@ -54,7 +56,7 @@ export const traceStore = proxy<TraceStore>({
     header: emptyFileHeader,
 
     isLoading: false,
-    error: null,
+    errorLoadingFile: null,
     currentLineIndex: -1,
 
     // Timeline
@@ -103,11 +105,11 @@ export const traceStore = proxy<TraceStore>({
         } catch (e: any) {
             console.error("Failed to load trace", e);
             if (filesStore.filesData[id]) {
-                filesStore.filesData[id].error = e.message || "Unknown error";
+                filesStore.filesData[id].errorLoadingFile = e.message || "Unknown error";
                 filesStore.filesData[id].isLoading = false;
                 
                 if (selectionStore.selectedFileId === id) {
-                    traceStore.error = filesStore.filesData[id].error;
+                    traceStore.errorLoadingFile = filesStore.filesData[id].errorLoadingFile;
                     traceStore.isLoading = false;
                 }
             }
@@ -236,7 +238,7 @@ function createNewFileData(id: string, fileName: string): FileData {
         header: emptyFileHeader,
         errorCount: 0,
         isLoading: true,
-        error: null,
+        errorLoadingFile: null,
     };
 }
 
@@ -257,7 +259,7 @@ function resetTraceStoreToEmpty() {
     traceStore.header = emptyFileHeader;
     traceStore.fileName = null;
     traceStore.isLoading = false;
-    traceStore.error = null;
+    traceStore.errorLoadingFile = null;
     traceStore.currentLineIndex = -1;
 }
 
@@ -268,7 +270,7 @@ function syncToSetAsActiveFile(file: FileState) {
     traceStore.header = file.data.header;
     traceStore.fileName = file.data.fileName;
     traceStore.isLoading = file.data.isLoading;
-    traceStore.error = file.data.error;
+    traceStore.errorLoadingFile = file.data.errorLoadingFile;
     traceStore.currentLineIndex = file.currentLineIndex;
 }
 
