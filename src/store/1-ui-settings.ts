@@ -40,6 +40,7 @@ export interface AppSettings {
         onLeft: boolean;
         precision: number; // 0-5 digits to hide/round
         showBuildDoneNotice: boolean;
+        needToRebuild: boolean;
     };
 }
 
@@ -58,6 +59,7 @@ const DEFAULT_SETTINGS: AppSettings = {
         onLeft: true,
         precision: 2,
         showBuildDoneNotice: true,
+        needToRebuild: true,
     },
 };
 

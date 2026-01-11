@@ -9,8 +9,16 @@ import { cancelFullTimelineBuild } from "../../workers-client/all-times-client";
 export const listenerToBuildAllTimesEffectAtom = atomEffect(
     (get, set) => {
         const unsubShow = subscribeKey(appSettings.allTimes, 'show', runBuildAlltimes);
-        const unsubPrecision = subscribeKey(appSettings.allTimes, 'precision', runBuildAlltimes);
-        const unsubFilesData = subscribe(filesStore.filesData, runBuildAlltimes);
+        
+        const unsubPrecision = subscribeKey(appSettings.allTimes, 'precision', () => {
+            appSettings.allTimes.needToRebuild = true;
+            runBuildAlltimes();
+        });
+
+        const unsubFilesData = subscribe(filesStore.filesData, () => {
+            appSettings.allTimes.needToRebuild = true;
+            runBuildAlltimes();
+        });
 
         return () => {
             unsubShow();
@@ -22,12 +30,31 @@ export const listenerToBuildAllTimesEffectAtom = atomEffect(
 );
 
 export function runBuildAlltimes() {
-    const { show, precision } = appSettings.allTimes;
+    const { show, precision, needToRebuild } = appSettings.allTimes;
     const { filesData } = filesStore;
 
     if (!show) {
-        traceStore.setAllTimes([]);
+        // Don't clear if hidden, just don't build?
+        // User logic: "When toggled ... show if it was built then don't need to rebuild it."
+        // implies we keep the data if we hide it?
+        // But previously we cleared it: traceStore.setAllTimes([]);
+        // If we clear it, we MUST rebuild it when shown.
+        // So we should NOT clear it if we want to avoid rebuild.
+        
+        // However, if I remove `traceStore.setAllTimes([])` here, then the memory is held.
+        // Maybe the user wants to keep it in memory.
+        
+        // But if I clear it, then `needToRebuild` must be true next time?
+        // Or `needToRebuild` tracks if *inputs* changed.
+        // If inputs haven't changed, but I cleared the output, I still need to rebuild to show it.
+        
+        // If the user wants to avoid rebuild, I must NOT clear the data when hiding.
+        
         cancelFullTimelineBuild();
+        return;
+    }
+
+    if (!needToRebuild && traceStore.allTimes.length > 0) {
         return;
     }
 
@@ -40,8 +67,11 @@ export function runBuildAlltimes() {
 
     if (files.length === 0) {
         traceStore.setAllTimes([]);
+        appSettings.allTimes.needToRebuild = false; // "Built" empty
         return;
     }
 
-    traceStore.asyncBuildAllTimes(precision);
+    traceStore.asyncBuildAllTimes(precision).then(() => {
+        appSettings.allTimes.needToRebuild = false;
+    });
 }
