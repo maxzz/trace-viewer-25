@@ -1,6 +1,5 @@
 import { traceStore } from "../../store/traces-store/0-state";
-import { LineCode, type TraceLine } from "../../trace-viewer-core/9-core-types";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { type TraceLine, LineCode } from "../../trace-viewer-core/9-core-types";
 import { cn } from "@/utils";
 import {
     columnLineNumberClasses,
@@ -11,8 +10,7 @@ import {
     lineNotCurrentClasses,
     lineErrorClasses
 } from "./8-trace-view-classes";
-
-export const ITEM_HEIGHT = 20; // Fixed height for simplicity. was 24
+import { ITEM_HEIGHT } from "./9-trace-view-constants";
 
 export function renderRow(line: TraceLine, index: number, startIndex: number, currentLineIndex: number, useIconsForEntryExit: boolean, showLineNumbers: boolean, uniqueThreadIds: readonly number[]) {
     const globalIndex = startIndex + index;
