@@ -1,28 +1,24 @@
-import { traceStore } from "../../store/traces-store/0-state";
-import { type TraceLine, LineCode } from "../../trace-viewer-core/9-core-types";
+import React from "react";
 import { cn } from "@/utils";
-import {
-    columnLineNumberClasses,
-    columnTimeClasses,
-    columnThreadIdClasses,
-    lineClasses,
-    lineCurrentClasses,
-    lineNotCurrentClasses,
-    lineErrorClasses
-} from "./8-trace-view-classes";
+import { type TraceLine, LineCode } from "../../trace-viewer-core/9-core-types";
+import { traceStore } from "../../store/traces-store/0-state";
 import { ITEM_HEIGHT } from "./9-trace-view-constants";
+import { columnLineNumberClasses, columnTimeClasses, columnThreadIdClasses, lineClasses, lineCurrentClasses, lineNotCurrentClasses, lineErrorClasses } from "./8-trace-view-classes";
 
-export function renderRow(line: TraceLine, index: number, startIndex: number, currentLineIndex: number, useIconsForEntryExit: boolean, showLineNumbers: boolean, uniqueThreadIds: readonly number[]) {
-    const globalIndex = startIndex + index;
+export const TraceRowMemo = React.memo(TraceRow);
+
+function TraceRow({ line, globalIndex, currentLineIndex, useIconsForEntryExit, showLineNumbers, uniqueThreadIds }: {
+    line: TraceLine,
+    globalIndex: number,
+    currentLineIndex: number,
+    useIconsForEntryExit: boolean,
+    showLineNumbers: boolean,
+    uniqueThreadIds: readonly number[];
+}) {
     const showThreadBackground = uniqueThreadIds.length > 0 && uniqueThreadIds[0] !== line.threadId;
 
     return (
-        <div
-            className={getRowClasses(line, globalIndex, currentLineIndex)}
-            style={{ height: ITEM_HEIGHT }}
-            key={line.lineIndex}
-            onClick={() => (traceStore.currentLineIndex = globalIndex)}
-        >
+        <div className={getRowClasses(line, globalIndex, currentLineIndex)} style={{ height: ITEM_HEIGHT }} onClick={() => traceStore.currentLineIndex = globalIndex}>
             {/* Line Number */}
             {showLineNumbers && (
                 <div className={columnLineNumberClasses}>

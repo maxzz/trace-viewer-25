@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect, useCallback } from "react";
 import { useSnapshot } from "valtio";
 import { appSettings } from "../../store/1-ui-settings";
 import { traceStore } from "../../store/traces-store/0-state";
-import { renderRow } from "./1-trace-view-row";
+import { TraceRowMemo } from "./1-trace-view-row";
 import { ITEM_HEIGHT } from "./9-trace-view-constants";
 import { handlePendingTimestampScroll, scrollToSelection } from "./2-trace-view-scroll";
 import { handleKeyboardNavigation } from "./3-trace-view-keyboard";
@@ -64,7 +64,8 @@ export function TraceList() {
     // Virtualization logic
     const totalHeight = viewLines.length * ITEM_HEIGHT;
     // Calculate buffer based on visible items (50% of visible, minimum 20)
-    const BUFFER = Math.max(20, Math.floor(containerHeight / ITEM_HEIGHT / 2));
+    // 08.01.2026: Increased buffer to avoid empty screen on fast scroll
+    const BUFFER = Math.max(50, Math.floor(containerHeight / ITEM_HEIGHT * 2));
     const startIndex = Math.max(0, Math.floor(scrollTop / ITEM_HEIGHT) - BUFFER);
     const endIndex = Math.min(viewLines.length, Math.floor((scrollTop + containerHeight) / ITEM_HEIGHT) + BUFFER);
 
@@ -81,7 +82,17 @@ export function TraceList() {
             <div style={{ height: totalHeight, position: 'relative' }}>
                 <div style={{ transform: `translateY(${offsetY}px)` }}>
                     {visibleLines.map(
-                        (line, idx) => renderRow(line, idx, startIndex, currentLineIndex, useIconsForEntryExit, showLineNumbers, uniqueThreadIds)
+                        (line, idx) => (
+                            <TraceRowMemo
+                                key={line.lineIndex}
+                                line={line}
+                                globalIndex={startIndex + idx}
+                                currentLineIndex={currentLineIndex}
+                                useIconsForEntryExit={useIconsForEntryExit}
+                                showLineNumbers={showLineNumbers}
+                                uniqueThreadIds={uniqueThreadIds}
+                            />
+                        )
                     )}
                 </div>
             </div>
