@@ -24,17 +24,16 @@ function AllTimesList() {
             <ScrollArea className="flex-1">
                 <div className="flex flex-col">
                     {allTimes.map(
-                        (item, idx) => {
+                        (item) => {
                             const isSelected = item.timestamp === selectedAllTimesTimestamp;
                             const { displayTime, currentDate } = splitTimestampIntoDateAndTime(item.timestamp);
 
                             const showDateHeader = currentDate && currentDate !== lastDate;
                             if (currentDate) lastDate = currentDate;
 
-                            return (
-                                <div key={idx}>
+                            return (<>
                                     {showDateHeader && (
-                                        <div className={dateHeaderClasses}>
+                                        <div className={dateHeaderClasses} key={`date-header-${item.timestamp}`}>
                                             {currentDate}
                                         </div>
                                     )}
@@ -42,10 +41,11 @@ function AllTimesList() {
                                         className={cn(rowClasses, isSelected && "bg-primary text-primary-foreground hover:bg-primary/90")}
                                         onClick={() => traceStore.setAllTimesSelectedTimestamp(isSelected ? null : item.timestamp)}
                                         title={item.timestamp}
+                                        key={item.timestamp}
                                     >
                                         {displayTime}
                                     </div>
-                                </div>
+                                </>
                             );
                         }
                     )}
