@@ -17,17 +17,6 @@ export function AllTimesPanel() {
 function AllTimesList() {
     const { allTimes } = useSnapshot(appSettings);
     const { allTimes: timeline, allTimesSelectedTimestamp: selectedTimelineTimestamp } = useSnapshot(traceStore);
-    const scrollRef = useRef<HTMLDivElement>(null);
-    const itemRefs = useRef<Map<string, HTMLDivElement>>(new Map());
-
-    // Auto-scroll to selected item
-    useEffect(
-        () => {
-            if (selectedTimelineTimestamp && itemRefs.current.has(selectedTimelineTimestamp)) {
-                itemRefs.current.get(selectedTimelineTimestamp)?.scrollIntoView({ behavior: 'auto', block: 'center' });
-            }
-        }, [selectedTimelineTimestamp]
-    );
 
     let lastDate = "";
 
@@ -53,7 +42,6 @@ function AllTimesList() {
                                     <div
                                         className={cn(rowClasses, isSelected && "bg-primary text-primary-foreground hover:bg-primary/90")}
                                         onClick={() => traceStore.setAllTimesSelectedTimestamp(isSelected ? null : item.timestamp)}
-                                        ref={(el) => { el ? itemRefs.current.set(item.timestamp, el) : itemRefs.current.delete(item.timestamp); }}
                                         title={item.timestamp}
                                     >
                                         {displayTime}
