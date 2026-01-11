@@ -30,7 +30,7 @@ export function FileListRow({ file, isSelected }: { file: FileState; isSelected:
 
     return (
         <ContextMenu>
-            <ContextMenuTrigger>
+            <ContextMenuTrigger asChild>
                 <div className={getRowClasses(isSelected, hasError)} onClick={() => traceStore.selectFile(file.id)}>
                     {/* Highlight Background Layer */}
                     {!isSelected && highlightColor && (

@@ -1,9 +1,8 @@
-import { useEffect, useRef } from "react";
 import { useSnapshot } from "valtio";
-import { classNames, cn } from "@/utils/classnames";
-import { ScrollArea } from "../ui/shadcn/scroll-area";
-import { traceStore } from "@/store/traces-store/0-state";
 import { appSettings } from "@/store/1-ui-settings";
+import { classNames, cn } from "@/utils/classnames";
+import { traceStore } from "@/store/traces-store/0-state";
+import { ScrollArea } from "../ui/shadcn/scroll-area";
 
 export function AllTimesPanel() {
     const { allTimes } = useSnapshot(appSettings);
@@ -15,18 +14,18 @@ export function AllTimesPanel() {
 }
 
 function AllTimesList() {
-    const { allTimes } = useSnapshot(appSettings);
-    const { allTimes: timeline, allTimesSelectedTimestamp: selectedTimelineTimestamp } = useSnapshot(traceStore);
+    const { onLeft } = useSnapshot(appSettings.allTimes);
+    const { allTimes, allTimesSelectedTimestamp: selectedAllTimesTimestamp } = useSnapshot(traceStore);
 
     let lastDate = "";
 
     return (
-        <div className={classNames("w-max h-full bg-muted/10 select-none flex flex-col", allTimes.onLeft ? "border-r" : "border-l")}>
+        <div className={classNames("w-max h-full bg-muted/10 select-none flex flex-col", onLeft ? "border-r" : "border-l")}>
             <ScrollArea className="flex-1">
                 <div className="flex flex-col">
-                    {timeline.map(
+                    {allTimes.map(
                         (item, idx) => {
-                            const isSelected = item.timestamp === selectedTimelineTimestamp;
+                            const isSelected = item.timestamp === selectedAllTimesTimestamp;
                             const { displayTime, currentDate } = splitTimestampIntoDateAndTime(item.timestamp);
 
                             const showDateHeader = currentDate && currentDate !== lastDate;
@@ -51,7 +50,7 @@ function AllTimesList() {
                         }
                     )}
 
-                    {timeline.length === 0 && (
+                    {allTimes.length === 0 && (
                         <div className="text-[10px] text-muted-foreground p-2 text-center">
                             No data
                         </div>
