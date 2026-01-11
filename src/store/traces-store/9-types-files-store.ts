@@ -8,6 +8,7 @@ export interface FileData  {
     viewLines: TraceLine[];
     uniqueThreadIds: number[];
     header: TraceHeader;
+    
     errorCount: number;
     isLoading: boolean;
     error: string | null;

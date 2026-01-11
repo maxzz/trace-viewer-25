@@ -47,11 +47,12 @@ export const traceStore = proxy<TraceStore>({
     selectedFileId: null,
 
     // Initial empty state
+    fileName: null,
     rawLines: [],
     viewLines: [],
     uniqueThreadIds: [],
     header: emptyFileHeader,
-    fileName: null,
+
     isLoading: false,
     error: null,
     currentLineIndex: -1,
