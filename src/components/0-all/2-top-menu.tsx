@@ -2,7 +2,7 @@ import { useCallback, useRef } from "react";
 import { useSetAtom, useAtom } from "jotai";
 import { useSnapshot } from "valtio";
 import { notice } from "../ui/local-ui/7-toaster";
-import { cancelFullTimelineBuild } from "@/workers-client";
+import { cancelAllTimesBuild } from "@/workers-client";
 import { traceStore } from "@/store/traces-store/0-state";
 import { asyncLoadAnyFiles } from "@/store/traces-store/1-load-files";
 import { Input } from "../ui/shadcn/input";
@@ -158,7 +158,7 @@ function TimelineProgress() {
                     <Button variant="destructive"
                         onClick={
                             () => {
-                                cancelFullTimelineBuild();
+                                cancelAllTimesBuild();
                                 traceStore.setAllTimesLoading(false);
                                 traceStore.setAllTimes([]);
                                 notice.info("Timeline build cancelled");

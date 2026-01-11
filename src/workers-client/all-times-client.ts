@@ -6,9 +6,9 @@ let currentReject: ((reason?: any) => void) | null = null;
 
 type LineForFullTimeline = Pick<TraceLine, 'timestamp' | 'lineIndex' | 'date'>;
 
-export function buildAllTimesInWorker(files: { id: string; lines: LineForFullTimeline[]; }[], precision: number): Promise<AllTimesItem[]> {
+export function asyncBuildAllTimesInWorker(files: { id: string; lines: LineForFullTimeline[]; }[], precision: number): Promise<AllTimesItem[]> {
     // Cancel any existing work
-    cancelFullTimelineBuild();
+    cancelAllTimesBuild();
 
     worker = new Worker(new URL('../workers/all-times.worker.ts', import.meta.url), { type: 'module' });
 
@@ -50,7 +50,7 @@ export function buildAllTimesInWorker(files: { id: string; lines: LineForFullTim
     );
 }
 
-export function cancelFullTimelineBuild() {
+export function cancelAllTimesBuild() {
     if (worker) {
         worker.terminate();
         worker = null;

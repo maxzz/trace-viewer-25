@@ -5,7 +5,7 @@ import { type TraceLine, type TraceHeader, emptyFileHeader } from "../../trace-v
 import { type FileState, type FileData, filesStore } from "./9-types-files-store";
 import { type AllTimesItem } from "../../workers/all-times-worker-types";
 import { asyncParseTraceFile } from "./2-parse-trace-file";
-import { buildAllTimesInWorker } from "../../workers-client/all-times-client";
+import { asyncBuildAllTimesInWorker } from "../../workers-client/all-times-client";
 import { recomputeFilterMatches } from "../4-file-filters";
 import { recomputeHighlightMatches } from "../5-highlight-rules";
 import { runBuildAlltimes } from "./8-all-times-listener";
@@ -203,7 +203,7 @@ export const traceStore = proxy<TraceStore>({
                 })
             );
 
-            const items = await buildAllTimesInWorker(inputFiles, precision);
+            const items = await asyncBuildAllTimesInWorker(inputFiles, precision);
             traceStore.setAllTimes(items);
             if (appSettings.allTimes.showBuildDoneNotice) {
                 notice.success("Timeline built");

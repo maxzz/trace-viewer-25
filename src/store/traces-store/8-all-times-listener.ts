@@ -4,7 +4,7 @@ import { subscribeKey } from "valtio/utils";
 import { appSettings } from "../1-ui-settings";
 import { traceStore } from "./0-state";
 import { filesStore } from "./9-types-files-store";
-import { cancelFullTimelineBuild } from "../../workers-client/all-times-client";
+import { cancelAllTimesBuild } from "../../workers-client/all-times-client";
 
 export const listenerToBuildAllTimesEffectAtom = atomEffect(
     (get, set) => {
@@ -24,7 +24,7 @@ export const listenerToBuildAllTimesEffectAtom = atomEffect(
             unsubShow();
             unsubPrecision();
             unsubFilesData();
-            cancelFullTimelineBuild();
+            cancelAllTimesBuild();
         };
     }
 );
@@ -50,7 +50,7 @@ export function runBuildAlltimes() {
         
         // If the user wants to avoid rebuild, I must NOT clear the data when hiding.
         
-        cancelFullTimelineBuild();
+        cancelAllTimesBuild();
         return;
     }
 

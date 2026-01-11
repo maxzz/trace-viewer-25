@@ -37,29 +37,12 @@ function FullTimelineList() {
 
     return (
         <div className={classNames("w-max h-full bg-muted/10 select-none flex flex-col", allTimes.onLeft ? "border-r" : "border-l")}>
-            {/* <div className="text-xs p-1 font-bold border-b text-center text-muted-foreground bg-muted/20">
-                Timeline
-            </div> */}
-
             <ScrollArea className="flex-1">
-                <div className="py-1 flex flex-col">
+                <div className="flex flex-col">
                     {timeline.map(
                         (item, idx) => {
                             const isSelected = item.timestamp === selectedTimelineTimestamp;
-
-                            // Parse timestamp to separate date and time
-                            // Expected format: "MM/DD/YYYY HH:MM:SS.mmm" or "HH:MM:SS.mmm"
-                            let displayTime = item.timestamp;
-                            let currentDate = "";
-
-                            if (item.timestamp.includes(' ')) {
-                                const parts = item.timestamp.split(' ');
-                                // Assuming format "Date Time"
-                                if (parts.length >= 2) {
-                                    currentDate = parts.slice(0, parts.length - 1).join(' ');
-                                    displayTime = parts[parts.length - 1];
-                                }
-                            }
+                            const { displayTime, currentDate } = splitTimestampIntoDateAndTime(item.timestamp);
 
                             const showDateHeader = currentDate && currentDate !== lastDate;
                             if (currentDate) lastDate = currentDate;
@@ -67,13 +50,13 @@ function FullTimelineList() {
                             return (
                                 <div key={idx}>
                                     {showDateHeader && (
-                                        <div className="mx-2 px-0.5 py-1 text-[10px] text-center font-bold text-foreground dark:text-background border border-muted-foreground/20 rounded shadow bg-sky-200">
+                                        <div className="mx-2 px-0.5 h-5 text-[10px] text-center font-bold text-foreground dark:text-background bg-green-200 border border-muted-foreground/20 rounded shadow flex items-center justify-center">
                                             {currentDate}
                                         </div>
                                     )}
                                     <div
                                         className={cn(
-                                            "text-[10px] px-2.5 py-0.5 cursor-pointer hover:bg-muted/50 truncate font-mono text-center",
+                                            "h-5 text-[10px] px-2.5 py-0.5 cursor-pointer hover:bg-muted/50 truncate font-mono text-center flex items-center justify-center",
                                             isSelected && "bg-primary text-primary-foreground hover:bg-primary/90"
                                         )}
                                         ref={(el) => {
@@ -104,4 +87,22 @@ function FullTimelineList() {
             </ScrollArea>
         </div>
     );
+}
+
+function splitTimestampIntoDateAndTime(timestamp: string): { displayTime: string; currentDate: string } {
+    // Parse timestamp to separate date and time. Expected format: "MM/DD/YYYY HH:MM:SS.mmm" or "HH:MM:SS.mmm"
+
+    let displayTime = timestamp;
+    let currentDate = "";
+
+    if (timestamp.includes(' ')) {
+        const parts = timestamp.split(' ');
+        // Assuming format "Date Time"
+        if (parts.length >= 2) {
+            currentDate = parts.slice(0, parts.length - 1).join(' ');
+            displayTime = parts[parts.length - 1];
+        }
+    }
+    
+    return { displayTime, currentDate };
 }
