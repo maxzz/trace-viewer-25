@@ -5,7 +5,7 @@ import { traceStore } from "./0-state";
 import { filesStore } from "./9-types-files-store";
 import { cancelFullTimelineBuild } from "../../workers-client/all-times-client";
 
-export const listenerToBuildFullTimelineAtom = atomEffect(
+export const listenerToBuildAllTimesEffectAtom = atomEffect(
     (get, set) => {
         const unsubSettings = subscribe(appSettings, runBuildAlltimes);
         const unsubFilesData = subscribe(filesStore, runBuildAlltimes);
@@ -25,7 +25,7 @@ export function runBuildAlltimes() {
     const { filesData } = filesStore;
 
     if (!showCombinedTimeline) {
-        traceStore.setFullTimeline([]);
+        traceStore.setAllTimes([]);
         cancelFullTimelineBuild();
         return;
     }
@@ -38,7 +38,7 @@ export function runBuildAlltimes() {
     }
 
     if (files.length === 0) {
-        traceStore.setFullTimeline([]);
+        traceStore.setAllTimes([]);
         return;
     }
 

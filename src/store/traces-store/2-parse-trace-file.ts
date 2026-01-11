@@ -1,5 +1,5 @@
-import { TraceParser } from "../../trace-viewer-core/0-parser";
 import { type TraceLine, type TraceHeader, LineCode } from "../../trace-viewer-core/9-core-types";
+import { TraceParser } from "../../trace-viewer-core/0-parser";
 
 export interface ParsedTraceData {
     rawLines: TraceLine[];
@@ -9,7 +9,7 @@ export interface ParsedTraceData {
     errorCount: number;
 }
 
-export async function parseTraceFile(file: File): Promise<ParsedTraceData> {
+export async function asyncParseTraceFile(file: File): Promise<ParsedTraceData> {
     const arrayBuffer = await file.arrayBuffer();
     const parser = new TraceParser(arrayBuffer);
     

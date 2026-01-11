@@ -3,7 +3,7 @@ import { notice } from "../../components/ui/local-ui/7-toaster";
 import { type TraceLine, type TraceHeader, emptyFileHeader } from "../../trace-viewer-core/9-core-types";
 import { type FileState, type FileData, filesStore } from "./9-types-files-store";
 import { type AllTimesItem } from "../../workers/all-times-worker-types";
-import { parseTraceFile } from "./2-parse-trace-file";
+import { asyncParseTraceFile } from "./2-parse-trace-file";
 import { buildAllTimesInWorker } from "../../workers-client/all-times-client";
 import { recomputeFilterMatches } from "../4-file-filters";
 import { recomputeHighlightMatches } from "../5-highlight-rules";
@@ -25,7 +25,7 @@ export interface TraceStore {
 
     // All times
     allTimes: AllTimesItem[];                          // All times items
-    isAllTimesLoading: boolean;                        // Whether the all times is loading
+    allTimesIsLoading: boolean;                        // Whether the all times is loading
     allTimesError: string | null;                      // Error message for the all times
     allTimesSelectedTimestamp: string | null;          // Timestamp of the selected item in the all times
     pendingScrollTimestamp: string | null;             // Timestamp to scroll TraceList to when the all times item is selected
@@ -36,7 +36,7 @@ export interface TraceStore {
     closeFile: (id: string) => void;
     closeOtherFiles: (id: string) => void;
     closeAllFiles: () => void;
-    setFullTimeline: (items: AllTimesItem[]) => void;
+    setAllTimes: (items: AllTimesItem[]) => void;
     setAllTimesLoading: (loading: boolean) => void;
     setAllTimesSelectedTimestamp: (timestamp: string | null) => void;
     setPendingScrollTimestamp: (timestamp: string | null) => void;
@@ -58,31 +58,24 @@ export const traceStore = proxy<TraceStore>({
 
     // Timeline
     allTimes: [],
-    isAllTimesLoading: false,
+    allTimesIsLoading: false,
     allTimesError: null,
     allTimesSelectedTimestamp: null,
     pendingScrollTimestamp: null,
 
     loadTrace: async (file: File) => {
         const id = MakeUuid();
-
-        // Create new file data entry
         const newFileData = createNewFileData(id, file.name);
-
-        // Create file state entry with reference to data
         const newFile = createNewFileState(id, newFileData);
 
-        // Add to store immediately
-        filesStore.filesData[id] = ref(newFileData);
-        // Update reference to point to the proxy in the store
-        newFile.data = filesStore.filesData[id];
+        filesStore.filesData[id] = ref(newFileData); // Add to store immediately
+        newFile.data = filesStore.filesData[id]; // Update reference to point to the proxy in the store
         filesStore.filesState.push(newFile);
 
-        // Select it (this will update loading state in UI)
-        traceStore.selectFile(id);
+        traceStore.selectFile(id); // Select it (this will update loading state in UI)
 
         try {
-            const parsedData = await parseTraceFile(file);
+            const parsedData = await asyncParseTraceFile(file);
 
             // Find the file data in store
             if (filesStore.filesData[id]) {
@@ -98,7 +91,7 @@ export const traceStore = proxy<TraceStore>({
                 if (traceStore.selectedFileId === id) {
                     const traceFile = filesStore.filesState.find(f => f.id === id);
                     if (traceFile) {
-                        syncActiveFile(traceFile);
+                        syncToSetAsActiveFile(traceFile);
                     }
                 }
                 
@@ -129,18 +122,10 @@ export const traceStore = proxy<TraceStore>({
         if (id) {
             const file = filesStore.filesState.find(f => f.id === id);
             if (file) {
-                syncActiveFile(file);
+                syncToSetAsActiveFile(file);
             }
         } else {
-            // Reset to empty
-            traceStore.rawLines = [];
-            traceStore.viewLines = [];
-            traceStore.uniqueThreadIds = [];
-            traceStore.header = emptyFileHeader;
-            traceStore.fileName = null;
-            traceStore.isLoading = false;
-            traceStore.error = null;
-            traceStore.currentLineIndex = -1;
+            resetTraceStoreToEmpty();
         }
     },
 
@@ -183,14 +168,14 @@ export const traceStore = proxy<TraceStore>({
         traceStore.selectFile(null);
     },
 
-    setFullTimeline: (items: AllTimesItem[]) => {
+    setAllTimes: (items: AllTimesItem[]) => {
         traceStore.allTimes = items;
-        traceStore.isAllTimesLoading = false;
+        traceStore.allTimesIsLoading = false;
         traceStore.allTimesError = null;
     },
 
     setAllTimesLoading: (loading: boolean) => {
-        traceStore.isAllTimesLoading = loading;
+        traceStore.allTimesIsLoading = loading;
         if (loading) {
             traceStore.allTimesError = null;
         }
@@ -217,7 +202,7 @@ export const traceStore = proxy<TraceStore>({
             );
 
             const items = await buildAllTimesInWorker(inputFiles, precision);
-            traceStore.setFullTimeline(items);
+            traceStore.setAllTimes(items);
             notice.success("Timeline built");
         } catch (e: any) {
             if (e.message === 'Timeline build cancelled') {
@@ -262,7 +247,18 @@ function createNewFileState(id: string, data: FileData): FileState {
     };
 }
 
-function syncActiveFile(file: FileState) {
+function resetTraceStoreToEmpty() {
+    traceStore.rawLines = [];
+    traceStore.viewLines = [];
+    traceStore.uniqueThreadIds = [];
+    traceStore.header = emptyFileHeader;
+    traceStore.fileName = null;
+    traceStore.isLoading = false;
+    traceStore.error = null;
+    traceStore.currentLineIndex = -1;
+}
+
+function syncToSetAsActiveFile(file: FileState) {
     traceStore.rawLines = file.data.rawLines;
     traceStore.viewLines = file.data.viewLines;
     traceStore.uniqueThreadIds = file.data.uniqueThreadIds;

@@ -1,6 +1,7 @@
+import { useAtomValue } from "jotai";
 import { useSnapshot } from "valtio";
+import { listenerToBuildAllTimesEffectAtom } from "@/store/traces-store/8-timeline-listener";
 import { appSettings } from "../../store/1-ui-settings";
-import { traceStore } from "../../store/traces-store/0-state";
 import { filesStore } from "../../store/traces-store/9-types-files-store";
 import { TopMenu } from "./2-top-menu";
 import { TraceMainView } from "./6-resizable-panels";
@@ -9,11 +10,8 @@ import { TraceFooter } from "./7-app-footer";
 import { FileFilterDropdown, ButtonHighlightToggle } from "./3-btn-filters-select";
 import { ButtonThemeToggle } from "./3-btn-theme-toggle";
 
-import { useAtomValue } from "jotai";
-import { listenerToBuildFullTimelineAtom } from "@/store/traces-store/8-timeline-listener";
-
 export function TraceViewerApp() {
-    useAtomValue(listenerToBuildFullTimelineAtom);
+    useAtomValue(listenerToBuildAllTimesEffectAtom);
 
     const { filesData } = useSnapshot(filesStore);
     const hasFile = Object.keys(filesData).length > 0;
