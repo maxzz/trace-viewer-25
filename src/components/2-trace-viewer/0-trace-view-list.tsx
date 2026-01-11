@@ -2,13 +2,15 @@ import React, { useRef, useState, useEffect, useCallback } from "react";
 import { useSnapshot } from "valtio";
 import { appSettings } from "../../store/1-ui-settings";
 import { traceStore } from "../../store/traces-store/0-state";
+import { selectionStore } from "../../store/traces-store/selection";
 import { TraceRowMemo } from "./1-trace-view-row";
 import { ITEM_HEIGHT } from "./9-trace-view-constants";
 import { handlePendingTimestampScroll, scrollToSelection } from "./2-trace-view-scroll";
 import { handleKeyboardNavigation } from "./3-trace-view-keyboard";
 
 export function TraceList() {
-    const { viewLines, currentLineIndex, uniqueThreadIds, selectedFileId, pendingScrollTimestamp } = useSnapshot(traceStore);
+    const { viewLines, currentLineIndex, uniqueThreadIds, pendingScrollTimestamp } = useSnapshot(traceStore);
+    const { selectedFileId } = useSnapshot(selectionStore);
     const { useIconsForEntryExit, showLineNumbers } = useSnapshot(appSettings);
     
     const scrollRef = useRef<HTMLDivElement>(null);

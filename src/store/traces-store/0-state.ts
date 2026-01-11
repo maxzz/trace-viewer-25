@@ -9,10 +9,11 @@ import { asyncBuildAllTimesInWorker } from "../../workers-client/all-times-clien
 import { recomputeFilterMatches } from "../4-file-filters";
 import { recomputeHighlightMatches } from "../5-highlight-rules";
 import { runBuildAlltimes } from "./8-all-times-listener";
+import { selectionStore } from "./selection";
 
 export interface TraceStore {
     // traceFiles moved to filesStore
-    selectedFileId: string | null;
+    // selectedFileId moved to selectionStore
 
     // Active file properties (mirrored from selected file for backward compatibility)
     rawLines: TraceLine[];
@@ -45,8 +46,6 @@ export interface TraceStore {
 }
 
 export const traceStore = proxy<TraceStore>({
-    selectedFileId: null,
-
     // Initial empty state
     fileName: null,
     rawLines: [],
@@ -90,7 +89,7 @@ export const traceStore = proxy<TraceStore>({
                 updatedFileData.isLoading = false;
 
                 // If this is still the selected file, update the top-level properties
-                if (traceStore.selectedFileId === id) {
+                if (selectionStore.selectedFileId === id) {
                     const traceFile = filesStore.filesState.find(f => f.id === id);
                     if (traceFile) {
                         syncToSetAsActiveFile(traceFile);
@@ -107,7 +106,7 @@ export const traceStore = proxy<TraceStore>({
                 filesStore.filesData[id].error = e.message || "Unknown error";
                 filesStore.filesData[id].isLoading = false;
                 
-                if (traceStore.selectedFileId === id) {
+                if (selectionStore.selectedFileId === id) {
                     traceStore.error = filesStore.filesData[id].error;
                     traceStore.isLoading = false;
                 }
@@ -119,7 +118,7 @@ export const traceStore = proxy<TraceStore>({
     },
 
     selectFile: (id: string | null) => {
-        traceStore.selectedFileId = id;
+        selectionStore.selectedFileId = id;
 
         if (id) {
             const file = filesStore.filesState.find(f => f.id === id);
@@ -138,7 +137,7 @@ export const traceStore = proxy<TraceStore>({
             delete filesStore.filesData[id];
 
             // If closed file was selected, select another one
-            if (traceStore.selectedFileId === id) {
+            if (selectionStore.selectedFileId === id) {
                 if (filesStore.filesState.length > 0) {
                     // Select the next file, or the previous one if we closed the last one
                     const nextIndex = Math.min(index, filesStore.filesState.length - 1);
@@ -159,7 +158,7 @@ export const traceStore = proxy<TraceStore>({
             }
         });
         
-        if (traceStore.selectedFileId !== id) {
+        if (selectionStore.selectedFileId !== id) {
             traceStore.selectFile(id);
         }
     },
@@ -276,8 +275,8 @@ function syncToSetAsActiveFile(file: FileState) {
 // Subscribe to currentLineIndex changes to update the file state
 subscribe(traceStore,
     () => {
-        if (traceStore.selectedFileId) {
-            const file = filesStore.filesState.find(f => f.id === traceStore.selectedFileId);
+        if (selectionStore.selectedFileId) {
+            const file = filesStore.filesState.find(f => f.id === selectionStore.selectedFileId);
             // Only update if changed to avoid infinite loops if syncActiveFile triggers this
             if (file && file.currentLineIndex !== traceStore.currentLineIndex) {
                 file.currentLineIndex = traceStore.currentLineIndex;

@@ -2,6 +2,7 @@ import { type RefObject, useEffect, useRef, useMemo } from "react";
 import { useSnapshot } from "valtio";
 import { appSettings, type FileFilter } from "../../store/1-ui-settings";
 import { traceStore } from "../../store/traces-store/0-state";
+import { selectionStore } from "../../store/traces-store/selection";
 import { filesStore } from "../../store/traces-store/9-types-files-store";
 import { ScrollArea } from "../ui/shadcn/scroll-area";
 import { FileListRow } from "./1-file-list-row";
@@ -9,7 +10,7 @@ import { AllTimesPanel } from "./2-all-times-list";
 
 export function FileList() {
     const { filesState } = useSnapshot(filesStore);
-    const { selectedFileId } = useSnapshot(traceStore);
+    const { selectedFileId } = useSnapshot(selectionStore);
     const { fileFilters, selectedFilterId, allTimes } = useSnapshot(appSettings);
     const containerRef = useRef<HTMLDivElement>(null);
 
