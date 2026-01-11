@@ -1,5 +1,6 @@
 import { atomEffect } from "jotai-effect";
 import { subscribe } from "valtio";
+import { subscribeKey } from "valtio/utils";
 import { appSettings } from "../1-ui-settings";
 import { traceStore } from "./0-state";
 import { filesStore } from "./9-types-files-store";
@@ -7,11 +8,13 @@ import { cancelFullTimelineBuild } from "../../workers-client/all-times-client";
 
 export const listenerToBuildAllTimesEffectAtom = atomEffect(
     (get, set) => {
-        const unsubSettings = subscribe(appSettings.allTimes, runBuildAlltimes);
+        const unsubShow = subscribeKey(appSettings.allTimes, 'show', runBuildAlltimes);
+        const unsubPrecision = subscribeKey(appSettings.allTimes, 'precision', runBuildAlltimes);
         const unsubFilesData = subscribe(filesStore.filesData, runBuildAlltimes);
 
         return () => {
-            unsubSettings();
+            unsubShow();
+            unsubPrecision();
             unsubFilesData();
             cancelFullTimelineBuild();
         };
