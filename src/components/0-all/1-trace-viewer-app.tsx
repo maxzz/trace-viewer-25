@@ -1,6 +1,6 @@
 import { useAtomValue } from "jotai";
 import { useSnapshot } from "valtio";
-import { listenerToBuildAllTimesEffectAtom } from "@/store/traces-store/8-timeline-listener";
+import { listenerToBuildAllTimesEffectAtom } from "@/store/traces-store/8-all-times-listener";
 import { appSettings } from "../../store/1-ui-settings";
 import { filesStore } from "../../store/traces-store/9-types-files-store";
 import { TopMenu } from "./2-top-menu";

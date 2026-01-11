@@ -10,7 +10,7 @@ import { CombinedTimelinePanel } from "./2-full-timeline-list";
 export function FileList() {
     const { filesState } = useSnapshot(filesStore);
     const { selectedFileId } = useSnapshot(traceStore);
-    const { fileFilters, selectedFilterId, combinedOnLeft } = useSnapshot(appSettings);
+    const { fileFilters, selectedFilterId, allTimes } = useSnapshot(appSettings);
     const containerRef = useRef<HTMLDivElement>(null);
 
     // Compute filtered files
@@ -55,7 +55,7 @@ export function FileList() {
             className="h-full flex flex-row bg-muted/10 select-none outline-none focus-visible:ring-1 focus-visible:ring-ring"
             tabIndex={0}
         >
-            {combinedOnLeft && <CombinedTimelinePanel />}
+            {allTimes.onLeft && <CombinedTimelinePanel />}
 
             <div className="flex-1 flex flex-col h-full min-w-0">
                 <ScrollArea className="flex-1" fixedWidth>
@@ -73,7 +73,7 @@ export function FileList() {
                 </ScrollArea>
             </div>
 
-            {!combinedOnLeft && <CombinedTimelinePanel />}
+            {!allTimes.onLeft && <CombinedTimelinePanel />}
         </div>
     );
 }

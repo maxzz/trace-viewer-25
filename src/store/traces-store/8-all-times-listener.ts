@@ -7,8 +7,8 @@ import { cancelFullTimelineBuild } from "../../workers-client/all-times-client";
 
 export const listenerToBuildAllTimesEffectAtom = atomEffect(
     (get, set) => {
-        const unsubSettings = subscribe(appSettings, runBuildAlltimes);
-        const unsubFilesData = subscribe(filesStore, runBuildAlltimes);
+        const unsubSettings = subscribe(appSettings.allTimes, runBuildAlltimes);
+        const unsubFilesData = subscribe(filesStore.filesData, runBuildAlltimes);
 
         return () => {
             unsubSettings();
@@ -19,12 +19,10 @@ export const listenerToBuildAllTimesEffectAtom = atomEffect(
 );
 
 export function runBuildAlltimes() {
-    console.log("runBuildFullTimeline");
-
-    const { showCombinedTimeline, timelinePrecision } = appSettings;
+    const { show, precision } = appSettings.allTimes;
     const { filesData } = filesStore;
 
-    if (!showCombinedTimeline) {
+    if (!show) {
         traceStore.setAllTimes([]);
         cancelFullTimelineBuild();
         return;
@@ -42,5 +40,5 @@ export function runBuildAlltimes() {
         return;
     }
 
-    traceStore.asyncBuildAllTimes(timelinePrecision);
+    traceStore.asyncBuildAllTimes(precision);
 }

@@ -8,7 +8,7 @@ import { asyncParseTraceFile } from "./2-parse-trace-file";
 import { buildAllTimesInWorker } from "../../workers-client/all-times-client";
 import { recomputeFilterMatches } from "../4-file-filters";
 import { recomputeHighlightMatches } from "../5-highlight-rules";
-import { runBuildAlltimes } from "./8-timeline-listener";
+import { runBuildAlltimes } from "./8-all-times-listener";
 
 export interface TraceStore {
     // traceFiles moved to filesStore
@@ -205,7 +205,7 @@ export const traceStore = proxy<TraceStore>({
 
             const items = await buildAllTimesInWorker(inputFiles, precision);
             traceStore.setAllTimes(items);
-            if (appSettings.showAllTimesBuildDoneNotice) {
+            if (appSettings.allTimes.showBuildDoneNotice) {
                 notice.success("Timeline built");
             }
         } catch (e: any) {

@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/shadcn/label';
 
 export function DialogOptions() {
     const [open, onOpenChange] = useAtom(dialogOptionsOpenAtom);
-    const { showFooter, useIconsForEntryExit, showLineNumbers, extraInFooter, showCombinedTimeline, combinedOnLeft, timelinePrecision, showAllTimesBuildDoneNotice: showTimelineNotification } = useSnapshot(appSettings);
+    const { showFooter, useIconsForEntryExit, showLineNumbers, extraInFooter, allTimes } = useSnapshot(appSettings);
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -37,17 +37,17 @@ export function DialogOptions() {
                     <div className="mt-2 font-semibold">All times options:</div>
 
                     <Label className="text-xs font-normal flex items-center space-x-1">
-                        <Checkbox className="size-5" checked={showCombinedTimeline} onCheckedChange={handleShowTimelineChange} />
+                        <Checkbox className="size-5" checked={allTimes.show} onCheckedChange={handleShowTimelineChange} />
                         Show all times column
                     </Label>
 
                     <Label className="text-xs font-normal flex items-center space-x-1">
-                        <Checkbox className="size-5" checked={showTimelineNotification} onCheckedChange={handleShowTimelineNotificationChange} />
+                        <Checkbox className="size-5" checked={allTimes.showBuildDoneNotice} onCheckedChange={handleShowTimelineNotificationChange} />
                         Show notification when all times is built
                     </Label>
 
                     <Label className="text-xs font-normal flex items-center space-x-1">
-                        <Checkbox className="size-5" checked={combinedOnLeft} onCheckedChange={handleCombinedOnLeftChange} />
+                        <Checkbox className="size-5" checked={allTimes.onLeft} onCheckedChange={handleCombinedOnLeftChange} />
                         Show on the left of the file list
                     </Label>
 
@@ -55,7 +55,7 @@ export function DialogOptions() {
                         <Label className="text-xs font-normal text-balance">
                             All times precision
                         </Label>
-                        <Input className="w-12 h-6 text-xs p-1" value={timelinePrecision} onChange={handleTimelinePrecisionChange} min={0} max={5} type="number" />
+                        <Input className="w-12 h-6 text-xs p-1" value={allTimes.precision} onChange={handleTimelinePrecisionChange} min={0} max={5} type="number" />
                     </div>
 
                     <div className="mt-2 font-semibold">Footer options:</div>
@@ -97,20 +97,20 @@ function handleShowLineNumbersChange(checked: boolean) {
 }
 
 function handleShowTimelineChange(checked: boolean) {
-    appSettings.showCombinedTimeline = checked;
+    appSettings.allTimes.show = checked;
 }
 
 function handleCombinedOnLeftChange(checked: boolean) {
-    appSettings.combinedOnLeft = checked;
+    appSettings.allTimes.onLeft = checked;
 }
 
 function handleTimelinePrecisionChange(e: React.ChangeEvent<HTMLInputElement>) {
     const val = parseInt(e.target.value, 10);
     if (!isNaN(val) && val >= 0 && val <= 5) {
-        appSettings.timelinePrecision = val;
+        appSettings.allTimes.precision = val;
     }
 }
 
 function handleShowTimelineNotificationChange(checked: boolean) {
-    appSettings.showAllTimesBuildDoneNotice = checked;
+    appSettings.allTimes.showBuildDoneNotice = checked;
 }
