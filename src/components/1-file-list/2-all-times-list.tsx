@@ -3,6 +3,7 @@ import { appSettings } from "@/store/1-ui-settings";
 import { classNames, cn } from "@/utils/classnames";
 import { traceStore } from "@/store/traces-store/0-state";
 import { ScrollArea } from "../ui/shadcn/scroll-area";
+import { Fragment } from "react/jsx-runtime";
 
 export function AllTimesPanel() {
     const { allTimes } = useSnapshot(appSettings);
@@ -24,14 +25,14 @@ function AllTimesList() {
             <ScrollArea className="flex-1">
                 <div className="flex flex-col">
                     {allTimes.map(
-                        (item) => {
+                        (item, idx) => {
                             const isSelected = item.timestamp === selectedAllTimesTimestamp;
                             const { displayTime, currentDate } = splitTimestampIntoDateAndTime(item.timestamp);
 
                             const showDateHeader = currentDate && currentDate !== lastDate;
                             if (currentDate) lastDate = currentDate;
 
-                            return (<>
+                            return (<Fragment key={idx}>
                                     {showDateHeader && (
                                         <div className={dateHeaderClasses} key={`date-header-${item.timestamp}`}>
                                             {currentDate}
@@ -45,7 +46,7 @@ function AllTimesList() {
                                     >
                                         {displayTime}
                                     </div>
-                                </>
+                                </Fragment>
                             );
                         }
                     )}
