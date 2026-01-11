@@ -38,6 +38,7 @@ export interface AppSettings {
     showCombinedTimeline: boolean;
     combinedOnLeft: boolean;
     timelinePrecision: number; // 0-5 digits to hide/round
+    showAllTimesBuildDoneNotice: boolean;
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
@@ -53,6 +54,7 @@ const DEFAULT_SETTINGS: AppSettings = {
     showCombinedTimeline: false,
     combinedOnLeft: true,
     timelinePrecision: 2,
+    showAllTimesBuildDoneNotice: true,
 };
 
 // Load settings from localStorage

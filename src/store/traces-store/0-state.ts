@@ -1,5 +1,6 @@
 import { proxy, ref, subscribe } from "valtio";
 import { notice } from "../../components/ui/local-ui/7-toaster";
+import { appSettings } from "../1-ui-settings";
 import { type TraceLine, type TraceHeader, emptyFileHeader } from "../../trace-viewer-core/9-core-types";
 import { type FileState, type FileData, filesStore } from "./9-types-files-store";
 import { type AllTimesItem } from "../../workers/all-times-worker-types";
@@ -204,7 +205,9 @@ export const traceStore = proxy<TraceStore>({
 
             const items = await buildAllTimesInWorker(inputFiles, precision);
             traceStore.setAllTimes(items);
-            notice.success("Timeline built");
+            if (appSettings.showAllTimesBuildDoneNotice) {
+                notice.success("Timeline built");
+            }
         } catch (e: any) {
             if (e.message === 'Timeline build cancelled') {
                 // unexpected here unless we cancelled it

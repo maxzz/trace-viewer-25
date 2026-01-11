@@ -10,38 +10,7 @@ import { Label } from '@/components/ui/shadcn/label';
 
 export function DialogOptions() {
     const [open, onOpenChange] = useAtom(dialogOptionsOpenAtom);
-    const { showFooter, useIconsForEntryExit, showLineNumbers, extraInFooter, showCombinedTimeline, combinedOnLeft, timelinePrecision } = useSnapshot(appSettings);
-
-    const handleShowFooterChange = (checked: boolean) => {
-        appSettings.showFooter = checked;
-    };
-
-    const handleUseIconsChange = (checked: boolean) => {
-        appSettings.useIconsForEntryExit = checked;
-    };
-
-    const handleExtraInFooterChange = (checked: boolean) => {
-        appSettings.extraInFooter = checked;
-    };
-
-    const handleShowLineNumbersChange = (checked: boolean) => {
-        appSettings.showLineNumbers = checked;
-    };
-
-    const handleShowTimelineChange = (checked: boolean) => {
-        appSettings.showCombinedTimeline = checked;
-    };
-
-    const handleCombinedOnLeftChange = (checked: boolean) => {
-        appSettings.combinedOnLeft = checked;
-    };
-
-    const handleTimelinePrecisionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = parseInt(e.target.value, 10);
-        if (!isNaN(val) && val >= 0 && val <= 5) {
-            appSettings.timelinePrecision = val;
-        }
-    };
+    const { showFooter, useIconsForEntryExit, showLineNumbers, extraInFooter, showCombinedTimeline, combinedOnLeft, timelinePrecision, showAllTimesBuildDoneNotice: showTimelineNotification } = useSnapshot(appSettings);
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -62,14 +31,19 @@ export function DialogOptions() {
 
                     <Label className="text-xs font-normal flex items-center space-x-1">
                         <Checkbox className="size-5" checked={showLineNumbers} onCheckedChange={handleShowLineNumbersChange} />
-                        Show Line numbers
+                        Show line numbers in the trace file
                     </Label>
 
-                    <div className="mt-2 font-semibold">Combined timeline options:</div>
+                    <div className="mt-2 font-semibold">All times options:</div>
 
                     <Label className="text-xs font-normal flex items-center space-x-1">
                         <Checkbox className="size-5" checked={showCombinedTimeline} onCheckedChange={handleShowTimelineChange} />
-                        Show combined timeline
+                        Show all times column
+                    </Label>
+
+                    <Label className="text-xs font-normal flex items-center space-x-1">
+                        <Checkbox className="size-5" checked={showTimelineNotification} onCheckedChange={handleShowTimelineNotificationChange} />
+                        Show notification when all times is built
                     </Label>
 
                     <Label className="text-xs font-normal flex items-center space-x-1">
@@ -79,7 +53,7 @@ export function DialogOptions() {
 
                     <div className="-mt-1 pl-7 flex items-center space-x-2">
                         <Label className="text-xs font-normal text-balance">
-                            Combined timeline precision
+                            All times precision
                         </Label>
                         <Input className="w-12 h-6 text-xs p-1" value={timelinePrecision} onChange={handleTimelinePrecisionChange} min={0} max={5} type="number" />
                     </div>
@@ -88,12 +62,12 @@ export function DialogOptions() {
 
                     <Label className="text-xs font-normal flex items-center space-x-1">
                         <Checkbox className="size-5" checked={showFooter} onCheckedChange={handleShowFooterChange} />
-                        Show Footer
+                        Show footer
                     </Label>
 
                     <Label className="text-xs font-normal flex items-center space-x-1">
                         <Checkbox className="size-5" checked={extraInFooter} onCheckedChange={handleExtraInFooterChange} />
-                        Show header info in footer
+                        Show info from the file header in the footer
                     </Label>
                 </div>
 
@@ -104,4 +78,39 @@ export function DialogOptions() {
             </DialogContent>
         </Dialog>
     );
+}
+
+function handleShowFooterChange(checked: boolean) {
+    appSettings.showFooter = checked;
+}
+
+function handleUseIconsChange(checked: boolean) {
+    appSettings.useIconsForEntryExit = checked;
+}
+
+function handleExtraInFooterChange(checked: boolean) {
+    appSettings.extraInFooter = checked;
+}
+
+function handleShowLineNumbersChange(checked: boolean) {
+    appSettings.showLineNumbers = checked;
+}
+
+function handleShowTimelineChange(checked: boolean) {
+    appSettings.showCombinedTimeline = checked;
+}
+
+function handleCombinedOnLeftChange(checked: boolean) {
+    appSettings.combinedOnLeft = checked;
+}
+
+function handleTimelinePrecisionChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const val = parseInt(e.target.value, 10);
+    if (!isNaN(val) && val >= 0 && val <= 5) {
+        appSettings.timelinePrecision = val;
+    }
+}
+
+function handleShowTimelineNotificationChange(checked: boolean) {
+    appSettings.showAllTimesBuildDoneNotice = checked;
 }
