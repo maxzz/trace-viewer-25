@@ -5,20 +5,16 @@ import { ScrollArea } from "../ui/shadcn/scroll-area";
 import { traceStore } from "@/store/traces-store/0-state";
 import { appSettings } from "@/store/1-ui-settings";
 
-export function CombinedTimelinePanel() {
+export function AllTimesPanel() {
     const { allTimes } = useSnapshot(appSettings);
     if (!allTimes.show) {
         return null;
     }
 
-    return <CombinedTimelineList />;
+    return <AllTimesList />;
 }
 
-function CombinedTimelineList() {
-    return <FullTimelineList />;
-}
-
-function FullTimelineList() {
+function AllTimesList() {
     const { allTimes } = useSnapshot(appSettings);
     const { allTimes: timeline, allTimesSelectedTimestamp: selectedTimelineTimestamp } = useSnapshot(traceStore);
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -50,25 +46,14 @@ function FullTimelineList() {
                             return (
                                 <div key={idx}>
                                     {showDateHeader && (
-                                        <div className="mx-2 px-0.5 h-5 text-[10px] text-center font-bold text-foreground dark:text-background bg-green-200 border border-muted-foreground/20 rounded shadow flex items-center justify-center">
+                                        <div className={dateHeaderClasses}>
                                             {currentDate}
                                         </div>
                                     )}
                                     <div
-                                        className={cn(
-                                            "h-5 text-[10px] px-2.5 py-0.5 cursor-pointer hover:bg-muted/50 truncate font-mono text-center flex items-center justify-center",
-                                            isSelected && "bg-primary text-primary-foreground hover:bg-primary/90"
-                                        )}
-                                        ref={(el) => {
-                                            if (el) {
-                                                itemRefs.current.set(item.timestamp, el);
-                                            } else {
-                                                itemRefs.current.delete(item.timestamp);
-                                            }
-                                        }}
-                                        onClick={() => {
-                                            traceStore.setAllTimesSelectedTimestamp(isSelected ? null : item.timestamp);
-                                        }}
+                                        className={cn(rowClasses, isSelected && "bg-primary text-primary-foreground hover:bg-primary/90")}
+                                        onClick={() => traceStore.setAllTimesSelectedTimestamp(isSelected ? null : item.timestamp)}
+                                        ref={(el) => { el ? itemRefs.current.set(item.timestamp, el) : itemRefs.current.delete(item.timestamp); }}
                                         title={item.timestamp}
                                     >
                                         {displayTime}
@@ -89,7 +74,10 @@ function FullTimelineList() {
     );
 }
 
-function splitTimestampIntoDateAndTime(timestamp: string): { displayTime: string; currentDate: string } {
+const dateHeaderClasses = "mx-2 px-0.5 h-5 text-[10px] text-center font-bold text-foreground dark:text-background bg-green-200 border border-muted-foreground/20 rounded shadow flex items-center justify-center";
+const rowClasses = "h-5 text-[10px] px-2.5 py-0.5 cursor-pointer hover:bg-muted/50 truncate font-mono text-center flex items-center justify-center";
+
+function splitTimestampIntoDateAndTime(timestamp: string): { displayTime: string; currentDate: string; } {
     // Parse timestamp to separate date and time. Expected format: "MM/DD/YYYY HH:MM:SS.mmm" or "HH:MM:SS.mmm"
 
     let displayTime = timestamp;
@@ -103,6 +91,6 @@ function splitTimestampIntoDateAndTime(timestamp: string): { displayTime: string
             displayTime = parts[parts.length - 1];
         }
     }
-    
+
     return { displayTime, currentDate };
 }

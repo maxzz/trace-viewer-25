@@ -5,7 +5,7 @@ import { traceStore } from "../../store/traces-store/0-state";
 import { filesStore } from "../../store/traces-store/9-types-files-store";
 import { ScrollArea } from "../ui/shadcn/scroll-area";
 import { FileListRow } from "./1-file-list-row";
-import { CombinedTimelinePanel } from "./2-all-times-list";
+import { AllTimesPanel } from "./2-all-times-list";
 
 export function FileList() {
     const { filesState } = useSnapshot(filesStore);
@@ -55,7 +55,7 @@ export function FileList() {
             className="h-full flex flex-row bg-muted/10 select-none outline-none focus-visible:ring-1 focus-visible:ring-ring"
             tabIndex={0}
         >
-            {allTimes.onLeft && <CombinedTimelinePanel />}
+            {allTimes.onLeft && <AllTimesPanel />}
 
             <div className="flex-1 flex flex-col h-full min-w-0">
                 <ScrollArea className="flex-1" fixedWidth>
@@ -73,7 +73,7 @@ export function FileList() {
                 </ScrollArea>
             </div>
 
-            {!allTimes.onLeft && <CombinedTimelinePanel />}
+            {!allTimes.onLeft && <AllTimesPanel />}
         </div>
     );
 }
