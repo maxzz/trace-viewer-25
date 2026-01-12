@@ -23,7 +23,7 @@ export interface TraceStore {
     pendingScrollTimestamp: string | null;             // Timestamp to scroll TraceList to when the all times item is selected
 
     // Actions
-    loadTrace: (file: File) => Promise<void>;
+    // loadTrace: (file: File) => Promise<void>;
     selectFile: (id: string | null) => void;
     closeFile: (id: string) => void;
     closeOtherFiles: (id: string) => void;
@@ -33,31 +33,6 @@ export interface TraceStore {
     setAllTimesSelectedTimestamp: (timestamp: string | null) => void;
     setPendingScrollTimestamp: (timestamp: string | null) => void;
     asyncBuildAllTimes: (precision: number) => Promise<void>;
-}
-
-function newTraceItemCreate(file: File): FileState {
-    const id = MakeUuid();
-    const newFileData = createNewFileData(id, file.name);
-    const newFile = createNewFileState(id, ref(newFileData));
-    return newFile;
-}
-
-async function newTraceItemLoad(fileState: FileState, file: File): Promise<void> {
-    const data = fileState.data;
-    try {
-        const parsed = await asyncParseTraceFile(file);
-
-        data.rawLines = parsed.rawLines;
-        data.viewLines = parsed.viewLines;
-        data.uniqueThreadIds = parsed.uniqueThreadIds;
-        data.header = parsed.header;
-        data.errorCount = parsed.errorCount;
-        data.isLoading = false;
-    } catch (e: any) {
-        data.errorLoadingFile = e.message || "Unknown error";
-        data.isLoading = false;
-        console.error("Failed to load trace", e);
-    }
 }
 
 export const traceStore = proxy<TraceStore>({
@@ -71,28 +46,28 @@ export const traceStore = proxy<TraceStore>({
     allTimesSelectedTimestamp: null,
     pendingScrollTimestamp: null,
 
-    loadTrace: async (file: File) => {
-        const newFileState = newTraceItemCreate(file);
-        await newTraceItemLoad(newFileState, file);
+    // loadTrace: async (file: File) => {
+    //     const newFileState = newTraceItemCreate(file);
+    //     await newTraceItemLoad(newFileState, file);
 
-        filesStore.filesState.push(newFileState);
+    //     filesStore.filesState.push(newFileState);
 
-        traceStore.selectFile(newFileState.id); // Select it (this will update loading state in UI)
+    //     traceStore.selectFile(newFileState.id); // Select it (this will update loading state in UI)
 
-        // If this is still the selected file, update the top-level properties
-        if (selectionStore.selectedFileId === newFileState.id) {
-            const traceState = filesStore.filesState.find(f => f.id === newFileState.id);
-            if (traceState) {
-                traceStore.currentFileState = traceState;
-            }
-        }
+    //     // If this is still the selected file, update the top-level properties
+    //     if (selectionStore.selectedFileId === newFileState.id) {
+    //         const traceState = filesStore.filesState.find(f => f.id === newFileState.id);
+    //         if (traceState) {
+    //             traceStore.currentFileState = traceState;
+    //         }
+    //     }
 
-        // Recompute filters and highlights for the new file
-        recomputeFilterMatches();
-        recomputeHighlightMatches();
+    //     // Recompute filters and highlights for the new file
+    //     recomputeFilterMatches();
+    //     recomputeHighlightMatches();
 
-        runBuildAlltimes();
-    },
+    //     runBuildAlltimes();
+    // },
 
     selectFile: (id: string | null) => {
         selectionStore.selectedFileId = id;
@@ -196,36 +171,6 @@ export const traceStore = proxy<TraceStore>({
         }
     }
 });
-
-// Utilities
-
-function MakeUuid(): string {
-    return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
-}
-
-function createNewFileData(id: string, fileName: string): FileData {
-    return {
-        id,
-        fileName,
-        rawLines: [],
-        viewLines: [],
-        uniqueThreadIds: [],
-        header: emptyFileHeader,
-        errorCount: 0,
-        isLoading: true,
-        errorLoadingFile: null,
-    };
-}
-
-function createNewFileState(id: string, data: FileData): FileState {
-    return {
-        id,
-        data, // Placeholder, will update after adding to store
-        currentLineIndex: -1,
-        matchedFilterIds: [],
-        matchedHighlightIds: []
-    };
-}
 
 // Subscribe to currentLineIndex changes to update the file state
 subscribe(traceStore,

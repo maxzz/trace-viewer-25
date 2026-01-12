@@ -14,8 +14,8 @@ export function TraceList() {
     const { useIconsForEntryExit, showLineNumbers } = useSnapshot(appSettings);
     
     // Derived from currentFileState
-    const fileData = currentFileState?.fileData;
-    const currentLineIndex = currentFileState?.fileState.currentLineIndex ?? -1;
+    const fileData = currentFileState?.data;
+    const currentLineIndex = currentFileState?.currentLineIndex ?? -1;
     const viewLines = fileData?.viewLines || [];
     const threadIds = fileData?.uniqueThreadIds || [];
 

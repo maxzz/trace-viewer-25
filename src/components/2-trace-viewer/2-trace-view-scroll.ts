@@ -105,7 +105,7 @@ export function handlePendingTimestampScroll(pendingScrollTimestamp: string | nu
 
     // Apply selection
     if (bestIndex !== -1 && traceStore.currentFileState) {
-        traceStore.currentFileState.fileState.currentLineIndex = bestIndex;
+        traceStore.currentFileState.currentLineIndex = bestIndex;
         // Force scroll to this index even if it was already selected?
         // The scroll effect depends on currentLineIndex change.
         // If bestIndex === currentLineIndex, the other effect won't fire unless we force it.

@@ -18,7 +18,7 @@ function TraceRow({ line, globalIndex, currentLineIndex, useIconsForEntryExit, s
     const showThreadBackground = uniqueThreadIds.length > 0 && uniqueThreadIds[0] !== line.threadId;
 
     return (
-        <div className={getRowClasses(line, globalIndex, currentLineIndex)} style={{ height: ITEM_HEIGHT }} onClick={() => traceStore.currentFileState && (traceStore.currentFileState.fileState.currentLineIndex = globalIndex)}>
+        <div className={getRowClasses(line, globalIndex, currentLineIndex)} style={{ height: ITEM_HEIGHT }} onClick={() => traceStore.currentFileState && (traceStore.currentFileState.currentLineIndex = globalIndex)}>
             {/* Line Number */}
             {showLineNumbers && (
                 <div className={columnLineNumberClasses}>

@@ -15,10 +15,10 @@ export function handleKeyboardNavigation(e: KeyboardEvent, scrollRef: React.RefO
         return;
     }
 
-    const totalLines = traceStore.currentFileState?.fileData.viewLines.length ?? 0;
+    const totalLines = traceStore.currentFileState?.data.viewLines.length ?? 0;
     if (totalLines === 0) return;
 
-    const currentIndex = traceStore.currentFileState?.fileState.currentLineIndex ?? -1;
+    const currentIndex = traceStore.currentFileState?.currentLineIndex ?? -1;
     const linesPerPage = Math.floor(containerHeight / ITEM_HEIGHT);
     
     // Calculate current visible range based on scrollTop
@@ -61,6 +61,6 @@ export function handleKeyboardNavigation(e: KeyboardEvent, scrollRef: React.RefO
 
     e.preventDefault();
     if (newIndex !== currentIndex && traceStore.currentFileState) {
-        traceStore.currentFileState.fileState.currentLineIndex = newIndex;
+        traceStore.currentFileState.currentLineIndex = newIndex;
     }
 }

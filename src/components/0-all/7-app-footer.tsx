@@ -12,7 +12,7 @@ export function TraceFooter() {
     const { extraInFooter } = useSnapshot(appSettings);
     
     // Derived values
-    const fileData = currentFileState?.fileData;
+    const fileData = currentFileState?.data;
     const viewLines = fileData?.viewLines || [];
     const header = fileData?.header || { magic: '' };
     const error = fileData?.errorLoadingFile;

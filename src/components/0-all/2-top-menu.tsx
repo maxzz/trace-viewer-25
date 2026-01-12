@@ -21,7 +21,7 @@ export function TopMenu() {
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { currentFileState } = useSnapshot(traceStore);
-    const selectedFileId = currentFileState?.fileData?.id ?? null;
+    const selectedFileId = currentFileState?.id ?? null;
 
     return (<>
         <InputWatchFilesLoad inputRef={fileInputRef} />
