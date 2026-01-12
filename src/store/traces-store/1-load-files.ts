@@ -11,7 +11,7 @@ import { runBuildAlltimes } from "./8-all-times-listener";
 
 export async function asyncLoadAnyFiles(files: File[], droppedFolderName?: string, filePaths?: string[]) {
     const zipFiles = files.filter(f => isZipFile(f));
-    const trc3Files = files.filter(f => !isTrc3File(f));
+    const trc3Files = files.filter(f => isTrc3File(f));
 
     // Extract and load files from ZIPs
     for (const file of zipFiles) {

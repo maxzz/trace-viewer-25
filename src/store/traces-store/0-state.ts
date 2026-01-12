@@ -1,14 +1,10 @@
-import { proxy, ref, subscribe } from "valtio";
+import { proxy, subscribe } from "valtio";
 import { notice } from "../../components/ui/local-ui/7-toaster";
 import { appSettings } from "../1-ui-settings";
-import { type TraceLine, type TraceHeader, emptyFileHeader } from "../../trace-viewer-core/9-core-types";
-import { type FileState, type FileData, filesStore } from "./9-types-files-store";
+import { type TraceLine } from "../../trace-viewer-core/9-core-types";
+import { type FileState, filesStore } from "./9-types-files-store";
 import { type AllTimesItem } from "../../workers/all-times-worker-types";
-import { asyncParseTraceFile } from "./2-parse-trace-file";
 import { asyncBuildAllTimesInWorker } from "../../workers-client/all-times-client";
-import { recomputeFilterMatches } from "../4-file-filters";
-import { recomputeHighlightMatches } from "../5-highlight-rules";
-import { runBuildAlltimes } from "./8-all-times-listener";
 import { selectionStore } from "./selection";
 
 export interface TraceStore {
@@ -44,6 +40,7 @@ export const traceStore = proxy<TraceStore>({
     allTimesIsLoading: false,
     allTimesError: null,
     allTimesSelectedTimestamp: null,
+    
     pendingScrollTimestamp: null,
 
     // loadTrace: async (file: File) => {
