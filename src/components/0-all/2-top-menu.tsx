@@ -4,6 +4,7 @@ import { useSnapshot } from "valtio";
 import { notice } from "../ui/local-ui/7-toaster";
 import { cancelAllTimesBuild } from "@/workers-client";
 import { traceStore } from "@/store/traces-store/0-state";
+import { allTimesStore } from "@/store/traces-store/3-all-times-store";
 import { asyncLoadAnyFiles } from "@/store/traces-store/1-load-files";
 import { Input } from "../ui/shadcn/input";
 import { Button } from "../ui/shadcn/button";
@@ -125,7 +126,7 @@ function TraceOpenMenuItem({ onClick }: { onClick: () => void; }) {
 function TimelineProgress() {
     const [open, setOpen] = useAtom(dialogTimelineCancelOpenAtom);
 
-    const { allTimesIsLoading: isFullTimelineLoading } = useSnapshot(traceStore);
+    const { allTimesIsLoading: isFullTimelineLoading } = useSnapshot(allTimesStore);
     if (!isFullTimelineLoading) {
         return null;
     }
@@ -153,8 +154,8 @@ function TimelineProgress() {
                         onClick={
                             () => {
                                 cancelAllTimesBuild();
-                                traceStore.setAllTimesLoading(false);
-                                traceStore.setAllTimes([]);
+                                allTimesStore.setAllTimesLoading(false);
+                                allTimesStore.setAllTimes([]);
                                 notice.info("Timeline build cancelled");
                                 setOpen(false);
                             }

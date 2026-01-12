@@ -1,7 +1,7 @@
 import { useSnapshot } from "valtio";
 import { appSettings } from "@/store/1-ui-settings";
 import { classNames, cn } from "@/utils/classnames";
-import { traceStore } from "@/store/traces-store/0-state";
+import { allTimesStore } from "@/store/traces-store/3-all-times-store";
 import { ScrollArea } from "../ui/shadcn/scroll-area";
 import { Fragment } from "react/jsx-runtime";
 
@@ -16,7 +16,7 @@ export function AllTimesPanel() {
 
 function AllTimesList() {
     const { onLeft } = useSnapshot(appSettings.allTimes);
-    const { allTimes, allTimesSelectedTimestamp: selectedAllTimesTimestamp } = useSnapshot(traceStore);
+    const { allTimes, allTimesSelectedTimestamp: selectedAllTimesTimestamp } = useSnapshot(allTimesStore);
 
     let lastDate = "";
 
@@ -40,7 +40,7 @@ function AllTimesList() {
                                     )}
                                     <div
                                         className={cn(rowClasses, isSelected && "bg-primary text-primary-foreground hover:bg-primary/90")}
-                                        onClick={() => traceStore.setAllTimesSelectedTimestamp(isSelected ? null : item.timestamp)}
+                                        onClick={() => allTimesStore.setAllTimesSelectedTimestamp(isSelected ? null : item.timestamp)}
                                         title={item.timestamp}
                                         key={item.timestamp}
                                     >

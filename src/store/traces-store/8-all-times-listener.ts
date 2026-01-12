@@ -2,7 +2,7 @@ import { atomEffect } from "jotai-effect";
 import { subscribe } from "valtio";
 import { subscribeKey } from "valtio/utils";
 import { appSettings } from "../1-ui-settings";
-import { traceStore } from "./0-state";
+import { allTimesStore } from "./3-all-times-store";
 import { filesStore } from "./9-types-files-store";
 import { cancelAllTimesBuild } from "../../workers-client/all-times-client";
 
@@ -54,7 +54,7 @@ export function runBuildAlltimes() {
         return;
     }
 
-    if (!needToRebuild && traceStore.allTimes.length > 0) {
+    if (!needToRebuild && allTimesStore.allTimes.length > 0) {
         return;
     }
 
@@ -66,12 +66,12 @@ export function runBuildAlltimes() {
     }
 
     if (files.length === 0) {
-        traceStore.setAllTimes([]);
+        allTimesStore.setAllTimes([]);
         appSettings.allTimes.needToRebuild = false; // "Built" empty
         return;
     }
 
-    traceStore.asyncBuildAllTimes(precision).then(() => {
+    allTimesStore.asyncBuildAllTimes(precision).then(() => {
         appSettings.allTimes.needToRebuild = false;
     });
 }
