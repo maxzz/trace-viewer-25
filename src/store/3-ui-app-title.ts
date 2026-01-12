@@ -14,10 +14,12 @@ export function setAppTitle(files: File[], droppedFolderName?: string, filePaths
 
     if (droppedFolderName) {
         folderName = droppedFolderName;
-    } else if (filePaths && filePaths.length > 0 && filePaths.every(p => p)) {
+    }
+    else if (filePaths && filePaths.length > 0 && filePaths.every(p => p)) {
         // Use paths from FileSystemEntry.fullPath (available in DnD)
         folderName = getCommonPath(filePaths);
-    } else if (files.length > 0) {
+    }
+    else if (files.length > 0) {
         // Check for common path in webkitRelativePath (available in folder picker dialog)
         const paths = files.map(f => f.webkitRelativePath).filter(p => p);
         if (paths.length === files.length) {
@@ -28,9 +30,11 @@ export function setAppTitle(files: File[], droppedFolderName?: string, filePaths
     let title = defaultTitle;
     if (folderName) {
         title = `${defaultTitle} - ${folderName}`;
-    } else if (files.length === 1) {
+    }
+    else if (files.length === 1) {
         title = `${defaultTitle} - ${files[0].name}`;
-    } else if (files.length > 1) {
+    }
+    else if (files.length > 1) {
         title = `${defaultTitle} - ${files.length} files`;
     }
 

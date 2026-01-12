@@ -87,13 +87,13 @@ export const doSetFilesFrom_Dnd_Atom = atom(                    // used by DropI
 );
 
 // Helper function to process a single entry (file or directory)
-async function processEntry(entry: FileSystemEntry, filesWithPaths: FileWithPath[]): Promise<void> {
+async function processEntry(entry: FileSystemEntry, rv: FileWithPath[]): Promise<void> {
     if (entry.isFile) {
         return new Promise((resolve, reject) => {
             (entry as FileSystemFileEntry).file(
                 (file) => {
                     if (isOurFile(file)) {
-                        filesWithPaths.push({ file, path: entry.fullPath });
+                        rv.push({ file, path: entry.fullPath });
                     }
                     resolve();
                 },
@@ -102,7 +102,7 @@ async function processEntry(entry: FileSystemEntry, filesWithPaths: FileWithPath
         });
     } else if (entry.isDirectory) {
         // Only process first-level files in directory
-        await collectFilesFromDirectory(entry as FileSystemDirectoryEntry, filesWithPaths);
+        await collectFilesFromDirectory(entry as FileSystemDirectoryEntry, rv);
     }
 }
 
@@ -132,7 +132,7 @@ interface FileSystemDirectoryReader {
 }
 
 // Helper function to recursively collect files from a directory entry (first level only)
-async function collectFilesFromDirectory(entry: FileSystemDirectoryEntry, filesWithPaths: FileWithPath[]): Promise<void> {
+async function collectFilesFromDirectory(entry: FileSystemDirectoryEntry, rv: FileWithPath[]): Promise<void> {
     return new Promise((resolve, reject) => {
         const reader = entry.createReader();
         const entries: FileSystemEntry[] = [];
@@ -147,16 +147,19 @@ async function collectFilesFromDirectory(entry: FileSystemDirectoryEntry, filesW
                                 async (childEntry) => {
                                     if (childEntry.isFile) {
                                         return new Promise<FileWithPath | null>((resolveFile) => {
-                                            (childEntry as FileSystemFileEntry).file((file) => {
-                                                resolveFile((isOurFile(file)) ? { file, path: childEntry.fullPath } : null);
-                                            }, reject);
+                                            (childEntry as FileSystemFileEntry).file(
+                                                (file) => {
+                                                    resolveFile((isOurFile(file)) ? { file, path: childEntry.fullPath } : null);
+                                                },
+                                                reject
+                                            );
                                         });
                                     }
                                     return null;
                                 }
                             )
                         ).then((fileResults) => {
-                            filesWithPaths.push(...fileResults.filter((f): f is FileWithPath => f !== null));
+                            rv.push(...fileResults.filter((f): f is FileWithPath => f !== null));
                             resolve();
                         });
                     } else {
