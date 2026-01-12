@@ -47,17 +47,21 @@ export function recomputeFilterMatches() {
 
     if (files.length === 0) return;
 
-    files.forEach(file => {
-        const matchedIds: string[] = [];
-        filters.forEach(filter => {
-            if (isFileNameMatch(file.data.fileName, filter.pattern)) {
-                matchedIds.push(filter.id);
+    files.forEach(
+        (file) => {
+            const matchedIds: string[] = [];
+            filters.forEach(
+                (filter) => {
+                    if (isFileNameMatch(file.data.fileName, filter.pattern)) {
+                        matchedIds.push(filter.id);
+                    }
+                }
+            );
+
+            // Update only if changed to avoid unnecessary renders
+            if (JSON.stringify(file.matchedFilterIds) !== JSON.stringify(matchedIds)) {
+                file.matchedFilterIds = matchedIds;
             }
-        });
-        
-        // Update only if changed to avoid unnecessary renders
-        if (JSON.stringify(file.matchedFilterIds) !== JSON.stringify(matchedIds)) {
-            file.matchedFilterIds = matchedIds;
         }
-    });
+    );
 }

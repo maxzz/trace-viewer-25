@@ -19,10 +19,9 @@ export async function asyncParseTraceFile(file: File): Promise<ParsedTraceData> 
 
     const rawLines = parser.lines;
     
-    // Filter out Time lines (84) for default view
-    const viewLines = parser.lines.filter(l => l.code !== 84);
-    const uniqueThreadIds = Array.from(new Set(parser.lines.map(l => l.threadId))).sort((a, b) => a - b);
-    const errorCount = parser.lines.filter(l => l.code === LineCode.Error).length;
+    const viewLines = parser.lines.filter((l: TraceLine) => l.code !== LineCode.Time);
+    const uniqueThreadIds = Array.from(new Set(parser.lines.map((l: TraceLine) => l.threadId))).sort((a, b) => a - b);
+    const errorCount = parser.lines.filter((l: TraceLine) => l.code === LineCode.Error).length;
 
     return {
         rawLines,

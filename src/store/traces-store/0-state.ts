@@ -119,7 +119,7 @@ export const traceStore = proxy<TraceStore>({
                 syncToSetAsActiveFile(file);
             }
         } else {
-            resetTraceStoreToEmpty();
+            traceStore.currentFileState = null;
         }
     },
 
@@ -242,15 +242,12 @@ function createNewFileState(id: string, data: FileData): FileState {
         matchedHighlightIds: []
     };
 }
-function resetTraceStoreToEmpty() {
-    traceStore.currentFileState = null;
-}
 
-function syncToSetAsActiveFile(file: FileState) {
+function syncToSetAsActiveFile(fileState: FileState) {
     traceStore.currentFileState = {
-        fileData: file.data,
+        fileData: fileState.data,
         fileState: {
-            currentLineIndex: file.currentLineIndex
+            currentLineIndex: fileState.currentLineIndex
         }
     };
 }
