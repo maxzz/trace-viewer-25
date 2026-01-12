@@ -6,10 +6,15 @@ import { appSettings } from "../../store/1-ui-settings";
 import { Cpu } from "lucide-react";
 
 export function TraceFooter() {
-    const { viewLines, header, errorLoadingFile: error } = useSnapshot(traceStore);
+    const { currentFileData } = useSnapshot(traceStore);
     const { selectedFileId } = useSnapshot(selectionStore);
     const { filesState } = useSnapshot(filesStore);
     const { extraInFooter } = useSnapshot(appSettings);
+    
+    // Derived values
+    const viewLines = currentFileData?.viewLines || [];
+    const header = currentFileData?.header || { magic: '' };
+    const error = currentFileData?.errorLoadingFile;
     const selectedFile = selectedFileId ? filesState.find(f => f.id === selectedFileId) : null;
     const errorCount = selectedFile?.data.errorCount || 0;
 

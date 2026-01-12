@@ -16,14 +16,7 @@ export interface TraceStore {
     // selectedFileId moved to selectionStore
 
     // Active file properties (mirrored from selected file for backward compatibility)
-    fileName: string | null;
-    rawLines: TraceLine[];
-    viewLines: TraceLine[];
-    uniqueThreadIds: number[];
-    header: TraceHeader;
-
-    isLoading: boolean;
-    errorLoadingFile: string | null;
+    currentFileData: FileData | null; // Replaces individual fields
     
     currentLineIndex: number;
 
@@ -49,14 +42,7 @@ export interface TraceStore {
 
 export const traceStore = proxy<TraceStore>({
     // Initial empty state
-    fileName: null,
-    rawLines: [],
-    viewLines: [],
-    uniqueThreadIds: [],
-    header: emptyFileHeader,
-
-    isLoading: false,
-    errorLoadingFile: null,
+    currentFileData: null,
     currentLineIndex: -1,
 
     // Timeline
@@ -109,8 +95,10 @@ export const traceStore = proxy<TraceStore>({
                 filesStore.filesData[id].isLoading = false;
                 
                 if (selectionStore.selectedFileId === id) {
-                    traceStore.errorLoadingFile = filesStore.filesData[id].errorLoadingFile;
-                    traceStore.isLoading = false;
+                    if (traceStore.currentFileData) {
+                        traceStore.currentFileData.errorLoadingFile = filesStore.filesData[id].errorLoadingFile;
+                        traceStore.currentFileData.isLoading = false;
+                    }
                 }
             }
         } finally {
@@ -253,24 +241,12 @@ function createNewFileState(id: string, data: FileData): FileState {
 }
 
 function resetTraceStoreToEmpty() {
-    traceStore.rawLines = [];
-    traceStore.viewLines = [];
-    traceStore.uniqueThreadIds = [];
-    traceStore.header = emptyFileHeader;
-    traceStore.fileName = null;
-    traceStore.isLoading = false;
-    traceStore.errorLoadingFile = null;
+    traceStore.currentFileData = null;
     traceStore.currentLineIndex = -1;
 }
 
 function syncToSetAsActiveFile(file: FileState) {
-    traceStore.rawLines = file.data.rawLines;
-    traceStore.viewLines = file.data.viewLines;
-    traceStore.uniqueThreadIds = file.data.uniqueThreadIds;
-    traceStore.header = file.data.header;
-    traceStore.fileName = file.data.fileName;
-    traceStore.isLoading = file.data.isLoading;
-    traceStore.errorLoadingFile = file.data.errorLoadingFile;
+    traceStore.currentFileData = file.data;
     traceStore.currentLineIndex = file.currentLineIndex;
 }
 
