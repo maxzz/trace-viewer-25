@@ -28,7 +28,8 @@ export async function extractTracesFromZipInWorker(file: File): Promise<void> {
     const worker = getWorker();
 
     return new Promise((resolve, reject) => {
-        const handleMessage = (e: MessageEvent<ZipWorkerResponse>) => {
+
+        function handleMessage(e: MessageEvent<ZipWorkerResponse>) {
             const response = e.data;
 
             // Clean up listener for this request (assuming serial requests for now)
@@ -38,9 +39,7 @@ export async function extractTracesFromZipInWorker(file: File): Promise<void> {
 
             if (response.type === 'SUCCESS') {
                 if (response.files.length === 0) {
-                    // No .trc3 files found
-                    // Maybe show a toast?
-                    console.warn('No .trc3 files found in ZIP');
+                    // No .trc3 files found. Maybe show a toast? console.warn('No .trc3 files found in ZIP');
                     resolve();
                     return;
                 }
@@ -48,9 +47,7 @@ export async function extractTracesFromZipInWorker(file: File): Promise<void> {
                 // Convert extracted buffers to File objects
                 const extractedFiles = response.files.map(
                     (extracted) => {
-                        return new File([extracted.buffer], extracted.name, {
-                            type: 'application/octet-stream' // or specific type if known
-                        });
+                        return new File([extracted.buffer], extracted.name, { type: 'application/octet-stream' }); // or specific type if known
                     }
                 );
 
@@ -68,14 +65,11 @@ export async function extractTracesFromZipInWorker(file: File): Promise<void> {
                 // traceStore.error = response.error; // Global error?
                 reject(new Error(response.error));
             }
-        };
+        }
 
         worker.addEventListener('message', handleMessage);
 
-        const request: ZipWorkerRequest = {
-            type: 'EXTRACT',
-            file
-        };
+        const request: ZipWorkerRequest = { type: 'EXTRACT', file };
         worker.postMessage(request);
     });
 }

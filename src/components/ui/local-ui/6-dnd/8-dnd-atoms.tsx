@@ -1,7 +1,8 @@
 import { traceStore } from "@/store/traces-store/0-state";
 import { atom } from "jotai";
 import { setAppTitle } from '@/store/3-ui-app-title';
-import { isTrc3File, isZipFile, extractTracesFromZipInWorker } from "@/workers-client";
+import { isTrc3File, isZipFile } from "@/workers-client";
+import { asyncLoadAnyFiles } from "@/store/traces-store/1-load-files";
 
 export type DoSetFilesFrom_Dnd_Atom = typeof doSetFilesFrom_Dnd_Atom;
 
@@ -81,13 +82,7 @@ export const doSetFilesFrom_Dnd_Atom = atom(                    // used by DropI
         setAppTitle(files, droppedFolderName, filePaths);
 
         // Load new files
-        for (const file of files) {
-            if (isZipFile(file)) {
-                await extractTracesFromZipInWorker(file);
-            } else {
-                traceStore.loadTrace(file);
-            }
-        }
+        asyncLoadAnyFiles(files);
     }
 );
 
