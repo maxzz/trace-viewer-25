@@ -11,10 +11,18 @@ import { recomputeHighlightMatches } from "../5-highlight-rules";
 import { runBuildAlltimes } from "./8-all-times-listener";
 import { selectionStore } from "./selection";
 
+export interface FileUiState {
+    currentLineIndex: number;                          // Line index in the trace view of the current file
+}
+
+export interface CurrentFileState {
+    fileData: FileData;
+    fileState: FileUiState;
+}
+
 export interface TraceStore {
     // Current file
-    currentFileData: FileData | null;                  // Active file properties (mirrored from selected file for backward compatibility)
-    currentLineIndex: number;                          // Line index in the trace view of the current file
+    currentFileState: CurrentFileState | null;         // Active file state (mirrored from selected file)
 
     // All times
     allTimes: AllTimesItem[];                          // All times items
@@ -38,8 +46,7 @@ export interface TraceStore {
 
 export const traceStore = proxy<TraceStore>({
     // Initial empty state
-    currentFileData: null,
-    currentLineIndex: -1,
+    currentFileState: null,
 
     // Timeline
     allTimes: [],
@@ -91,9 +98,9 @@ export const traceStore = proxy<TraceStore>({
                 filesStore.filesData[id].isLoading = false;
                 
                 if (selectionStore.selectedFileId === id) {
-                    if (traceStore.currentFileData) {
-                        traceStore.currentFileData.errorLoadingFile = filesStore.filesData[id].errorLoadingFile;
-                        traceStore.currentFileData.isLoading = false;
+                    if (traceStore.currentFileState) {
+                        traceStore.currentFileState.fileData.errorLoadingFile = filesStore.filesData[id].errorLoadingFile;
+                        traceStore.currentFileState.fileData.isLoading = false;
                     }
                 }
             }
@@ -235,26 +242,29 @@ function createNewFileState(id: string, data: FileData): FileState {
         matchedHighlightIds: []
     };
 }
-
 function resetTraceStoreToEmpty() {
-    traceStore.currentFileData = null;
-    traceStore.currentLineIndex = -1;
+    traceStore.currentFileState = null;
 }
 
 function syncToSetAsActiveFile(file: FileState) {
-    traceStore.currentFileData = file.data;
-    traceStore.currentLineIndex = file.currentLineIndex;
+    traceStore.currentFileState = {
+        fileData: file.data,
+        fileState: {
+            currentLineIndex: file.currentLineIndex
+        }
+    };
 }
 
 // Subscribe to currentLineIndex changes to update the file state
 subscribe(traceStore,
     () => {
-        if (selectionStore.selectedFileId) {
+        if (selectionStore.selectedFileId && traceStore.currentFileState) {
             const file = filesStore.filesState.find(f => f.id === selectionStore.selectedFileId);
             // Only update if changed to avoid infinite loops if syncActiveFile triggers this
-            if (file && file.currentLineIndex !== traceStore.currentLineIndex) {
-                file.currentLineIndex = traceStore.currentLineIndex;
+            if (file && file.currentLineIndex !== traceStore.currentFileState.fileState.currentLineIndex) {
+                file.currentLineIndex = traceStore.currentFileState.fileState.currentLineIndex;
             }
         }
     }
 );
+

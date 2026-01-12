@@ -9,17 +9,15 @@ import { handlePendingTimestampScroll, scrollToSelection } from "./2-trace-view-
 import { handleKeyboardNavigation } from "./3-trace-view-keyboard";
 
 export function TraceList() {
-    const { currentFileData, currentLineIndex, pendingScrollTimestamp } = useSnapshot(traceStore);
+    const { currentFileState, pendingScrollTimestamp } = useSnapshot(traceStore);
     const { selectedFileId } = useSnapshot(selectionStore);
     const { useIconsForEntryExit, showLineNumbers } = useSnapshot(appSettings);
     
-    // Derived from currentFileData, defaulting to empty if null
-    const viewLines = currentFileData?.viewLines || [];
-    // uniqueThreadIds is now in currentFileData or traceStore? 
-    // Wait, traceStore.uniqueThreadIds was removed. It should be currentFileData.uniqueThreadIds.
-    // But uniqueThreadIds was also destructured from useSnapshot(traceStore).
-    // Let's check 0-state.ts again. uniqueThreadIds WAS removed.
-    const threadIds = currentFileData?.uniqueThreadIds || [];
+    // Derived from currentFileState
+    const fileData = currentFileState?.fileData;
+    const currentLineIndex = currentFileState?.fileState.currentLineIndex ?? -1;
+    const viewLines = fileData?.viewLines || [];
+    const threadIds = fileData?.uniqueThreadIds || [];
 
     const scrollRef = useRef<HTMLDivElement>(null);
     const [scrollTop, setScrollTop] = useState(0);
