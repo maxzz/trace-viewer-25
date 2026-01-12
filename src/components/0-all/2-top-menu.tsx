@@ -21,7 +21,8 @@ export function TopMenu() {
     const setEditHighlightsOpen = useSetAtom(dialogEditHighlightsOpenAtom);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const { selectedFileId } = useSnapshot(traceStore);
+    const { currentFileState } = useSnapshot(traceStore);
+    const selectedFileId = currentFileState?.fileData?.id ?? null;
 
     return (<>
         <InputWatchFilesLoad inputRef={fileInputRef} />
@@ -91,18 +92,13 @@ function InputWatchFilesLoad({ inputRef }: { inputRef: React.RefObject<HTMLInput
         async (e: React.ChangeEvent<HTMLInputElement>) => {
             const files = e.target.files;
             if (files && files.length > 0) {
-                // Clear previously uploaded files
-                traceStore.closeAllFiles();
+                traceStore.closeAllFiles(); // Clear previously uploaded files
 
                 const fileList = Array.from(files);
-
-                // Update title
-                setAppTitle(fileList);
-
                 asyncLoadAnyFiles(fileList);
+                setAppTitle(fileList);
             }
-            // Reset input so same file can be selected again if needed
-            e.target.value = '';
+            e.target.value = ''; // Reset input so same file can be selected again if needed
         }, []
     );
 

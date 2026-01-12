@@ -37,6 +37,7 @@ export function setAppTitle(files: File[], droppedFolderName?: string, filePaths
     appMainTitle.title = title;
     appMainTitle.openFolderName = folderName;
 }
+
 function getCommonPath(paths: string[]): string {
     if (paths.length === 0) return '';
     if (paths.length === 1) {

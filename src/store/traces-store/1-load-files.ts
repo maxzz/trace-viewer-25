@@ -9,18 +9,18 @@ export async function asyncLoadAnyFiles(files: File[]) {
     // Extract and load files from ZIPs
     for (const file of zipFiles) {
         const result = await extractTracesFromZipInWorker(file);
-        
+
         if (result.files.length > 0) {
             setAppTitle(result.files, result.zipFileName);
-            loadFilesFromZip(result.files);
+            loadFilesToStore(result.files);
         }
     }
 
     // Load non-ZIP files directly
-    loadFilesFromZip(nonZipFiles);
+    loadFilesToStore(nonZipFiles);
 }
 
-function loadFilesFromZip(files: File[]) {
+function loadFilesToStore(files: File[]) {
     for (const file of files) {
         traceStore.loadTrace(file);
     }
