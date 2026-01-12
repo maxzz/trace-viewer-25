@@ -44,6 +44,31 @@ export interface TraceStore {
     asyncBuildAllTimes: (precision: number) => Promise<void>;
 }
 
+function newTraceItemCreate(file: File): FileState {
+    const id = MakeUuid();
+    const newFileData = createNewFileData(id, file.name);
+    const newFile = createNewFileState(id, newFileData);
+    return newFile;
+}
+
+async function newTraceItemLoad(fileState: FileState, file: File): Promise<void> {
+    const data = fileState.data;
+    try {
+        const parsed = await asyncParseTraceFile(file);
+
+        data.rawLines = parsed.rawLines;
+        data.viewLines = parsed.viewLines;
+        data.uniqueThreadIds = parsed.uniqueThreadIds;
+        data.header = parsed.header;
+        data.errorCount = parsed.errorCount;
+        data.isLoading = false;
+    } catch (e: any) {
+        data.errorLoadingFile = e.message || "Unknown error";
+        data.isLoading = false;
+        console.error("Failed to load trace", e);
+    }
+}
+
 export const traceStore = proxy<TraceStore>({
     // Initial empty state
     currentFileState: null,
@@ -56,32 +81,30 @@ export const traceStore = proxy<TraceStore>({
     pendingScrollTimestamp: null,
 
     loadTrace: async (file: File) => {
-        const id = MakeUuid();
-        const newFileData = createNewFileData(id, file.name);
-        const newFile = createNewFileState(id, newFileData);
+        const newFileState = newTraceItemCreate(file);
+        await newTraceItemLoad(newFileState, file);
+        
+        filesStore.filesData[newFileState.id] = ref(newFileState.data); // Add to store immediately
+        filesStore.filesState.push(newFileState);
 
-        filesStore.filesData[id] = ref(newFileData); // Add to store immediately
-        newFile.data = filesStore.filesData[id]; // Update reference to point to the proxy in the store
-        filesStore.filesState.push(newFile);
-
-        traceStore.selectFile(id); // Select it (this will update loading state in UI)
+        traceStore.selectFile(newFileState.id); // Select it (this will update loading state in UI)
 
         try {
-            const parsedData = await asyncParseTraceFile(file);
+            // const parsedData = await asyncParseTraceFile(file);
 
-            // Find the file data in store
-            if (filesStore.filesData[id]) {
-                const updatedFileData = filesStore.filesData[id];
-                updatedFileData.rawLines = parsedData.rawLines;
-                updatedFileData.viewLines = parsedData.viewLines;
-                updatedFileData.uniqueThreadIds = parsedData.uniqueThreadIds;
-                updatedFileData.header = parsedData.header;
-                updatedFileData.errorCount = parsedData.errorCount;
-                updatedFileData.isLoading = false;
+            // // Find the file data in store
+            // if (filesStore.filesData[id]) {
+            //     const updatedFileData = filesStore.filesData[id];
+            //     updatedFileData.rawLines = parsedData.rawLines;
+            //     updatedFileData.viewLines = parsedData.viewLines;
+            //     updatedFileData.uniqueThreadIds = parsedData.uniqueThreadIds;
+            //     updatedFileData.header = parsedData.header;
+            //     updatedFileData.errorCount = parsedData.errorCount;
+            //     updatedFileData.isLoading = false;
 
                 // If this is still the selected file, update the top-level properties
-                if (selectionStore.selectedFileId === id) {
-                    const traceFile = filesStore.filesState.find(f => f.id === id);
+                if (selectionStore.selectedFileId === newFileState.id) {
+                    const traceFile = filesStore.filesState.find(f => f.id === newFileState.id);
                     if (traceFile) {
                         syncToSetAsActiveFile(traceFile);
                     }
@@ -90,20 +113,20 @@ export const traceStore = proxy<TraceStore>({
                 // Recompute filters and highlights for the new file
                 recomputeFilterMatches();
                 recomputeHighlightMatches();
-            }
+            // }
         } catch (e: any) {
             console.error("Failed to load trace", e);
-            if (filesStore.filesData[id]) {
-                filesStore.filesData[id].errorLoadingFile = e.message || "Unknown error";
-                filesStore.filesData[id].isLoading = false;
+            // if (filesStore.filesData[id]) {
+            //     filesStore.filesData[id].errorLoadingFile = e.message || "Unknown error";
+            //     filesStore.filesData[id].isLoading = false;
                 
-                if (selectionStore.selectedFileId === id) {
-                    if (traceStore.currentFileState) {
-                        traceStore.currentFileState.fileData.errorLoadingFile = filesStore.filesData[id].errorLoadingFile;
-                        traceStore.currentFileState.fileData.isLoading = false;
-                    }
-                }
-            }
+            //     // if (selectionStore.selectedFileId === newFileState.id) {
+            //     //     if (traceStore.currentFileState) {
+            //     //         traceStore.currentFileState.fileData.errorLoadingFile = filesStore.filesData[id].errorLoadingFile;
+            //     //         traceStore.currentFileState.fileData.isLoading = false;
+            //     //     }
+            //     // }
+            // }
         } finally {
             runBuildAlltimes();
         }
