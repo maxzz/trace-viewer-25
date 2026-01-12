@@ -1,6 +1,5 @@
 import { traceStore } from "@/store/traces-store/0-state";
 import { atom } from "jotai";
-import { setAppTitle } from '@/store/3-ui-app-title';
 import { isOurFile, isTrc3File, isZipFile } from "@/workers-client";
 import { asyncLoadAnyFiles } from "@/store/traces-store/1-load-files";
 
@@ -78,11 +77,8 @@ export const doSetFilesFrom_Dnd_Atom = atom(                    // used by DropI
         const files = filesWithPaths.map(fp => fp.file);
         const filePaths = filesWithPaths.map(fp => fp.path);
 
-        // Update title
-        setAppTitle(files, droppedFolderName, filePaths);
-
         // Load new files
-        asyncLoadAnyFiles(files);
+        asyncLoadAnyFiles(files, droppedFolderName, filePaths);
     }
 );
 

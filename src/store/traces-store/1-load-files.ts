@@ -11,13 +11,15 @@ export async function asyncLoadAnyFiles(files: File[], droppedFolderName?: strin
         const result = await extractTracesFromZipInWorker(file);
 
         if (result.files.length > 0) {
-            setAppTitle(result.files, result.zipFileName);
             loadFilesToStore(result.files);
+            setAppTitle(result.files, result.zipFileName);
         }
     }
 
     // Load non-ZIP files directly
     loadFilesToStore(nonZipFiles);
+
+    setAppTitle(files, droppedFolderName, filePaths);
 }
 
 function loadFilesToStore(files: File[]) {

@@ -10,7 +10,6 @@ import { Button } from "../ui/shadcn/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/shadcn/dialog";
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarShortcut, MenubarTrigger } from "../ui/shadcn/menubar";
 import { Loader2 } from "lucide-react";
-import { setAppTitle } from '@/store/3-ui-app-title';
 import { dialogFileHeaderOpenAtom, dialogAboutOpenAtom, dialogOptionsOpenAtom, dialogEditFiltersOpenAtom, dialogEditHighlightsOpenAtom, dialogTimelineCancelOpenAtom } from "@/store/2-ui-atoms";
 
 export function TopMenu() {
@@ -96,7 +95,6 @@ function InputWatchFilesLoad({ inputRef }: { inputRef: React.RefObject<HTMLInput
 
                 const fileList = Array.from(files);
                 asyncLoadAnyFiles(fileList);
-                setAppTitle(fileList);
             }
             e.target.value = ''; // Reset input so same file can be selected again if needed
         }, []
