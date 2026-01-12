@@ -11,18 +11,9 @@ import { recomputeHighlightMatches } from "../5-highlight-rules";
 import { runBuildAlltimes } from "./8-all-times-listener";
 import { selectionStore } from "./selection";
 
-export interface FileUiState {
-    currentLineIndex: number;                          // Line index in the trace view of the current file
-}
-
-export interface CurrentFileState {
-    fileData: FileData;
-    fileState: FileUiState;
-}
-
 export interface TraceStore {
     // Current file
-    currentFileState: CurrentFileState | null;         // Active file state (mirrored from selected file)
+    currentFileState: FileState | null;         // Active file state (mirrored from selected file)
 
     // All times
     allTimes: AllTimesItem[];                          // All times items
@@ -47,7 +38,7 @@ export interface TraceStore {
 function newTraceItemCreate(file: File): FileState {
     const id = MakeUuid();
     const newFileData = createNewFileData(id, file.name);
-    const newFile = createNewFileState(id, newFileData);
+    const newFile = createNewFileState(id, ref(newFileData));
     return newFile;
 }
 
@@ -83,63 +74,33 @@ export const traceStore = proxy<TraceStore>({
     loadTrace: async (file: File) => {
         const newFileState = newTraceItemCreate(file);
         await newTraceItemLoad(newFileState, file);
-        
-        filesStore.filesData[newFileState.id] = ref(newFileState.data); // Add to store immediately
+
         filesStore.filesState.push(newFileState);
 
         traceStore.selectFile(newFileState.id); // Select it (this will update loading state in UI)
 
-        try {
-            // const parsedData = await asyncParseTraceFile(file);
-
-            // // Find the file data in store
-            // if (filesStore.filesData[id]) {
-            //     const updatedFileData = filesStore.filesData[id];
-            //     updatedFileData.rawLines = parsedData.rawLines;
-            //     updatedFileData.viewLines = parsedData.viewLines;
-            //     updatedFileData.uniqueThreadIds = parsedData.uniqueThreadIds;
-            //     updatedFileData.header = parsedData.header;
-            //     updatedFileData.errorCount = parsedData.errorCount;
-            //     updatedFileData.isLoading = false;
-
-                // If this is still the selected file, update the top-level properties
-                if (selectionStore.selectedFileId === newFileState.id) {
-                    const traceFile = filesStore.filesState.find(f => f.id === newFileState.id);
-                    if (traceFile) {
-                        syncToSetAsActiveFile(traceFile);
-                    }
-                }
-                
-                // Recompute filters and highlights for the new file
-                recomputeFilterMatches();
-                recomputeHighlightMatches();
-            // }
-        } catch (e: any) {
-            console.error("Failed to load trace", e);
-            // if (filesStore.filesData[id]) {
-            //     filesStore.filesData[id].errorLoadingFile = e.message || "Unknown error";
-            //     filesStore.filesData[id].isLoading = false;
-                
-            //     // if (selectionStore.selectedFileId === newFileState.id) {
-            //     //     if (traceStore.currentFileState) {
-            //     //         traceStore.currentFileState.fileData.errorLoadingFile = filesStore.filesData[id].errorLoadingFile;
-            //     //         traceStore.currentFileState.fileData.isLoading = false;
-            //     //     }
-            //     // }
-            // }
-        } finally {
-            runBuildAlltimes();
+        // If this is still the selected file, update the top-level properties
+        if (selectionStore.selectedFileId === newFileState.id) {
+            const traceState = filesStore.filesState.find(f => f.id === newFileState.id);
+            if (traceState) {
+                traceStore.currentFileState = traceState;
+            }
         }
 
+        // Recompute filters and highlights for the new file
+        recomputeFilterMatches();
+        recomputeHighlightMatches();
+
+        runBuildAlltimes();
     },
 
     selectFile: (id: string | null) => {
         selectionStore.selectedFileId = id;
 
         if (id) {
-            const file = filesStore.filesState.find(f => f.id === id);
-            if (file) {
-                syncToSetAsActiveFile(file);
+            const fileState = filesStore.filesState.find(f => f.id === id);
+            if (fileState) {
+                traceStore.currentFileState = fileState;
             }
         } else {
             traceStore.currentFileState = null;
@@ -173,7 +134,7 @@ export const traceStore = proxy<TraceStore>({
                 delete filesStore.filesData[key];
             }
         });
-        
+
         if (selectionStore.selectedFileId !== id) {
             traceStore.selectFile(id);
         }
@@ -266,25 +227,15 @@ function createNewFileState(id: string, data: FileData): FileState {
     };
 }
 
-function syncToSetAsActiveFile(fileState: FileState) {
-    traceStore.currentFileState = {
-        fileData: fileState.data,
-        fileState: {
-            currentLineIndex: fileState.currentLineIndex
-        }
-    };
-}
-
 // Subscribe to currentLineIndex changes to update the file state
 subscribe(traceStore,
     () => {
         if (selectionStore.selectedFileId && traceStore.currentFileState) {
             const file = filesStore.filesState.find(f => f.id === selectionStore.selectedFileId);
             // Only update if changed to avoid infinite loops if syncActiveFile triggers this
-            if (file && file.currentLineIndex !== traceStore.currentFileState.fileState.currentLineIndex) {
-                file.currentLineIndex = traceStore.currentFileState.fileState.currentLineIndex;
+            if (file && file.currentLineIndex !== traceStore.currentFileState.currentLineIndex) {
+                file.currentLineIndex = traceStore.currentFileState.currentLineIndex;
             }
         }
     }
 );
-
