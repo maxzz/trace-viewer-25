@@ -1,6 +1,6 @@
 import { IconBinocular } from "../ui/icons";
 
-export function TraceEmptyState() {
+export function TraceEmptyView() {
     return (
         <div className="absolute inset-0 bg-gray-100 flex flex-col items-center justify-center pointer-events-none">
             <IconBinocular className="size-8" />

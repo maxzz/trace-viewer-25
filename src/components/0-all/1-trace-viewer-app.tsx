@@ -5,7 +5,7 @@ import { appSettings } from "../../store/1-ui-settings";
 import { filesStore } from "../../store/traces-store/9-types-files-store";
 import { TopMenu } from "./2-top-menu";
 import { TraceMainView } from "./6-resizable-panels";
-import { TraceEmptyState } from "../2-trace-viewer/7-trace-empty-state";
+import { TraceEmptyView } from "../2-trace-viewer/7-trace-empty-view";
 import { TraceFooter } from "./7-app-footer";
 import { FileFilterDropdown, ButtonHighlightToggle } from "./3-btn-filters-select";
 import { ButtonThemeToggle } from "./3-btn-theme-toggle";
@@ -28,7 +28,7 @@ export function TraceViewerApp() {
             <div className="flex-1 flex flex-col overflow-hidden relative">
                 {hasFile
                     ? <TraceMainView />
-                    : <TraceEmptyState />
+                    : <TraceEmptyView />
                 }
             </div>
 
