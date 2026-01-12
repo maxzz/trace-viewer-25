@@ -12,13 +12,9 @@ import { runBuildAlltimes } from "./8-all-times-listener";
 import { selectionStore } from "./selection";
 
 export interface TraceStore {
-    // traceFiles moved to filesStore
-    // selectedFileId moved to selectionStore
-
-    // Active file properties (mirrored from selected file for backward compatibility)
-    currentFileData: FileData | null; // Replaces individual fields
-    
-    currentLineIndex: number;
+    // Current file
+    currentFileData: FileData | null;                  // Active file properties (mirrored from selected file for backward compatibility)
+    currentLineIndex: number;                          // Line index in the trace view of the current file
 
     // All times
     allTimes: AllTimesItem[];                          // All times items
