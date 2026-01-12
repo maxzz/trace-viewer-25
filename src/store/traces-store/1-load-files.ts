@@ -2,7 +2,7 @@ import { extractTracesFromZipInWorker, isZipFile } from "@/workers-client";
 import { setAppTitle } from "@/store/3-ui-app-title";
 import { traceStore } from "./0-state";
 
-export async function asyncLoadAnyFiles(files: File[]) {
+export async function asyncLoadAnyFiles(files: File[], droppedFolderName?: string, filePaths?: string[]) {
     const zipFiles = files.filter(f => isZipFile(f));
     const nonZipFiles = files.filter(f => !isZipFile(f));
 

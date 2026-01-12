@@ -1,7 +1,7 @@
 import { traceStore } from "@/store/traces-store/0-state";
 import { atom } from "jotai";
 import { setAppTitle } from '@/store/3-ui-app-title';
-import { isTrc3File, isZipFile } from "@/workers-client";
+import { isOurFile, isTrc3File, isZipFile } from "@/workers-client";
 import { asyncLoadAnyFiles } from "@/store/traces-store/1-load-files";
 
 export type DoSetFilesFrom_Dnd_Atom = typeof doSetFilesFrom_Dnd_Atom;
@@ -25,11 +25,11 @@ export const doSetFilesFrom_Dnd_Atom = atom(                    // used by DropI
         if (dataTransfer.items) {
             // Check if single folder dropped
             if (dataTransfer.items.length === 1) {
-                 const item = dataTransfer.items[0];
-                 const entry = (item as any).webkitGetAsEntry?.() as FileSystemEntry | null | undefined;
-                 if (entry && entry.isDirectory) {
-                     droppedFolderName = entry.name;
-                 }
+                const item = dataTransfer.items[0];
+                const entry = (item as any).webkitGetAsEntry?.() as FileSystemEntry | null | undefined;
+                if (entry && entry.isDirectory) {
+                    droppedFolderName = entry.name;
+                }
             }
 
             // Collect all entries synchronously first
@@ -61,7 +61,7 @@ export const doSetFilesFrom_Dnd_Atom = atom(                    // used by DropI
             // Fallback for older browsers
             for (let i = 0; i < dataTransfer.files.length; i++) {
                 const file = dataTransfer.files[i];
-                if (isTrc3File(file) || isZipFile(file)) {
+                if (isOurFile(file)) {
                     filesWithPaths.push({ file, path: '' });
                 }
             }
@@ -90,12 +90,15 @@ export const doSetFilesFrom_Dnd_Atom = atom(                    // used by DropI
 async function processEntry(entry: FileSystemEntry, filesWithPaths: FileWithPath[]): Promise<void> {
     if (entry.isFile) {
         return new Promise((resolve, reject) => {
-            (entry as FileSystemFileEntry).file((file) => {
-                if (isTrc3File(file) || isZipFile(file)) {
-                    filesWithPaths.push({ file, path: entry.fullPath });
-                }
-                resolve();
-            }, reject);
+            (entry as FileSystemFileEntry).file(
+                (file) => {
+                    if (isOurFile(file)) {
+                        filesWithPaths.push({ file, path: entry.fullPath });
+                    }
+                    resolve();
+                },
+                reject
+            );
         });
     } else if (entry.isDirectory) {
         // Only process first-level files in directory
@@ -135,29 +138,34 @@ async function collectFilesFromDirectory(entry: FileSystemDirectoryEntry, filesW
         const entries: FileSystemEntry[] = [];
 
         function readEntries() {
-            reader.readEntries((batch) => {
-                if (batch.length === 0) {
-                    // All entries read, now process them
-                    Promise.all(
-                        entries.map(async (childEntry) => {
-                            if (childEntry.isFile) {
-                                return new Promise<FileWithPath | null>((resolveFile) => {
-                                    (childEntry as FileSystemFileEntry).file((file) => {
-                                        resolveFile((isTrc3File(file) || isZipFile(file)) ? { file, path: childEntry.fullPath } : null);
-                                    }, reject);
-                                });
-                            }
-                            return null;
-                        })
-                    ).then((fileResults) => {
-                        filesWithPaths.push(...fileResults.filter((f): f is FileWithPath => f !== null));
-                        resolve();
-                    });
-                } else {
-                    entries.push(...batch);
-                    readEntries(); // Continue reading
-                }
-            }, reject);
+            reader.readEntries(
+                (batch) => {
+                    if (batch.length === 0) {
+                        // All entries read, now process them
+                        Promise.all(
+                            entries.map(
+                                async (childEntry) => {
+                                    if (childEntry.isFile) {
+                                        return new Promise<FileWithPath | null>((resolveFile) => {
+                                            (childEntry as FileSystemFileEntry).file((file) => {
+                                                resolveFile((isOurFile(file)) ? { file, path: childEntry.fullPath } : null);
+                                            }, reject);
+                                        });
+                                    }
+                                    return null;
+                                }
+                            )
+                        ).then((fileResults) => {
+                            filesWithPaths.push(...fileResults.filter((f): f is FileWithPath => f !== null));
+                            resolve();
+                        });
+                    } else {
+                        entries.push(...batch);
+                        readEntries(); // Continue reading
+                    }
+                },
+                reject
+            );
         }
 
         readEntries();
