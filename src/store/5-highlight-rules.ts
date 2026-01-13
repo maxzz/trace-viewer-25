@@ -1,5 +1,5 @@
 import { type HighlightRule, appSettings } from './1-ui-settings';
-import { filesStore } from './traces-store/9-types-files-store';
+import { type FileState, filesStore } from './traces-store/9-types-files-store';
 import { isFileNameMatch } from '@/utils/filter-match';
 
 export const highlightActions = {
@@ -42,21 +42,26 @@ export const highlightActions = {
 // Use this for HIGHLIGHTING (Coloring files)
 export function recomputeHighlightMatches() {
     const rules = appSettings.highlightRules;
-    const files = filesStore.states;
+    const fileStates = filesStore.states;
 
-    if (files.length === 0) return;
+    if (fileStates.length === 0) return;
 
-    files.forEach(file => {
-        const matchedIds: string[] = [];
-        rules.forEach(rule => {
-            if (isFileNameMatch(file.data.fileName, rule.pattern)) {
-                matchedIds.push(rule.id);
+    fileStates.forEach(
+        (fileState: FileState) => {
+            const matchedIds: string[] = [];
+            
+            rules.forEach(
+                (rule: HighlightRule) => {
+                    if (isFileNameMatch(fileState.data.fileName, rule.pattern)) {
+                        matchedIds.push(rule.id);
+                    }
+                }
+            );
+
+            // Update only if changed to avoid unnecessary renders
+            if (JSON.stringify(fileState.matchedHighlightIds) !== JSON.stringify(matchedIds)) {
+                fileState.matchedHighlightIds = matchedIds;
             }
-        });
-        
-        // Update only if changed to avoid unnecessary renders
-        if (JSON.stringify(file.matchedHighlightIds) !== JSON.stringify(matchedIds)) {
-            file.matchedHighlightIds = matchedIds;
         }
-    });
+    );
 }

@@ -1,5 +1,5 @@
 import { type FileFilter, appSettings } from './1-ui-settings';
-import { filesStore } from './traces-store/9-types-files-store';
+import { type FileState, filesStore } from './traces-store/9-types-files-store';
 import { isFileNameMatch } from '@/utils/filter-match';
 
 export const filterActions = {
@@ -43,24 +43,25 @@ export const filterActions = {
 // Use this for FILTERING (Hiding files)
 export function recomputeFilterMatches() {
     const filters = appSettings.fileFilters;
-    const files = filesStore.states;
+    const fileStates = filesStore.states;
 
-    if (files.length === 0) return;
+    if (fileStates.length === 0) return;
 
-    files.forEach(
-        (file) => {
+    fileStates.forEach(
+        (fileState: FileState) => {
             const matchedIds: string[] = [];
+            
             filters.forEach(
-                (filter) => {
-                    if (isFileNameMatch(file.data.fileName, filter.pattern)) {
+                (filter: FileFilter) => {
+                    if (isFileNameMatch(fileState.data.fileName, filter.pattern)) {
                         matchedIds.push(filter.id);
                     }
                 }
             );
 
             // Update only if changed to avoid unnecessary renders
-            if (JSON.stringify(file.matchedFilterIds) !== JSON.stringify(matchedIds)) {
-                file.matchedFilterIds = matchedIds;
+            if (JSON.stringify(fileState.matchedFilterIds) !== JSON.stringify(matchedIds)) {
+                fileState.matchedFilterIds = matchedIds;
             }
         }
     );
