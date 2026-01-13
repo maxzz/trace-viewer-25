@@ -1,5 +1,5 @@
 import { type RefObject, useEffect, useRef, useMemo } from "react";
-import { useSnapshot } from "valtio";
+import { useSnapshot, type Snapshot } from "valtio";
 import { appSettings, type FileFilter } from "../../store/1-ui-settings";
 import { traceStore } from "../../store/traces-store/0-state";
 import { selectionStore } from "../../store/traces-store/selection";
@@ -65,7 +65,7 @@ export function FileList() {
                             (file) => (
                                 <FileListRow
                                     key={file.id}
-                                    fileState={file as any}
+                                    fileState={file}
                                     isSelected={file.id === selectedFileId}
                                 />
                             )
@@ -130,7 +130,7 @@ function createFileListKeyDownHandler(containerRef: RefObject<HTMLDivElement | n
     };
 }
 
-function filterFiles<T extends { id: string; data: { fileName: string; } }>(files: ReadonlyArray<T>, selectedFilterId: string | null, fileFilters: ReadonlyArray<FileFilter>): ReadonlyArray<T> {
+function filterFiles<T extends { id: string; data: { fileName: string; } }>(files: Snapshot<T[]>, selectedFilterId: string | null, fileFilters: ReadonlyArray<FileFilter>): Snapshot<T[]> {
     const filter = !selectedFilterId ? null : fileFilters.find(f => f.id === selectedFilterId);
     if (!filter) {
         return files;

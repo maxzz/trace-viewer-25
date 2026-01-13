@@ -1,5 +1,5 @@
 import { useSetAtom } from "jotai";
-import { useSnapshot } from "valtio";
+import { useSnapshot, type Snapshot } from "valtio";
 import { cn } from "@/utils/index";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger, } from "../ui/shadcn/context-menu";
 import { appSettings } from "@/store/1-ui-settings";
@@ -9,7 +9,7 @@ import { allTimesStore } from "../../store/traces-store/3-all-times-store";
 import { AlertCircle, FileText } from "lucide-react";
 import { dialogFileHeaderOpenAtom } from "@/store/2-ui-atoms";
 
-export function FileListRow({ fileState, isSelected }: { fileState: Readonly<FileState>; isSelected: boolean; }) {
+export function FileListRow({ fileState, isSelected }: { fileState: Snapshot<FileState>; isSelected: boolean; }) {
     const hasError = fileState.data.errorCount > 0 || !!fileState.data.errorLoadingFile;
     const { highlightRules, highlightEnabled } = useSnapshot(appSettings);
     const { allTimes, allTimesSelectedTimestamp } = useSnapshot(allTimesStore);
