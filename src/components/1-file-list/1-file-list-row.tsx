@@ -10,7 +10,7 @@ import { AlertCircle, FileText } from "lucide-react";
 import { dialogFileHeaderOpenAtom } from "@/store/2-ui-atoms";
 
 export function FileListRow({ fileState, isSelected }: { fileState: Snapshot<FileState>; isSelected: boolean; }) {
-    const hasError = fileState.data.errorCount > 0 || !!fileState.data.errorLoadingFile;
+    const hasError = fileState.data.errorsInTraceCount > 0 || !!fileState.data.errorLoadingFile;
     const { highlightRules, highlightEnabled } = useSnapshot(appSettings);
     const { allTimes, allTimesSelectedTimestamp } = useSnapshot(allTimesStore);
     const setFileHeaderOpen = useSetAtom(dialogFileHeaderOpenAtom);
@@ -34,16 +34,16 @@ export function FileListRow({ fileState, isSelected }: { fileState: Snapshot<Fil
                     <div className="relative shrink-0 z-10">
                         <FileText className={cn("size-4", isSelected ? "text-primary" : "opacity-70", hasError && "text-red-600 dark:text-red-400")} />
 
-                        {fileState.data.errorCount === 0 && !!fileState.data.errorLoadingFile && (
+                        {fileState.data.errorsInTraceCount === 0 && !!fileState.data.errorLoadingFile && (
                             <div className="absolute -top-1 -right-1 bg-background rounded-full">
                                 <AlertCircle className="size-3 text-red-500 fill-background" />
                             </div>
                         )}
 
                         {/* Error count badge */}
-                        {fileState.data.errorCount > 0 && (
+                        {fileState.data.errorsInTraceCount > 0 && (
                             <span className={errorCountBadgeClasses}>
-                                {fileState.data.errorCount}
+                                {fileState.data.errorsInTraceCount}
                             </span>
                         )}
                     </div>

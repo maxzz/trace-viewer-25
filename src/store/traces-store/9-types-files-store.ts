@@ -9,10 +9,10 @@ export interface FileData  {
     viewLines: TraceLine[];
     uniqueThreadIds: number[];
     header: TraceHeader;
-    errorCount: number;
+    errorsInTraceCount: number;                 // Count of lines with code === LineCode.Error.
     
     isLoading: boolean;
-    errorLoadingFile: string | null;
+    errorLoadingFile: string | null;            // Error message from loading the file.
 }
 
 export interface FileState {
@@ -20,15 +20,15 @@ export interface FileState {
     data: FileData;
     
     currentLineIndex: number;
-    matchedFilterIds: string[]; // Cache for FILTERS that match this file (for hiding)
-    matchedHighlightIds: string[]; // Cache for HIGHLIGHT rules that match this file (for coloring)
+    matchedFilterIds: string[];                 // Cache for FILTERS that match this file (for hiding).
+    matchedHighlightIds: string[];              // Cache for HIGHLIGHT rules that match this file (for coloring).
 }
 
 // Store
 
 interface FilesStore {
-    quickFileData: Record<string, FileData>; // Quick File Data accessed by ID
-    states: FileState[]; // All files state
+    quickFileData: Record<string, FileData>;    // Quick File Data accessed by ID.
+    states: FileState[];                        // All files state.
 }
 
 export const filesStore = proxy<FilesStore>({

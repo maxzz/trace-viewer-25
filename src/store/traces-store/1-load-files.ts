@@ -69,7 +69,7 @@ function newTraceItemCreate(file: File): FileState {
             viewLines: [],
             uniqueThreadIds: [],
             header: emptyFileHeader,
-            errorCount: 0,
+            errorsInTraceCount: 0,
             isLoading: true,
             errorLoadingFile: null,
         };
@@ -95,7 +95,7 @@ async function newTraceItemLoad(fileState: FileState, file: File): Promise<void>
         data.viewLines = parsed.viewLines;
         data.uniqueThreadIds = parsed.uniqueThreadIds;
         data.header = parsed.header;
-        data.errorCount = parsed.errorCount;
+        data.errorsInTraceCount = parsed.errorCount;
         data.isLoading = false;
     } catch (e: any) {
         data.errorLoadingFile = e.message || "Unknown error";
