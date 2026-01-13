@@ -9,30 +9,22 @@ import { allTimesStore } from "../../store/traces-store/3-all-times-store";
 import { AlertCircle, FileText } from "lucide-react";
 import { dialogFileHeaderOpenAtom } from "@/store/2-ui-atoms";
 
-export function FileListRow({ file, isSelected }: { file: FileState; isSelected: boolean; }) {
-    const hasError = file.data.errorCount > 0 || !!file.data.errorLoadingFile;
+export function FileListRow({ fileState, isSelected }: { fileState: Readonly<FileState>; isSelected: boolean; }) {
+    const hasError = fileState.data.errorCount > 0 || !!fileState.data.errorLoadingFile;
     const { highlightRules, highlightEnabled } = useSnapshot(appSettings);
     const { allTimes, allTimesSelectedTimestamp } = useSnapshot(allTimesStore);
     const setFileHeaderOpen = useSetAtom(dialogFileHeaderOpenAtom);
 
-    let highlightColor = undefined;
-    if (highlightEnabled && file.matchedHighlightIds && file.matchedHighlightIds.length > 0) {
-        // Find the first rule in appSettings that matches one of the file's matched IDs
-        // We iterate through highlightRules to preserve order priority
-        const rule = highlightRules.find(r => file.matchedHighlightIds.includes(r.id));
-        if (rule && rule.color) {
-            highlightColor = rule.color;
-        }
-    }
+    const highlightColor = getHighlightColor(highlightEnabled, highlightRules, fileState.matchedHighlightIds);
 
     const isMarked = allTimesSelectedTimestamp
-        ? allTimes.find((t) => t.timestamp === allTimesSelectedTimestamp)?.fileIds.includes(file.id)
+        ? allTimes.find((t) => t.timestamp === allTimesSelectedTimestamp)?.fileIds.includes(fileState.id)
         : false;
 
     return (
         <ContextMenu>
             <ContextMenuTrigger asChild>
-                <div className={getRowClasses(isSelected, hasError)} onClick={() => traceStore.selectFile(file.id)}>
+                <div className={getRowClasses(isSelected, hasError)} onClick={() => traceStore.selectFile(fileState.id)}>
                     {/* Highlight Background Layer */}
                     {!isSelected && highlightColor && (
                         <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundColor: `var(--color-${highlightColor})` }} />
@@ -42,27 +34,27 @@ export function FileListRow({ file, isSelected }: { file: FileState; isSelected:
                     <div className="relative shrink-0 z-10">
                         <FileText className={cn("size-4", isSelected ? "text-primary" : "opacity-70", hasError && "text-red-600 dark:text-red-400")} />
 
-                        {file.data.errorCount === 0 && !!file.data.errorLoadingFile && (
+                        {fileState.data.errorCount === 0 && !!fileState.data.errorLoadingFile && (
                             <div className="absolute -top-1 -right-1 bg-background rounded-full">
                                 <AlertCircle className="size-3 text-red-500 fill-background" />
                             </div>
                         )}
 
                         {/* Error count badge */}
-                        {file.data.errorCount > 0 && (
+                        {fileState.data.errorCount > 0 && (
                             <span className={errorCountBadgeClasses}>
-                                {file.data.errorCount}
+                                {fileState.data.errorCount}
                             </span>
                         )}
                     </div>
 
                     {/* File name */}
-                    <span className="flex-1 truncate z-10" title={file.data.fileName}>
-                        {file.data.fileName}
+                    <span className="flex-1 truncate z-10" title={fileState.data.fileName}>
+                        {fileState.data.fileName}
                     </span>
 
                     {/* Loading indicator */}
-                    {file.data.isLoading && (
+                    {fileState.data.isLoading && (
                         <span className="size-2 rounded-full bg-blue-500 animate-pulse shrink-0 z-10" />
                     )}
 
@@ -72,7 +64,7 @@ export function FileListRow({ file, isSelected }: { file: FileState; isSelected:
                             className="ml-auto shrink-0 z-10 hover:scale-125 transition-transform"
                             onClick={(e) => {
                                 e.stopPropagation();
-                                traceStore.selectFile(file.id);
+                                traceStore.selectFile(fileState.id);
                                 allTimesStore.setPendingScrollTimestamp(allTimesSelectedTimestamp);
                             }}
                         >
@@ -85,15 +77,15 @@ export function FileListRow({ file, isSelected }: { file: FileState; isSelected:
             <ContextMenuContent>
                 <ContextMenuItem onClick={() => {
                     // traceStore.selectFile(file.id);
-                    setFileHeaderOpen(file.id);
+                    setFileHeaderOpen(fileState.id);
                 }}>
                     Show File Header
                 </ContextMenuItem>
                 <ContextMenuSeparator />
-                <ContextMenuItem onClick={() => traceStore.closeFile(file.id)}>
+                <ContextMenuItem onClick={() => traceStore.closeFile(fileState.id)}>
                     Close
                 </ContextMenuItem>
-                <ContextMenuItem onClick={() => traceStore.closeOtherFiles(file.id)}>
+                <ContextMenuItem onClick={() => traceStore.closeOtherFiles(fileState.id)}>
                     Close Others
                 </ContextMenuItem>
                 <ContextMenuItem onClick={() => traceStore.closeAllFiles()}>
@@ -102,6 +94,17 @@ export function FileListRow({ file, isSelected }: { file: FileState; isSelected:
             </ContextMenuContent>
         </ContextMenu>
     );
+}
+
+function getHighlightColor(highlightEnabled: boolean, highlightRules: readonly { id: string; color?: string; }[], matchedHighlightIds: readonly string[] | undefined): string | undefined {
+    if (!highlightEnabled || !matchedHighlightIds || matchedHighlightIds.length === 0) {
+        return undefined;
+    }
+
+    // Find the first rule in appSettings that matches one of the file's matched IDs.
+    // We iterate through highlightRules to preserve order priority
+    const rule = highlightRules.find(r => matchedHighlightIds.includes(r.id));
+    return rule?.color;
 }
 
 function getRowClasses(isSelected: boolean, hasError: boolean) {
