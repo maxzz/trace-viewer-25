@@ -5,13 +5,14 @@ import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator,
 import { appSettings } from "@/store/1-ui-settings";
 import { type FileState } from "../../store/traces-store/9-types-files-store";
 import { traceStore } from "../../store/traces-store/0-state";
+import { allTimesStore } from "../../store/traces-store/3-all-times-store";
 import { AlertCircle, FileText } from "lucide-react";
 import { dialogFileHeaderOpenAtom } from "@/store/2-ui-atoms";
 
 export function FileListRow({ file, isSelected }: { file: FileState; isSelected: boolean; }) {
     const hasError = file.data.errorCount > 0 || !!file.data.errorLoadingFile;
     const { highlightRules, highlightEnabled } = useSnapshot(appSettings);
-    const { allTimes: timeline, allTimesSelectedTimestamp: selectedTimelineTimestamp } = useSnapshot(traceStore);
+    const { allTimes: timeline, allTimesSelectedTimestamp: selectedTimelineTimestamp } = useSnapshot(allTimesStore);
     const setFileHeaderOpen = useSetAtom(dialogFileHeaderOpenAtom);
 
     let highlightColor = undefined;
@@ -25,7 +26,7 @@ export function FileListRow({ file, isSelected }: { file: FileState; isSelected:
     }
 
     const isMarked = selectedTimelineTimestamp
-        ? timeline.find(t => t.timestamp === selectedTimelineTimestamp)?.fileIds.includes(file.id)
+        ? timeline.find((t) => t.timestamp === selectedTimelineTimestamp)?.fileIds.includes(file.id)
         : false;
 
     return (
@@ -72,7 +73,7 @@ export function FileListRow({ file, isSelected }: { file: FileState; isSelected:
                             onClick={(e) => {
                                 e.stopPropagation();
                                 traceStore.selectFile(file.id);
-                                traceStore.setPendingScrollTimestamp(selectedTimelineTimestamp);
+                                allTimesStore.setPendingScrollTimestamp(selectedTimelineTimestamp);
                             }}
                         >
                             <div className="size-2 rounded-full bg-green-500 ring-1 ring-background" title="Present in selected timeline" />
