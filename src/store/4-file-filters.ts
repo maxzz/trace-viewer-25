@@ -43,7 +43,7 @@ export const filterActions = {
 // Use this for FILTERING (Hiding files)
 export function recomputeFilterMatches() {
     const filters = appSettings.fileFilters;
-    const files = filesStore.filesState;
+    const files = filesStore.states;
 
     if (files.length === 0) return;
 

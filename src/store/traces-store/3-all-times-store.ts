@@ -55,7 +55,7 @@ export const allTimesStore = proxy<AllTimesStore>({
     asyncBuildAllTimes: async (precision: number) => {
         allTimesStore.setAllTimesLoading(true);
         try {
-            const inputFiles = filesStore.filesState.map(
+            const inputFiles = filesStore.states.map(
                 (f: FileState) => ({
                     id: f.id,
                     lines: f.data.viewLines.map(
@@ -66,6 +66,7 @@ export const allTimesStore = proxy<AllTimesStore>({
 
             const items = await asyncBuildAllTimesInWorker(inputFiles, precision);
             allTimesStore.setAllTimes(items);
+            
             if (appSettings.allTimes.showBuildDoneNotice) {
                 notice.success("Timeline built");
             }

@@ -15,7 +15,7 @@ export const listenerToBuildAllTimesEffectAtom = atomEffect(
             runBuildAlltimes();
         });
 
-        const unsubFilesData = subscribe(filesStore.filesData, () => {
+        const unsubFilesData = subscribe(filesStore.states, () => {
             appSettings.allTimes.needToRebuild = true;
             runBuildAlltimes();
         });
@@ -31,7 +31,7 @@ export const listenerToBuildAllTimesEffectAtom = atomEffect(
 
 export function runBuildAlltimes() {
     const { show, precision, needToRebuild } = appSettings.allTimes;
-    const { filesData } = filesStore;
+    const { quickFileData } = filesStore;
 
     if (!show) {
         // Don't clear if hidden, just don't build?
@@ -58,7 +58,7 @@ export function runBuildAlltimes() {
         return;
     }
 
-    const files = Object.values(filesData);
+    const files = Object.values(quickFileData);
 
     const someFileIsLoading = files.some(f => f.isLoading);
     if (someFileIsLoading) {

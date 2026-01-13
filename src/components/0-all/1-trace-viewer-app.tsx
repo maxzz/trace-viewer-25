@@ -13,8 +13,8 @@ import { ButtonThemeToggle } from "./3-btn-theme-toggle";
 export function TraceViewerApp() {
     useAtomValue(listenerToBuildAllTimesEffectAtom);
 
-    const { filesData } = useSnapshot(filesStore);
-    const hasFile = Object.keys(filesData).length > 0;
+    const { states } = useSnapshot(filesStore);
+    const hasFile = states.length > 0;
 
     //const { error } = useSnapshot(traceStore);
 
@@ -47,9 +47,9 @@ function TopMenuToolbar() {
     );
 }
 
-function Footer({ hasFile }: { hasFile: boolean }) {
+function Footer({ hasFile }: { hasFile: boolean; }) {
     const { showFooter } = useSnapshot(appSettings);
-   return (<>
+    return (<>
         {showFooter && hasFile && <TraceFooter />}
     </>);
 }

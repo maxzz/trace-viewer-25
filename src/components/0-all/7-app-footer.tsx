@@ -8,7 +8,7 @@ import { Cpu } from "lucide-react";
 export function TraceFooter() {
     const { currentFileState } = useSnapshot(traceStore);
     const { selectedFileId } = useSnapshot(selectionStore);
-    const { filesState } = useSnapshot(filesStore);
+    const { states: filesState } = useSnapshot(filesStore);
     const { extraInFooter } = useSnapshot(appSettings);
     
     // Derived values

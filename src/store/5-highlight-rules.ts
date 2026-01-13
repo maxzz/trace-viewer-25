@@ -42,7 +42,7 @@ export const highlightActions = {
 // Use this for HIGHLIGHTING (Coloring files)
 export function recomputeHighlightMatches() {
     const rules = appSettings.highlightRules;
-    const files = filesStore.filesState;
+    const files = filesStore.states;
 
     if (files.length === 0) return;
 

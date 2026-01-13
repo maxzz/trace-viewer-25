@@ -40,7 +40,7 @@ async function loadFilesToStore(files: File[]) {
         const newFileState = newTraceItemCreate(file);
         await newTraceItemLoad(newFileState, file);
 
-        filesStore.filesState.push(newFileState);
+        filesStore.states.push(newFileState);
     }
 }
 

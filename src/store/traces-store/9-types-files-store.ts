@@ -27,11 +27,11 @@ export interface FileState {
 // Store
 
 interface FilesStore {
-    filesData: Record<string, FileData>;
-    filesState: FileState[];
+    quickFileData: Record<string, FileData>; // Quick File Data accessed by ID
+    states: FileState[]; // All files state
 }
 
 export const filesStore = proxy<FilesStore>({
-    filesData: {},
-    filesState: [],
+    quickFileData: {},
+    states: [],
 });

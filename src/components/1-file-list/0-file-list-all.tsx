@@ -9,20 +9,20 @@ import { FileListRow } from "./1-file-list-row";
 import { AllTimesPanel } from "./2-all-times-list";
 
 export function FileList() {
-    const { filesState } = useSnapshot(filesStore);
+    const { states } = useSnapshot(filesStore);
     const { selectedFileId } = useSnapshot(selectionStore);
     const { fileFilters, selectedFilterId, allTimes } = useSnapshot(appSettings);
     const containerRef = useRef<HTMLDivElement>(null);
 
     // Compute filtered files
     const filteredFiles = useMemo(
-        () => filterFiles(filesState, selectedFilterId, fileFilters), [filesState, selectedFilterId, fileFilters]
+        () => filterFiles(states, selectedFilterId, fileFilters), [states, selectedFilterId, fileFilters]
     );
 
     // Effect to handle selection change when filter results change
     useEffect(
         () => {
-            if (filesState.length === 0) return;
+            if (states.length === 0) return;
 
             // Check if currently selected file is in the filtered list
             const isSelectedInFiltered = filteredFiles.some(f => f.id === selectedFileId);
@@ -36,7 +36,7 @@ export function FileList() {
                     traceStore.selectFile(null);
                 }
             }
-        }, [filteredFiles, selectedFileId, filesState.length]
+        }, [filteredFiles, selectedFileId, states.length]
     );
 
     // Keyboard navigation
