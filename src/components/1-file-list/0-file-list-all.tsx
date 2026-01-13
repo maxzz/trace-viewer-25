@@ -1,9 +1,11 @@
-import { type RefObject, useEffect, useRef, useMemo } from "react";
-import { useSnapshot, type Snapshot } from "valtio";
-import { appSettings, type FileFilter } from "../../store/1-ui-settings";
+import { type RefObject, useEffect, useRef } from "react";
+import { useAtomValue } from "jotai";
+import { useSnapshot } from "valtio";
+import { appSettings } from "../../store/1-ui-settings";
 import { traceStore } from "../../store/traces-store/0-state";
 import { selectionStore } from "../../store/traces-store/selection";
 import { filesStore } from "../../store/traces-store/9-types-files-store";
+import { filteredFilesAtom } from "../../store/6-filtered-files";
 import { ScrollArea } from "../ui/shadcn/scroll-area";
 import { FileListRow } from "./1-file-list-row";
 import { AllTimesPanel } from "./2-all-times-list";
@@ -11,13 +13,9 @@ import { AllTimesPanel } from "./2-all-times-list";
 export function FileList() {
     const { states } = useSnapshot(filesStore);
     const { selectedFileId } = useSnapshot(selectionStore);
-    const { fileFilters, selectedFilterId, allTimes } = useSnapshot(appSettings);
+    const { allTimes } = useSnapshot(appSettings);
+    const filteredFiles = useAtomValue(filteredFilesAtom);
     const containerRef = useRef<HTMLDivElement>(null);
-
-    // Compute filtered files
-    const filteredFiles = useMemo(
-        () => filterFiles(states, selectedFilterId, fileFilters), [states, selectedFilterId, fileFilters]
-    );
 
     // Effect to handle selection change when filter results change
     useEffect(
@@ -130,47 +128,3 @@ function createFileListKeyDownHandler(containerRef: RefObject<HTMLDivElement | n
     };
 }
 
-function filterFiles<T extends { id: string; data: { fileName: string; } }>(files: Snapshot<T[]>, selectedFilterId: string | null, fileFilters: ReadonlyArray<FileFilter>): Snapshot<T[]> {
-    const filter = !selectedFilterId ? null : fileFilters.find(f => f.id === selectedFilterId);
-    if (!filter) {
-        return files;
-    }
-
-    const pattern = filter!.pattern;
-
-    // Check if pattern is regex (starts and ends with /)
-    if (pattern.startsWith('/') && pattern.endsWith('/') && pattern.length > 1) {
-        try {
-            const regexPattern = pattern.slice(1, -1);
-            const regex = new RegExp(regexPattern, 'i');
-            return files.filter(
-                (file) => regex.test(file.data.fileName)
-            );
-        } catch (e) {
-            // Invalid regex, return empty or fallback
-            console.warn('Invalid regex pattern:', pattern, e);
-            return [];
-        }
-    }
-
-    // Non-regex pattern: use existing logic
-    const patternLower = pattern.toLowerCase();
-
-    // Convert glob to regex if contains *
-    if (patternLower.includes('*')) {
-        try {
-            const regexStr = "^" + patternLower.split('*').map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('.*') + "$";
-            const regex = new RegExp(regexStr, 'i');
-            return files.filter(
-                (file) => regex.test(file.data.fileName)
-            );
-        } catch (e) {
-            // fallback to contains
-            return files.filter(
-                (file) => file.data.fileName.toLowerCase().includes(patternLower.replace(/\*/g, ''))
-            );
-        }
-    }
-
-    return files.filter(file => file.data.fileName.toLowerCase().includes(patternLower));
-}
