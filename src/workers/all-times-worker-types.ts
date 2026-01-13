@@ -1,19 +1,30 @@
+import { type TraceLine } from "@/trace-viewer-core/9-core-types";
+
+// Input
+
+export type AllTimesLineInput = Pick<TraceLine, 'timestamp' | 'lineIndex' | 'date'>;
+
+export interface AllTimesFileInput {
+    id: string;
+    lines: AllTimesLineInput[];
+}
+
 export interface AllTimesWorkerInput {
     type: 'BUILD';
-    files: {
-        id: string;
-        lines: { timestamp?: string; lineIndex: number; date?: string; }[];
-    }[];
+    files: AllTimesFileInput[];
     precision: number;
+}
+
+// Output
+
+export interface AllTimesItemOutput {
+    timestamp: string;
+    fileIds: string[];
 }
 
 export interface AllTimesWorkerOutput {
     type: 'SUCCESS' | 'ERROR' | 'CANCELLED';
-    allTimes?: AllTimesItem[];
+    allTimes?: AllTimesItemOutput[];
     error?: string;
 }
 
-export interface AllTimesItem {
-    timestamp: string;
-    fileIds: string[];
-}

@@ -3,19 +3,19 @@ import { notice } from "../../components/ui/local-ui/7-toaster";
 import { appSettings } from "../1-ui-settings";
 import { type TraceLine } from "../../trace-viewer-core/9-core-types";
 import { type FileState, filesStore } from "./9-types-files-store";
-import { type AllTimesItem } from "../../workers/all-times-worker-types";
+import { type AllTimesItemOutput } from "../../workers/all-times-worker-types";
 import { asyncBuildAllTimesInWorker } from "../../workers-client/all-times-client";
 
 export interface AllTimesStore {
     // State
-    allTimes: AllTimesItem[];                          // All times items
+    allTimes: AllTimesItemOutput[];                          // All times items
     allTimesIsLoading: boolean;                        // Whether the all times is loading
     allTimesError: string | null;                      // Error message for the all times
     allTimesSelectedTimestamp: string | null;          // Timestamp of the selected item in the all times
     pendingScrollTimestamp: string | null;             // Timestamp to scroll TraceList to when the all times item is selected
 
     // Actions
-    setAllTimes: (items: AllTimesItem[]) => void;
+    setAllTimes: (items: AllTimesItemOutput[]) => void;
     setAllTimesLoading: (loading: boolean) => void;
     setAllTimesSelectedTimestamp: (timestamp: string | null) => void;
     setPendingScrollTimestamp: (timestamp: string | null) => void;
@@ -31,7 +31,7 @@ export const allTimesStore = proxy<AllTimesStore>({
     pendingScrollTimestamp: null,
 
     // Actions
-    setAllTimes: (items: AllTimesItem[]) => {
+    setAllTimes: (items: AllTimesItemOutput[]) => {
         allTimesStore.allTimes = items;
         allTimesStore.allTimesIsLoading = false;
         allTimesStore.allTimesError = null;
@@ -66,7 +66,7 @@ export const allTimesStore = proxy<AllTimesStore>({
 
             const items = await asyncBuildAllTimesInWorker(inputFiles, precision);
             allTimesStore.setAllTimes(items);
-            
+
             if (appSettings.allTimes.showBuildDoneNotice) {
                 notice.success("Timeline built");
             }

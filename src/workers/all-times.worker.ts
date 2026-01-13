@@ -1,4 +1,4 @@
-import { type AllTimesItem, type AllTimesWorkerInput, type AllTimesWorkerOutput } from './all-times-worker-types';
+import { type AllTimesItemOutput, type AllTimesWorkerInput, type AllTimesWorkerOutput } from './all-times-worker-types';
 
 self.onmessage = function handleAllTimesBuild(e: MessageEvent<AllTimesWorkerInput>) {
     const { type, files, precision } = e.data;
@@ -38,7 +38,7 @@ self.onmessage = function handleAllTimesBuild(e: MessageEvent<AllTimesWorkerInpu
             }
         }
 
-        const allTimes: AllTimesItem[] = Array.from(timestampMap.entries())
+        const allTimes: AllTimesItemOutput[] = Array.from(timestampMap.entries())
             .map(
                 ([timestamp, fileIdSet]) => {
                     const date = dateMap.get(timestamp);
