@@ -65,7 +65,7 @@ export function FileList() {
                             (file) => (
                                 <FileListRow
                                     key={file.id}
-                                    file={file as any}
+                                    fileState={file as any}
                                     isSelected={file.id === selectedFileId}
                                 />
                             )
