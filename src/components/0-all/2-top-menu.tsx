@@ -16,13 +16,10 @@ import { dialogFileHeaderOpenAtom, dialogAboutOpenAtom, dialogOptionsOpenAtom, d
 export function TopMenu() {
     const setOptionsOpen = useSetAtom(dialogOptionsOpenAtom);
     const setAboutOpen = useSetAtom(dialogAboutOpenAtom);
-    const setFileHeaderOpen = useSetAtom(dialogFileHeaderOpenAtom);
     const setEditFiltersOpen = useSetAtom(dialogEditFiltersOpenAtom);
     const setEditHighlightsOpen = useSetAtom(dialogEditHighlightsOpenAtom);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const { currentFileState } = useSnapshot(traceStore);
-    const selectedFileId = currentFileState?.id ?? null;
 
     return (<>
         <InputWatchFilesLoad inputRef={fileInputRef} />
@@ -35,7 +32,7 @@ export function TopMenu() {
                         File
                     </MenubarTrigger>
                     <MenubarContent>
-                        <TraceOpenMenuItem onClick={() => fileInputRef.current?.click()} />
+                        <MenuItemOpenFile onClick={() => fileInputRef.current?.click()} />
                         <MenubarItem onClick={() => setOptionsOpen(true)}>
                             Options...
                         </MenubarItem>
@@ -60,9 +57,7 @@ export function TopMenu() {
                             Highlight Rules...
                         </MenubarItem>
                         <MenubarSeparator />
-                        <MenubarItem onClick={() => setFileHeaderOpen(selectedFileId)} disabled={!selectedFileId}>
-                            Show File Header ...
-                        </MenubarItem>
+                        <MenuItemShowFileHeader />
                     </MenubarContent>
                 </MenubarMenu>
 
@@ -113,7 +108,7 @@ function InputWatchFilesLoad({ inputRef }: { inputRef: React.RefObject<HTMLInput
     );
 }
 
-function TraceOpenMenuItem({ onClick }: { onClick: () => void; }) {
+function MenuItemOpenFile({ onClick }: { onClick: () => void; }) {
     // const { isLoading } = useSnapshot(traceStore);
     return (
         <MenubarItem onClick={onClick}>
@@ -123,11 +118,23 @@ function TraceOpenMenuItem({ onClick }: { onClick: () => void; }) {
     );
 }
 
+function MenuItemShowFileHeader() {
+    const setFileHeaderOpen = useSetAtom(dialogFileHeaderOpenAtom);
+    const { currentFileState } = useSnapshot(traceStore);
+    const selectedFileId = currentFileState?.id ?? null;
+
+    return (
+        <MenubarItem onClick={() => setFileHeaderOpen(selectedFileId)} disabled={!selectedFileId}>
+            Show File Header ...
+        </MenubarItem>
+    );
+}
+
 function TimelineProgress() {
     const [open, setOpen] = useAtom(dialogTimelineCancelOpenAtom);
 
-    const { allTimesIsLoading: isFullTimelineLoading } = useSnapshot(allTimesStore);
-    if (!isFullTimelineLoading) {
+    const { allTimesIsLoading } = useSnapshot(allTimesStore);
+    if (!allTimesIsLoading) {
         return null;
     }
 
