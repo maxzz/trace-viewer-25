@@ -36,11 +36,18 @@ export async function asyncLoadAnyFiles(files: File[], droppedFolderName?: strin
 }
 
 async function loadFilesToStore(files: File[]) {
+    const itemsToLoad: { file: File, fileState: FileState; }[] = [];
+
+    // Populate the store with new file states
     for (const file of files) {
         const newFileState = newTraceItemCreate(file);
-        await newTraceItemLoad(newFileState, file);
-
         filesStore.states.push(newFileState);
+        itemsToLoad.push({ file, fileState: newFileState });
+    }
+
+    // Load the files
+    for (const { file, fileState } of itemsToLoad) {
+        await newTraceItemLoad(fileState, file);
     }
 }
 
