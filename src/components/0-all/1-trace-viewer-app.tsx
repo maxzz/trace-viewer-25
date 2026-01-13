@@ -2,20 +2,18 @@ import { useAtomValue } from "jotai";
 import { useSnapshot } from "valtio";
 import { listenerToBuildAllTimesEffectAtom } from "@/store/traces-store/8-all-times-listener";
 import { appSettings } from "../../store/1-ui-settings";
-import { filesStore } from "../../store/traces-store/9-types-files-store";
 import { TopMenu } from "./2-top-menu";
 import { TraceMainView } from "./6-resizable-panels";
 import { TraceEmptyView } from "../2-trace-viewer/7-trace-empty-view";
-import { TraceFooter } from "./7-app-footer";
+import { TraceFooter } from "./7-footer";
 import { FileFilterDropdown, ButtonHighlightToggle } from "./3-btn-filters-select";
 import { ButtonThemeToggle } from "./3-btn-theme-toggle";
+import { filesCountAtom } from "@/store/6-filtered-files";
 
 export function TraceViewerApp() {
     useAtomValue(listenerToBuildAllTimesEffectAtom);
 
-    const { states } = useSnapshot(filesStore);
-    const hasFile = states.length > 0;
-
+    const fileCount = useAtomValue(filesCountAtom);
     //const { error } = useSnapshot(traceStore);
 
     return (
@@ -26,13 +24,13 @@ export function TraceViewerApp() {
             </div>
 
             <div className="flex-1 flex flex-col overflow-hidden relative">
-                {hasFile
+                {!!fileCount
                     ? <TraceMainView />
                     : <TraceEmptyView />
                 }
             </div>
 
-            <Footer hasFile={hasFile} />
+            <Footer hasFile={!!fileCount} />
         </div>
     );
 }

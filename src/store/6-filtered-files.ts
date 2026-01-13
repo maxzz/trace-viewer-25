@@ -16,6 +16,14 @@ export const filteredFilesAtom = atom(
     }
 );
 
+// Derived atom for files count
+export const filesCountAtom = atom(
+    (get) => {
+        const { states } = get(filesStatesAtom);
+        return states.length;
+    }
+);
+
 function filterFiles(files: readonly FileState[], selectedFilterId: string | null, fileFilters: readonly FileFilter[]): readonly FileState[] {
     const filter = !selectedFilterId ? null : fileFilters.find(f => f.id === selectedFilterId);
     if (!filter) {
