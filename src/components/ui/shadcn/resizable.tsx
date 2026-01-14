@@ -21,14 +21,7 @@ export function ResizablePanel({ ...props }: React.ComponentProps<typeof Panel>)
 
 export function ResizableHandle({ withHandle, className, ...props }: React.ComponentProps<typeof Separator> & { withHandle?: boolean; }) {
     return (
-        <Separator
-            data-slot="resizable-handle"
-            className={cn(
-                resizableLineClasses,
-                className
-            )}
-            {...props}
-        >
+        <Separator data-slot="resizable-handle" className={cn(resizableLineClasses, className)}            {...props}>
             {withHandle && (
                 <div className={resizableHandleClasses}>
                     <GripVerticalIcon className="size-2.5" />
@@ -43,9 +36,9 @@ const resizableHandleClasses = "w-3 h-4 bg-border border rounded-xs opacity-0 tr
 const resizableLineClasses = "\
 group \
 relative \
-pb-3 \
-w-px \
-bg-border \
+w-0.5 \
+bg-foreground/20 \
+dark:bg-foreground/20 \
 focus-visible:ring-ring \
 \
 hover:bg-blue-500 \
@@ -53,8 +46,8 @@ transition-all \
 \
 after:absolute \
 after:inset-y-0 \
-after:left-1/2 \
 after:w-1 \
+after:left-1/2 \
 after:-translate-x-1/2 \
 \
 focus-visible:ring-1 \
@@ -63,12 +56,12 @@ focus-visible:outline-hidden \
 \
 group-data-[panel-group-direction=vertical]/panel-group:pb-0 \
 group-data-[panel-group-direction=vertical]/panel-group:w-full \
-group-data-[panel-group-direction=vertical]/panel-group:h-px \
+group-data-[panel-group-direction=vertical]/panel-group:h-0.5 \
 group-data-[panel-group-direction=vertical]/panel-group:items-center \
 \
 group-data-[panel-group-direction=vertical]/panel-group:after:left-0 \
-group-data-[panel-group-direction=vertical]/panel-group:after:h-1 \
 group-data-[panel-group-direction=vertical]/panel-group:after:w-full \
+group-data-[panel-group-direction=vertical]/panel-group:after:h-1 \
 group-data-[panel-group-direction=vertical]/panel-group:after:translate-x-0 \
 group-data-[panel-group-direction=vertical]/panel-group:after:-translate-y-1/2 \
 \
