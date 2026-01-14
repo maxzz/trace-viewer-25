@@ -27,8 +27,14 @@ function TraceRow({ line, globalIndex, currentLineIndex, useIconsForEntryExit, s
             )}
 
             {/* Time Column */}
-            <div className={columnTimeClasses} title={line.timestamp}>
-                {line.timestamp || ""}
+            <div className={cn(columnTimeClasses, line.code === LineCode.Day && "pl-0 justify-center")} title={line.timestamp}>
+                {line.code === LineCode.Day ? (
+                    <div className="mx-2 px-0.5 h-5 text-[10px] text-center font-bold text-foreground dark:text-background bg-green-200 border border-muted-foreground/20 rounded shadow flex items-center justify-center">
+                        {line.content}
+                    </div>
+                ) : (
+                    line.timestamp || ""
+                )}
             </div>
 
             {/* Thread ID */}
@@ -55,7 +61,7 @@ function TraceRow({ line, globalIndex, currentLineIndex, useIconsForEntryExit, s
                     backgroundColor: showThreadBackground ? getThreadColor(line.threadId, 0.1) : undefined  //0.05
                 }}
             >
-                {formatContent(line, useIconsForEntryExit)}
+                {line.code !== LineCode.Day && formatContent(line, useIconsForEntryExit)}
             </div>
         </div>
     );
@@ -72,7 +78,7 @@ function getLineColor(line: TraceLine) {
         case LineCode.Entry: return 'text-blue-600 dark:text-blue-400';
         case LineCode.Exit: return 'text-blue-600 dark:text-blue-400';
         case LineCode.Time: return 'text-green-600 dark:text-green-400';
-        case LineCode.Day: return 'text-purple-600 dark:text-purple-400 font-bold bg-purple-100 dark:bg-purple-900/30 w-full block';
+        // case LineCode.Day: return 'text-purple-600 dark:text-purple-400 font-bold bg-purple-100 dark:bg-purple-900/30 w-full block';
         default: return 'text-foreground';
     }
 }
