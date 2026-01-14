@@ -1,4 +1,4 @@
-import { traceStore } from "@/store/traces-store/0-state";
+import { closeAllFiles } from "@/store/traces-store/0-state";
 import { atom } from "jotai";
 import { isOurFile, isTrc3File, isZipFile } from "@/workers-client";
 import { asyncLoadAnyFiles } from "@/store/traces-store/1-load-files";
@@ -71,7 +71,7 @@ export const doSetFilesFrom_Dnd_Atom = atom(                    // used by DropI
         }
 
         // Clear previously uploaded files
-        traceStore.closeAllFiles();
+        closeAllFiles();
 
         // Extract files and paths
         const files = filesWithPaths.map(fp => fp.file);

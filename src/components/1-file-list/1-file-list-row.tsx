@@ -4,7 +4,7 @@ import { cn } from "@/utils/index";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger, } from "../ui/shadcn/context-menu";
 import { appSettings } from "@/store/1-ui-settings";
 import { type FileState } from "../../store/traces-store/9-types-files-store";
-import { traceStore } from "../../store/traces-store/0-state";
+import { selectFile, closeFile, closeOtherFiles, closeAllFiles } from "../../store/traces-store/0-state";
 import { allTimesStore } from "../../store/traces-store/3-all-times-store";
 import { AlertCircle, FileText } from "lucide-react";
 import { dialogFileHeaderOpenAtom } from "@/store/2-ui-atoms";
@@ -24,7 +24,7 @@ export function FileListRow({ fileState, isSelected }: { fileState: Snapshot<Fil
     return (
         <ContextMenu>
             <ContextMenuTrigger asChild>
-                <div className={getRowClasses(isSelected, hasError)} onClick={() => traceStore.selectFile(fileState.id)}>
+                <div className={getRowClasses(isSelected, hasError)} onClick={() => selectFile(fileState.id)}>
                     {/* Highlight Background Layer */}
                     {!isSelected && highlightColor && (
                         <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundColor: `var(--color-${highlightColor})` }} />
@@ -64,7 +64,7 @@ export function FileListRow({ fileState, isSelected }: { fileState: Snapshot<Fil
                             className="ml-auto shrink-0 z-10 hover:scale-125 transition-transform"
                             onClick={(e) => {
                                 e.stopPropagation();
-                                traceStore.selectFile(fileState.id);
+                                selectFile(fileState.id);
                                 allTimesStore.setPendingScrollTimestamp(allTimesSelectedTimestamp);
                             }}
                         >
@@ -82,13 +82,13 @@ export function FileListRow({ fileState, isSelected }: { fileState: Snapshot<Fil
                     Show File Header
                 </ContextMenuItem>
                 <ContextMenuSeparator />
-                <ContextMenuItem onClick={() => traceStore.closeFile(fileState.id)}>
+                <ContextMenuItem onClick={() => closeFile(fileState.id)}>
                     Close
                 </ContextMenuItem>
-                <ContextMenuItem onClick={() => traceStore.closeOtherFiles(fileState.id)}>
+                <ContextMenuItem onClick={() => closeOtherFiles(fileState.id)}>
                     Close Others
                 </ContextMenuItem>
-                <ContextMenuItem onClick={() => traceStore.closeAllFiles()}>
+                <ContextMenuItem onClick={() => closeAllFiles()}>
                     Close All
                 </ContextMenuItem>
             </ContextMenuContent>

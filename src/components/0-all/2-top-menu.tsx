@@ -3,7 +3,7 @@ import { useSetAtom, useAtom } from "jotai";
 import { useSnapshot } from "valtio";
 import { notice } from "../ui/local-ui/7-toaster";
 import { cancelAllTimesBuild } from "@/workers-client";
-import { traceStore } from "@/store/traces-store/0-state";
+import { traceStore, closeAllFiles } from "@/store/traces-store/0-state";
 import { allTimesStore } from "@/store/traces-store/3-all-times-store";
 import { asyncLoadAnyFiles } from "@/store/traces-store/1-load-files";
 import { Input } from "../ui/shadcn/input";
@@ -87,7 +87,7 @@ function InputWatchFilesLoad({ inputRef }: { inputRef: React.RefObject<HTMLInput
         async (e: React.ChangeEvent<HTMLInputElement>) => {
             const files = e.target.files;
             if (files && files.length > 0) {
-                traceStore.closeAllFiles(); // Clear previously uploaded files
+                closeAllFiles(); // Clear previously uploaded files
 
                 const fileList = Array.from(files);
                 asyncLoadAnyFiles(fileList);

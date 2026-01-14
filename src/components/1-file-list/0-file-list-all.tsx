@@ -2,7 +2,7 @@ import { type RefObject, useEffect, useRef } from "react";
 import { useAtomValue } from "jotai";
 import { useSnapshot } from "valtio";
 import { appSettings } from "../../store/1-ui-settings";
-import { traceStore } from "../../store/traces-store/0-state";
+import { selectFile, closeFile } from "../../store/traces-store/0-state";
 import { fileListStore } from "../../store/traces-store/selection";
 import { filteredFilesAtom, filteredFilesSelectionEffectAtom } from "../../store/6-filtered-files";
 import { ScrollArea } from "../ui/shadcn/scroll-area";
@@ -28,11 +28,7 @@ export function FileList() {
     );
 
     return (
-        <div
-            ref={containerRef}
-            className="h-full flex flex-row bg-muted/10 select-none outline-none focus-visible:ring-1 focus-visible:ring-ring"
-            tabIndex={0}
-        >
+        <div ref={containerRef} className="h-full flex flex-row bg-muted/10 select-none outline-none focus-visible:ring-1 focus-visible:ring-ring" tabIndex={0}>
             {allTimes.onLeft && <AllTimesPanel />}
 
             <div className="flex-1 flex flex-col h-full min-w-0">
@@ -78,26 +74,26 @@ function createFileListKeyDownHandler(containerRef: RefObject<HTMLDivElement | n
             e.preventDefault();
             if (selectedIndex === -1) {
                 // If current selection not in list, select last visible
-                traceStore.selectFile(filteredFiles[filteredFiles.length - 1].id);
+                selectFile(filteredFiles[filteredFiles.length - 1].id);
             } else {
                 const newIndex = Math.max(0, selectedIndex - 1);
-                traceStore.selectFile(filteredFiles[newIndex].id);
+                selectFile(filteredFiles[newIndex].id);
             }
         }
         else if (e.key === 'ArrowDown') {
             e.preventDefault();
             if (selectedIndex === -1) {
                 // If current selection not in list, select first visible
-                traceStore.selectFile(filteredFiles[0].id);
+                selectFile(filteredFiles[0].id);
             } else {
                 const newIndex = Math.min(filteredFiles.length - 1, selectedIndex + 1);
-                traceStore.selectFile(filteredFiles[newIndex].id);
+                selectFile(filteredFiles[newIndex].id);
             }
         }
         else if (e.key === 'Delete') { // Backspace can be dangerous in browsers (nav back)
             if (selectedFileId) {
                 e.preventDefault();
-                traceStore.closeFile(selectedFileId);
+                closeFile(selectedFileId);
             }
         }
         else if (e.key === 'Enter') {
