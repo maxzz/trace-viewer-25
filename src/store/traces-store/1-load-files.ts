@@ -25,12 +25,7 @@ export async function asyncLoadAnyFiles(files: File[], droppedFolderName?: strin
 
     // Load .TRC3 files directly
     await loadFilesToStore(trc3Files);
-
     setAppTitle(files, droppedFolderName, filePaths);
-
-    // Recompute filters and highlights for the new file
-    recomputeFilterMatches();
-    recomputeHighlightMatches();
 
     buildAlltimes();
 }
@@ -44,6 +39,10 @@ async function loadFilesToStore(files: File[]) {
         filesStore.states.push(newFileState);
         itemsToLoad.push({ file, fileState: newFileState });
     }
+
+    // Recompute filters and highlights after all files list is populated
+    recomputeFilterMatches();
+    recomputeHighlightMatches();
 
     // Load the files
     for (const { file, fileState } of itemsToLoad) {
