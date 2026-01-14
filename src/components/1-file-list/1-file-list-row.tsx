@@ -56,7 +56,7 @@ export function FileListRow({ fileState, isSelected }: { fileState: Snapshot<Fil
 
                     {/* Loading indicator */}
                     {fileState.data.isLoading && (
-                        <SymbolSpinner className="size-3 text-blue-500 stroke-2 animate-spin shrink-0 z-10" />
+                        <SymbolSpinner className="size-2 text-blue-500/40 stroke-2 animate-spin shrink-0 z-10" />
                     )}
 
                     {/* Timeline Marker */}
