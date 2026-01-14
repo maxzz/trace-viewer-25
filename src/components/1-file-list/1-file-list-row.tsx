@@ -55,7 +55,7 @@ export function FileListRow({ fileState, isSelected }: { fileState: Snapshot<Fil
 
                     {/* Loading indicator */}
                     {fileState.data.isLoading && (
-                        <span className="size-2 rounded-full bg-blue-500 animate-pulse shrink-0 z-10" />
+                        <span className="size-2 rounded-full border-2 border-blue-500 animate-pulse shrink-0 z-10" />
                     )}
 
                     {/* Timeline Marker */}
