@@ -8,16 +8,16 @@ import { cancelAllTimesBuild } from "../../workers-client/all-times-client";
 
 export const listenerToBuildAllTimesEffectAtom = atomEffect(
     (get, set) => {
-        const unsubShow = subscribeKey(appSettings.allTimes, 'show', runBuildAlltimes);
+        const unsubShow = subscribeKey(appSettings.allTimes, 'show', buildAlltimes);
         
         const unsubPrecision = subscribeKey(appSettings.allTimes, 'precision', () => {
             appSettings.allTimes.needToRebuild = true;
-            runBuildAlltimes();
+            buildAlltimes();
         });
 
         const unsubFilesData = subscribe(filesStore.states, () => {
             appSettings.allTimes.needToRebuild = true;
-            runBuildAlltimes();
+            buildAlltimes();
         });
 
         return () => {
@@ -29,7 +29,7 @@ export const listenerToBuildAllTimesEffectAtom = atomEffect(
     }
 );
 
-export function runBuildAlltimes() {
+export function buildAlltimes() {
     const { show, precision, needToRebuild } = appSettings.allTimes;
     const { quickFileData } = filesStore;
 

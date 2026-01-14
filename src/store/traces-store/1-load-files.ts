@@ -7,7 +7,7 @@ import { asyncParseTraceFile } from "./2-parse-trace-file";
 import { emptyFileHeader } from "@/trace-viewer-core/9-core-types";
 import { recomputeFilterMatches } from "../4-file-filters";
 import { recomputeHighlightMatches } from "../5-highlight-rules";
-import { runBuildAlltimes } from "./8-all-times-listener";
+import { buildAlltimes } from "./8-all-times-listener";
 
 export async function asyncLoadAnyFiles(files: File[], droppedFolderName?: string, filePaths?: string[]) {
     const zipFiles = files.filter(f => isZipFile(f));
@@ -32,7 +32,7 @@ export async function asyncLoadAnyFiles(files: File[], droppedFolderName?: strin
     recomputeFilterMatches();
     recomputeHighlightMatches();
 
-    runBuildAlltimes();
+    buildAlltimes();
 }
 
 async function loadFilesToStore(files: File[]) {
@@ -48,6 +48,13 @@ async function loadFilesToStore(files: File[]) {
     // Load the files
     for (const { file, fileState } of itemsToLoad) {
         await newTraceItemLoad(fileState, file);
+        console.log("fileState", fileState.data.isLoading, fileState.data.fileName);
+    }
+
+    // After all files are loaded, populate the quick file data
+    for (const fileState of filesStore.states) {
+        console.log("setQuickFileData", fileState.data.isLoading, fileState.data.fileName);
+        filesStore.quickFileData[fileState.id] = fileState.data;
     }
 }
 

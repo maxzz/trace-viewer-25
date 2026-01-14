@@ -20,8 +20,7 @@ export function TraceMainView() {
     );
 
     return (
-        <ResizablePanelGroup className="h-full border-t" orientation="horizontal" onLayoutChange={handleLayout}
-        >
+        <ResizablePanelGroup className="h-full border-t" orientation="horizontal" onLayoutChange={handleLayout}>
             <ResizablePanel
                 id="file-list"
                 defaultSize={`${defaultFilePanelSize}`}
