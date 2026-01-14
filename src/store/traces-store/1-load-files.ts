@@ -8,6 +8,7 @@ import { emptyFileHeader } from "@/trace-viewer-core/9-core-types";
 import { recomputeFilterMatches } from "../4-file-filters";
 import { recomputeHighlightMatches } from "../5-highlight-rules";
 import { buildAlltimes } from "./8-all-times-listener";
+import { setFileLoading } from "./7-file-loading-atoms";
 
 export async function asyncLoadAnyFiles(files: File[], droppedFolderName?: string, filePaths?: string[]) {
     const zipFiles = files.filter(f => isZipFile(f));
@@ -106,4 +107,7 @@ async function newTraceItemLoad(fileState: FileState, file: File): Promise<void>
         data.isLoading = false;
         console.error("Failed to load trace", e);
     }
+
+    // Update the reactive atom to trigger UI re-render for this specific file
+    setFileLoading(fileState.id, false);
 }

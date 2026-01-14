@@ -1,4 +1,4 @@
-import { useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { useSnapshot, type Snapshot } from "valtio";
 import { cn } from "@/utils/index";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger, } from "../ui/shadcn/context-menu";
@@ -9,8 +9,10 @@ import { type FileState } from "@/store/traces-store/9-types-files-store";
 import { selectFile, closeFile, closeOtherFiles, closeAllFiles } from "@/store/traces-store/0-files-actions";
 import { allTimesStore } from "@/store/traces-store/3-all-times-store";
 import { dialogFileHeaderOpenAtom } from "@/store/2-ui-atoms";
+import { getFileLoadingAtom } from "@/store/traces-store/7-file-loading-atoms";
 
 export function FileListRow({ fileState, isSelected }: { fileState: Snapshot<FileState>; isSelected: boolean; }) {
+    const isLoading = useAtomValue(getFileLoadingAtom(fileState.id));
     const hasError = fileState.data.errorsInTraceCount > 0 || !!fileState.data.errorLoadingFile;
     const { highlightRules, highlightEnabled } = useSnapshot(appSettings);
     const { allTimes, allTimesSelectedTimestamp } = useSnapshot(allTimesStore);
@@ -55,7 +57,7 @@ export function FileListRow({ fileState, isSelected }: { fileState: Snapshot<Fil
                     </span>
 
                     {/* Loading indicator */}
-                    {fileState.data.isLoading && (
+                    {isLoading && (
                         <SymbolSpinner className="size-2 text-blue-500/40 stroke-2 animate-spin shrink-0 z-10" />
                     )}
 

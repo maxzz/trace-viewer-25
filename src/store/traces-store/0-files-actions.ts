@@ -1,6 +1,7 @@
 import { filesStore } from "./9-types-files-store";
 import { fileListStore } from "./0-files-list-selection";
 import { traceStore } from "./0-files-current-state";
+import { removeFileLoadingAtom } from "./7-file-loading-atoms";
 
 export function selectFile(id: string | null) {
     fileListStore.selectedFileId = id;
@@ -20,6 +21,7 @@ export function closeFile(id: string) {
     if (index !== -1) {
         filesStore.states.splice(index, 1);
         delete filesStore.quickFileData[id];
+        removeFileLoadingAtom(id);
 
         // If closed file was selected, select another one
         if (fileListStore.selectedFileId === id) {
@@ -35,6 +37,13 @@ export function closeFile(id: string) {
 }
 
 export function closeOtherFiles(id: string) {
+    // Clean up loading atoms for files being closed
+    filesStore.states.forEach(f => {
+        if (f.id !== id) {
+            removeFileLoadingAtom(f.id);
+        }
+    });
+
     filesStore.states = filesStore.states.filter(f => f.id === id);
     const keys = Object.keys(filesStore.quickFileData);
     keys.forEach(key => {
@@ -49,6 +58,9 @@ export function closeOtherFiles(id: string) {
 }
 
 export function closeAllFiles() {
+    // Clean up all loading atoms
+    filesStore.states.forEach(f => removeFileLoadingAtom(f.id));
+
     filesStore.states = [];
     filesStore.quickFileData = {};
     selectFile(null);
