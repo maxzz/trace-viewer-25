@@ -1,5 +1,5 @@
 import React from "react";
-import { traceStore } from "../../store/traces-store/0-state";
+import { traceStore } from "../../store/traces-store/0-files-current-state";
 import { ITEM_HEIGHT } from "./9-trace-view-constants";
 
 export function handleKeyboardNavigation(e: KeyboardEvent, scrollRef: React.RefObject<HTMLDivElement | null>, containerHeight: number, scrollTop: number) {

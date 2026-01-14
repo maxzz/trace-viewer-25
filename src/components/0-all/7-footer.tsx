@@ -1,7 +1,7 @@
 import { useAtomValue } from "jotai";
 import { useSnapshot } from "valtio";
-import { traceStore } from "../../store/traces-store/0-state";
-import { fileListStore } from "../../store/traces-store/selection";
+import { traceStore } from "../../store/traces-store/0-files-current-state";
+import { fileListStore } from "../../store/traces-store/0-files-list-selection";
 import { filesStore } from "../../store/traces-store/9-types-files-store";
 import { appSettings } from "../../store/1-ui-settings";
 import { filesCountAtom } from "../../store/6-filtered-files";

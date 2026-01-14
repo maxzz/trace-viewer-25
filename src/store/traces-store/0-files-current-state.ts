@@ -1,6 +1,6 @@
 import { proxy, subscribe } from "valtio";
 import { type FileState, filesStore } from "./9-types-files-store";
-import { fileListStore } from "./selection";
+import { fileListStore } from "./0-files-list-selection";
 
 export interface TraceStore {
     // Current file
@@ -10,6 +10,8 @@ export interface TraceStore {
 export const traceStore = proxy<TraceStore>({
     currentFileState: null,
 });
+
+// File List Store functions
 
 export function selectFile(id: string | null) {
     fileListStore.selectedFileId = id;

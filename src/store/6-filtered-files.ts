@@ -3,8 +3,8 @@ import { atomEffect } from 'jotai-effect';
 import { atomWithProxy } from 'jotai-valtio';
 import { appSettings, type FileFilter } from './1-ui-settings';
 import { filesStore, type FileState } from './traces-store/9-types-files-store';
-import { fileListStore } from './traces-store/selection';
-import { selectFile } from './traces-store/0-state';
+import { fileListStore } from './traces-store/0-files-list-selection';
+import { selectFile } from './traces-store/0-files-current-state';
 
 // Atoms to track valtio state changes
 const filesStatesAtom = atomWithProxy(filesStore);

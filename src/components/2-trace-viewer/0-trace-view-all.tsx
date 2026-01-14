@@ -1,9 +1,9 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import { useSnapshot } from "valtio";
 import { appSettings } from "../../store/1-ui-settings";
-import { traceStore } from "../../store/traces-store/0-state";
+import { traceStore } from "../../store/traces-store/0-files-current-state";
 import { allTimesStore } from "../../store/traces-store/3-all-times-store";
-import { fileListStore } from "../../store/traces-store/selection";
+import { fileListStore } from "../../store/traces-store/0-files-list-selection";
 import { TraceRowMemo } from "./1-trace-view-row";
 import { ITEM_HEIGHT } from "./9-trace-view-constants";
 import { handlePendingTimestampScroll, scrollToSelection } from "./2-trace-view-scroll";

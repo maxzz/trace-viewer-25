@@ -1,5 +1,5 @@
 import React from "react";
-import { traceStore } from "../../store/traces-store/0-state";
+import { traceStore } from "../../store/traces-store/0-files-current-state";
 import { allTimesStore } from "../../store/traces-store/3-all-times-store";
 import { type TraceLine } from "@/trace-viewer-core/9-core-types";
 import { ITEM_HEIGHT } from "./9-trace-view-constants";
