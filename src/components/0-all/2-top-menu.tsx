@@ -6,7 +6,7 @@ import { cancelAllTimesBuild } from "@/workers-client";
 import { traceStore } from "@/store/traces-store/0-files-current-state";
 import { closeAllFiles } from "@/store/traces-store/0-files-actions";
 import { allTimesStore } from "@/store/traces-store/3-all-times-store";
-import { asyncLoadAnyFiles } from "@/store/traces-store/1-load-files";
+import { asyncLoadAnyFiles } from "@/store/traces-store/1-1-load-files";
 import { Input } from "../ui/shadcn/input";
 import { Button } from "../ui/shadcn/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/shadcn/dialog";

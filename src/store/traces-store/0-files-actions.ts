@@ -1,7 +1,7 @@
 import { filesStore } from "./9-types-files-store";
 import { fileListStore } from "./0-files-list-selection";
 import { traceStore } from "./0-files-current-state";
-import { removeFileLoadingAtom } from "./7-file-loading-atoms";
+import { removeFileLoadingAtom } from "./1-3-file-loading-atoms";
 
 export function selectFile(id: string | null) {
     fileListStore.selectedFileId = id;

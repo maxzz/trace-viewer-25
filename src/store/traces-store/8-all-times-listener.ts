@@ -51,6 +51,8 @@ export function buildAlltimes() {
         // If the user wants to avoid rebuild, I must NOT clear the data when hiding.
         
         cancelAllTimesBuild();
+        allTimesStore.setAllTimes([]);
+        appSettings.allTimes.needToRebuild = false; // not valid and needs to be rebuilt
         return;
     }
 

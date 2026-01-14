@@ -3,12 +3,12 @@ import { setAppTitle } from "@/store/3-ui-app-title";
 import { traceStore } from "./0-files-current-state";
 import { filesStore, type FileData, type FileState } from "./9-types-files-store";
 import { ref } from "valtio";
-import { asyncParseTraceFile } from "./2-parse-trace-file";
+import { asyncParseTraceFile } from "./1-2-parse-trace-file";
 import { emptyFileHeader } from "@/trace-viewer-core/9-core-types";
 import { recomputeFilterMatches } from "../4-file-filters";
 import { recomputeHighlightMatches } from "../5-highlight-rules";
 import { buildAlltimes } from "./8-all-times-listener";
-import { setFileLoading } from "./7-file-loading-atoms";
+import { setFileLoading } from "./1-3-file-loading-atoms";
 
 export async function asyncLoadAnyFiles(files: File[], droppedFolderName?: string, filePaths?: string[]) {
     const zipFiles = files.filter(f => isZipFile(f));

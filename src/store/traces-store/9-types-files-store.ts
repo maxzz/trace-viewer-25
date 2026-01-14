@@ -11,7 +11,7 @@ export interface FileData  {
     header: TraceHeader;
     errorsInTraceCount: number;                 // Count of lines with code === LineCode.Error.
     
-    isLoading: boolean;
+    isLoading: boolean;                         // This is non-reactive, but we use it to track if the file is loading.
     errorLoadingFile: string | null;            // Error message from loading the file.
 }
 
