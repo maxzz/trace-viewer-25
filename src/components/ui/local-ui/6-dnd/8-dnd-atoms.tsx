@@ -1,6 +1,6 @@
-import { closeAllFiles } from "@/store/traces-store/0-files-current-state";
 import { atom } from "jotai";
 import { isOurFile, isTrc3File, isZipFile } from "@/workers-client";
+import { closeAllFiles } from "@/store/traces-store/0-files-actions";
 import { asyncLoadAnyFiles } from "@/store/traces-store/1-load-files";
 
 export type DoSetFilesFrom_Dnd_Atom = typeof doSetFilesFrom_Dnd_Atom;

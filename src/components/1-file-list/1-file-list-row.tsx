@@ -3,10 +3,10 @@ import { useSnapshot, type Snapshot } from "valtio";
 import { cn } from "@/utils/index";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger, } from "../ui/shadcn/context-menu";
 import { appSettings } from "@/store/1-ui-settings";
-import { type FileState } from "../../store/traces-store/9-types-files-store";
-import { selectFile, closeFile, closeOtherFiles, closeAllFiles } from "../../store/traces-store/0-files-current-state";
-import { allTimesStore } from "../../store/traces-store/3-all-times-store";
 import { AlertCircle, FileText } from "lucide-react";
+import { type FileState } from "@/store/traces-store/9-types-files-store";
+import { selectFile, closeFile, closeOtherFiles, closeAllFiles } from "@/store/traces-store/0-files-actions";
+import { allTimesStore } from "@/store/traces-store/3-all-times-store";
 import { dialogFileHeaderOpenAtom } from "@/store/2-ui-atoms";
 
 export function FileListRow({ fileState, isSelected }: { fileState: Snapshot<FileState>; isSelected: boolean; }) {

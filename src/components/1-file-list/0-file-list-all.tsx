@@ -2,7 +2,7 @@ import { type RefObject, useEffect, useRef } from "react";
 import { useAtomValue } from "jotai";
 import { useSnapshot } from "valtio";
 import { appSettings } from "../../store/1-ui-settings";
-import { selectFile, closeFile } from "../../store/traces-store/0-files-current-state";
+import { selectFile, closeFile } from "../../store/traces-store/0-files-actions";
 import { fileListStore } from "../../store/traces-store/0-files-list-selection";
 import { filteredFilesAtom, filteredFilesSelectionEffectAtom } from "../../store/6-filtered-files";
 import { ScrollArea } from "../ui/shadcn/scroll-area";
