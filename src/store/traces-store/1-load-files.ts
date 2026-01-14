@@ -18,7 +18,7 @@ export async function asyncLoadAnyFiles(files: File[], droppedFolderName?: strin
         const result = await extractTracesFromZipInWorker(file);
 
         if (result.files.length > 0) {
-            loadFilesToStore(result.files);
+            await loadFilesToStore(result.files);
             setAppTitle(result.files, result.zipFileName);
         }
     }
@@ -48,12 +48,10 @@ async function loadFilesToStore(files: File[]) {
     // Load the files
     for (const { file, fileState } of itemsToLoad) {
         await newTraceItemLoad(fileState, file);
-        console.log("fileState", fileState.data.isLoading, fileState.data.fileName);
     }
 
     // After all files are loaded, populate the quick file data
     for (const fileState of filesStore.states) {
-        console.log("setQuickFileData", fileState.data.isLoading, fileState.data.fileName);
         filesStore.quickFileData[fileState.id] = fileState.data;
     }
 }
