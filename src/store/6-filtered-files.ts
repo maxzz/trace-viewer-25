@@ -1,11 +1,15 @@
 import { atom } from 'jotai';
+import { atomEffect } from 'jotai-effect';
 import { atomWithProxy } from 'jotai-valtio';
 import { appSettings, type FileFilter } from './1-ui-settings';
 import { filesStore, type FileState } from './traces-store/9-types-files-store';
+import { selectionStore } from './traces-store/selection';
+import { traceStore } from './traces-store/0-state';
 
 // Atoms to track valtio state changes
 const filesStatesAtom = atomWithProxy(filesStore);
 const appSettingsAtom = atomWithProxy(appSettings);
+const selectionStoreAtom = atomWithProxy(selectionStore);
 
 // Derived atom for filtered files
 export const filteredFilesAtom = atom(
@@ -62,3 +66,27 @@ function filterFiles(files: readonly FileState[], selectedFilterId: string | nul
 
     return files.filter(file => file.data.fileName.toLowerCase().includes(patternLower));
 }
+
+// Effect atom to handle selection change when filter results change
+export const filteredFilesSelectionEffectAtom = atomEffect(
+    (get) => {
+        const { states } = get(filesStatesAtom);
+        const { selectedFileId } = get(selectionStoreAtom);
+        const filteredFiles = get(filteredFilesAtom);
+
+        if (states.length === 0) return;
+
+        // Check if currently selected file is in the filtered list
+        const isSelectedInFiltered = filteredFiles.some(f => f.id === selectedFileId);
+
+        if (!isSelectedInFiltered) {
+            if (filteredFiles.length > 0) {
+                // Select first file if current selection is hidden
+                traceStore.selectFile(filteredFiles[0].id);
+            } else if (selectedFileId) {
+                // Deselect if no files match filter
+                traceStore.selectFile(null);
+            }
+        }
+    }
+);

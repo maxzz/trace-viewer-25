@@ -4,38 +4,19 @@ import { useSnapshot } from "valtio";
 import { appSettings } from "../../store/1-ui-settings";
 import { traceStore } from "../../store/traces-store/0-state";
 import { selectionStore } from "../../store/traces-store/selection";
-import { filesStore } from "../../store/traces-store/9-types-files-store";
-import { filteredFilesAtom } from "../../store/6-filtered-files";
+import { filteredFilesAtom, filteredFilesSelectionEffectAtom } from "../../store/6-filtered-files";
 import { ScrollArea } from "../ui/shadcn/scroll-area";
 import { FileListRow } from "./1-file-list-row";
 import { AllTimesPanel } from "./2-all-times-list";
 
 export function FileList() {
-    const { states } = useSnapshot(filesStore);
     const { selectedFileId } = useSnapshot(selectionStore);
     const { allTimes } = useSnapshot(appSettings);
     const filteredFiles = useAtomValue(filteredFilesAtom);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    // Effect to handle selection change when filter results change
-    useEffect(
-        () => {
-            if (states.length === 0) return;
-
-            // Check if currently selected file is in the filtered list
-            const isSelectedInFiltered = filteredFiles.some(f => f.id === selectedFileId);
-
-            if (!isSelectedInFiltered) {
-                if (filteredFiles.length > 0) {
-                    // Select first file if current selection is hidden
-                    traceStore.selectFile(filteredFiles[0].id);
-                } else if (selectedFileId) {
-                    // Deselect if no files match filter
-                    traceStore.selectFile(null);
-                }
-            }
-        }, [filteredFiles, selectedFileId, states.length]
-    );
+    // Mount atom effect to handle selection change when filter results change
+    useAtomValue(filteredFilesSelectionEffectAtom);
 
     // Keyboard navigation
     useEffect(

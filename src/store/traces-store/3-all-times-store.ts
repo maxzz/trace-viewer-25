@@ -8,7 +8,7 @@ import { asyncBuildAllTimesInWorker } from "../../workers-client/all-times-clien
 
 export interface AllTimesStore {
     // State
-    allTimes: AllTimesItemOutput[];                          // All times items
+    allTimes: AllTimesItemOutput[];                    // All times items
     allTimesIsLoading: boolean;                        // Whether the all times is loading
     allTimesError: string | null;                      // Error message for the all times
     allTimesSelectedTimestamp: string | null;          // Timestamp of the selected item in the all times
