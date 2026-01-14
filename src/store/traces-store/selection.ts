@@ -1,9 +1,9 @@
 import { proxy } from "valtio";
 
-export interface SelectionStore {
+export interface FileListStore {
     selectedFileId: string | null;
 }
 
-export const selectionStore = proxy<SelectionStore>({
+export const fileListStore = proxy<FileListStore>({
     selectedFileId: null,
 });

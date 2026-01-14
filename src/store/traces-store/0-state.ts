@@ -1,6 +1,6 @@
 import { proxy, subscribe } from "valtio";
 import { type FileState, filesStore } from "./9-types-files-store";
-import { selectionStore } from "./selection";
+import { fileListStore } from "./selection";
 
 export interface TraceStore {
     // Current file
@@ -18,7 +18,7 @@ export const traceStore = proxy<TraceStore>({
     currentFileState: null,
 
     selectFile: (id: string | null) => {
-        selectionStore.selectedFileId = id;
+        fileListStore.selectedFileId = id;
 
         if (id) {
             const fileState = filesStore.states.find(f => f.id === id);
@@ -37,7 +37,7 @@ export const traceStore = proxy<TraceStore>({
             delete filesStore.quickFileData[id];
 
             // If closed file was selected, select another one
-            if (selectionStore.selectedFileId === id) {
+            if (fileListStore.selectedFileId === id) {
                 if (filesStore.states.length > 0) {
                     // Select the next file, or the previous one if we closed the last one
                     const nextIndex = Math.min(index, filesStore.states.length - 1);
@@ -58,7 +58,7 @@ export const traceStore = proxy<TraceStore>({
             }
         });
 
-        if (selectionStore.selectedFileId !== id) {
+        if (fileListStore.selectedFileId !== id) {
             traceStore.selectFile(id);
         }
     },
@@ -73,8 +73,8 @@ export const traceStore = proxy<TraceStore>({
 // Subscribe to currentLineIndex changes to update the file state
 subscribe(traceStore,
     () => {
-        if (selectionStore.selectedFileId && traceStore.currentFileState) {
-            const fileState = filesStore.states.find(f => f.id === selectionStore.selectedFileId);
+        if (fileListStore.selectedFileId && traceStore.currentFileState) {
+            const fileState = filesStore.states.find(f => f.id === fileListStore.selectedFileId);
             // Only update if changed to avoid infinite loops if syncActiveFile triggers this
             if (fileState && fileState.currentLineIndex !== traceStore.currentFileState.currentLineIndex) {
                 fileState.currentLineIndex = traceStore.currentFileState.currentLineIndex;
