@@ -4,6 +4,7 @@ import { cn } from "@/utils/index";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger, } from "../ui/shadcn/context-menu";
 import { appSettings } from "@/store/1-ui-settings";
 import { AlertCircle, FileText } from "lucide-react";
+import { SymbolSpinner } from "../ui/icons/symbols";
 import { type FileState } from "@/store/traces-store/9-types-files-store";
 import { selectFile, closeFile, closeOtherFiles, closeAllFiles } from "@/store/traces-store/0-files-actions";
 import { allTimesStore } from "@/store/traces-store/3-all-times-store";
@@ -55,7 +56,7 @@ export function FileListRow({ fileState, isSelected }: { fileState: Snapshot<Fil
 
                     {/* Loading indicator */}
                     {fileState.data.isLoading && (
-                        <span className="size-2 rounded-full border-2 border-blue-500 animate-pulse shrink-0 z-10" />
+                        <SymbolSpinner className="size-3 text-blue-500 stroke-2 animate-spin shrink-0 z-10" />
                     )}
 
                     {/* Timeline Marker */}
