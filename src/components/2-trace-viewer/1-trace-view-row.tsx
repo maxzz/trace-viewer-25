@@ -10,19 +10,18 @@ import { columnLineNumberClasses, columnTimeClasses, columnThreadIdClasses, line
 
 export const TraceRowMemo = React.memo(TraceRow);
 
-function TraceRow({ line, globalIndex, currentLineIdxAtom, useIconsForEntryExit, showLineNumbers, uniqueThreadIds, firstLineLength }: {
-    line: TraceLine,
-    globalIndex: number,
-    currentLineIdxAtom: PrimitiveAtom<number>,
-    useIconsForEntryExit: boolean,
-    showLineNumbers: boolean,
+type TraceRowParams = {
+    line: TraceLine;
+    globalIndex: number;
+    currentLineIdxAtom: PrimitiveAtom<number>;
+    useIconsForEntryExit: boolean;
+    showLineNumbers: boolean;
     uniqueThreadIds: readonly number[];
     firstLineLength: number;
-}) {
-    const isSelectedAtom = useMemo(
-        () => selectAtom(currentLineIdxAtom, (s) => s === globalIndex),
-        [currentLineIdxAtom, globalIndex]
-    );
+};
+
+function TraceRow({ line, globalIndex, currentLineIdxAtom, useIconsForEntryExit, showLineNumbers, uniqueThreadIds, firstLineLength }: TraceRowParams) {
+    const isSelectedAtom = useMemo(() => selectAtom(currentLineIdxAtom, (s) => s === globalIndex), [currentLineIdxAtom, globalIndex]);
     const isSelected = useAtomValue(isSelectedAtom);
     const showThreadBackground = uniqueThreadIds.length > 0 && uniqueThreadIds[0] !== line.threadId;
 

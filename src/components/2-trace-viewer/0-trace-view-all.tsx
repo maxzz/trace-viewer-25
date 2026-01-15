@@ -80,7 +80,7 @@ export function TraceList() {
     const offsetY = startIndex * ITEM_HEIGHT;
 
     // determine firstLineLength from the first line that has a timestamp
-    const firstLineLength = viewLines.find(l => l.timestamp && l.code === LineCode.Time)?.timestamp?.length ?? 12; // 12 is for 'HH:MM:SS.MSS' as oposite to higher precision 'HH:MM:SS.MSSSS'
+    const firstLineLength = viewLines.find(l => !!l.timestamp)?.timestamp?.length ?? 12; // 12 is for 'HH:MM:SS.MSS' as oposite to higher precision 'HH:MM:SS.MSSSS'
 
     return (
         <div

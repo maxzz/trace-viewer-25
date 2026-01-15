@@ -1,6 +1,6 @@
 import { useSnapshot } from "valtio";
 import { appSettings } from "@/store/1-ui-settings";
-import { classNames, cn } from "@/utils/classnames";
+import { classNames } from "@/utils/classnames";
 import { allTimesStore } from "@/store/traces-store/3-all-times-store";
 import { ScrollArea } from "../ui/shadcn/scroll-area";
 import { Fragment } from "react/jsx-runtime";
@@ -16,17 +16,17 @@ export function AllTimesPanel() {
 
 function AllTimesList() {
     const { onLeft } = useSnapshot(appSettings.allTimes);
-    const { allTimes, allTimesSelectedTimestamp: selectedAllTimesTimestamp } = useSnapshot(allTimesStore);
+    const { allTimes, allTimesSelectedTimestamp } = useSnapshot(allTimesStore);
 
     let lastDate = "";
 
     return (
-        <div className={classNames("w-max h-full bg-green-100/20 select-none flex flex-col", onLeft ? "border-r" : "border-l")}>
+        <div className={classNames("w-max h-full bg-green-100/20 dark:bg-green-950/20 select-none flex flex-col", onLeft ? "border-r" : "border-l")}>
             <ScrollArea className="flex-1">
                 <div className="flex flex-col">
                     {allTimes.map(
                         (item, idx) => {
-                            const isSelected = item.timestamp === selectedAllTimesTimestamp;
+                            const isSelected = item.timestamp === allTimesSelectedTimestamp;
                             const { displayTime, currentDate } = splitTimestampIntoDateAndTime(item.timestamp);
 
                             const showDateHeader = currentDate && currentDate !== lastDate;
@@ -40,7 +40,7 @@ function AllTimesList() {
                                         </div>
                                     )}
                                     <div
-                                        className={cn(rowClasses, isSelected && "bg-primary text-primary-foreground hover:bg-primary/90")}
+                                        className={classNames(rowClasses, isSelected && "bg-primary text-primary-foreground hover:bg-primary/90")}
                                         onClick={() => allTimesStore.setAllTimesSelectedTimestamp(isSelected ? null : item.timestamp)}
                                         title={item.timestamp}
                                         key={item.timestamp}
