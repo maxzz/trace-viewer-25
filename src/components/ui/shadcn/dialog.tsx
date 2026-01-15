@@ -1,4 +1,4 @@
-import * as React from "react"; // 01.03.26
+import * as React from "react"; // 01.14.26
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { XIcon } from "lucide-react";
 
@@ -43,9 +43,9 @@ function DialogOverlay({
                 fixed \
                 inset-0 \
                 z-50 \
-                bg-black/10 \
+                bg-black/5 \
                 dark:bg-black/10 \
-                backdrop-blur-[1px] \
+                backdrop-blur-[.7px] \
                 ",
                 className
             )}

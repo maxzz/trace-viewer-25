@@ -58,11 +58,7 @@ function ColorSwatch({ colorName, bgClass, textClass, label, letter, isSelected,
             onClick={onClick}
             title={label}
         >
-            <div className={cn(
-                "size-full rounded-md",
-                !colorName && "bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxwYXRoIGQ9Ik0wIDBoNHY0SDB6bTQgNGg0djRINHoiIGZpbGw9IiNjY2MiIGZpbGwtb3BhY2l0eT0iLjQiLz48L3N2Zz4=')]", // Checkerboard for transparent
-                colorName && bgClass
-            )} />
+            <div className={cn("size-full rounded-md", !colorName && `bg-[${checkerboarSvg}]`, colorName && bgClass)} />
 
             {/* Letter overlay */}
             <span className={cn(
@@ -105,3 +101,6 @@ const COLOR_GRID_Classes = [
     // Row 4
     { name: "pink-500",    /**/ label: "Pink", key: "d", bgClass: "bg-pink-500", textClass: "text-white" },
 ];
+
+// Checkerboard for transparent
+const checkerboarSvg = "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxwYXRoIGQ9Ik0wIDBoNHY0SDB6bTQgNGg0djRINHoiIGZpbGw9IiNjY2MiIGZpbGwtb3BhY2l0eT0iLjQiLz48L3N2Zz4=')";
