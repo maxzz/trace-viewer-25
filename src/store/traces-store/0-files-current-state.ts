@@ -1,11 +1,14 @@
-import { proxy } from "valtio";
+import { atom, getDefaultStore } from "jotai";
 import { type FileState } from "./9-types-files-store";
 
-export interface FilesListStore {
-    // Current file
-    currentFileState: FileState | null;         // Active file state (mirrored from selected file)
+export const currentFileStateAtom = atom<FileState | null>(null);
+
+// Helper functions for accessing the atom outside of React components
+
+export function getCurrentFileState(): FileState | null {
+    return getDefaultStore().get(currentFileStateAtom);
 }
 
-export const filesListStore = proxy<FilesListStore>({
-    currentFileState: null,
-});
+export function setCurrentFileState(fileState: FileState | null): void {
+    getDefaultStore().set(currentFileStateAtom, fileState);
+}

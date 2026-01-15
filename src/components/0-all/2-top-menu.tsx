@@ -1,9 +1,9 @@
 import { useCallback, useRef } from "react";
-import { useSetAtom, useAtom } from "jotai";
+import { useSetAtom, useAtom, useAtomValue } from "jotai";
 import { useSnapshot } from "valtio";
 import { notice } from "../ui/local-ui/7-toaster";
 import { cancelAllTimesBuild } from "@/workers-client";
-import { filesListStore } from "@/store/traces-store/0-files-current-state";
+import { currentFileStateAtom } from "@/store/traces-store/0-files-current-state";
 import { closeAllFiles } from "@/store/traces-store/0-files-actions";
 import { allTimesStore } from "@/store/traces-store/3-all-times-store";
 import { asyncLoadAnyFiles } from "@/store/traces-store/1-1-load-files";
@@ -121,7 +121,7 @@ function MenuItemOpenFile({ onClick }: { onClick: () => void; }) {
 
 function MenuItemShowFileHeader() {
     const setFileHeaderOpen = useSetAtom(dialogFileHeaderOpenAtom);
-    const { currentFileState } = useSnapshot(filesListStore);
+    const currentFileState = useAtomValue(currentFileStateAtom);
     const selectedFileId = currentFileState?.id ?? null;
 
     return (

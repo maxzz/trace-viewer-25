@@ -1,6 +1,6 @@
 import { useAtomValue } from "jotai";
 import { useSnapshot } from "valtio";
-import { filesListStore } from "../../store/traces-store/0-files-current-state";
+import { currentFileStateAtom } from "../../store/traces-store/0-files-current-state";
 import { filesStore } from "../../store/traces-store/9-types-files-store";
 import { appSettings } from "../../store/1-ui-settings";
 import { filesCountAtom } from "../../store/6-filtered-files";
@@ -37,7 +37,7 @@ export function TraceFooter() {
 }
 
 function FooterErrorBanner() {
-    const { currentFileState } = useSnapshot(filesListStore);
+    const currentFileState = useAtomValue(currentFileStateAtom);
     const error = currentFileState?.data?.errorLoadingFile;
 
     if (!error) {
@@ -54,7 +54,7 @@ function FooterErrorBanner() {
 
 function FooterExtraInfo() {
     const { extraInFooter } = useSnapshot(appSettings);
-    const { currentFileState } = useSnapshot(filesListStore);
+    const currentFileState = useAtomValue(currentFileStateAtom);
     const header = currentFileState?.data?.header || { magic: '' };
 
     if (!extraInFooter) {
@@ -92,7 +92,7 @@ function FooterFilesCount() {
 }
 
 function FooterLineCount() {
-    const { currentFileState } = useSnapshot(filesListStore);
+    const currentFileState = useAtomValue(currentFileStateAtom);
     const viewLines = currentFileState?.data?.viewLines || [];
     const lineCount = viewLines.length;
 
@@ -102,7 +102,7 @@ function FooterLineCount() {
 }
 
 function FooterErrorCount() {
-    const { currentFileState } = useSnapshot(filesListStore);
+    const currentFileState = useAtomValue(currentFileStateAtom);
     const errorCount = currentFileState?.data.errorsInTraceCount || 0;
 
     if (errorCount === 0) {

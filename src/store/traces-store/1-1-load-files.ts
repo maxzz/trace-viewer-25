@@ -1,8 +1,7 @@
+import { ref } from "valtio";
 import { extractTracesFromZipInWorker, isTrc3File, isZipFile } from "@/workers-client";
 import { setAppTitle } from "@/store/3-ui-app-title";
-import { filesListStore } from "./0-files-current-state";
 import { filesStore, type FileData, type FileState } from "./9-types-files-store";
-import { ref } from "valtio";
 import { asyncParseTraceFile } from "./1-2-parse-trace-file";
 import { emptyFileHeader } from "@/trace-viewer-core/9-core-types";
 import { recomputeFilterMatches } from "../4-file-filters";
