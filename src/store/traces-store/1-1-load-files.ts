@@ -6,9 +6,10 @@ import { filesStore, type FileData, type FileState } from "./9-types-files-store
 import { asyncParseTraceFile } from "./1-2-parse-trace-file";
 import { emptyFileHeader } from "@/trace-viewer-core/9-core-types";
 import { recomputeFilterMatches } from "../4-file-filters";
-import { recomputeHighlightMatches } from "../5-highlight-rules";
+import { appSettings } from "../1-ui-settings";
 import { buildAlltimes } from "./8-all-times-listener";
 import { setFileLoading } from "./1-3-file-loading-atoms";
+import { recomputeHighlightMatches } from "../5-highlight-rules";
 
 export async function asyncLoadAnyFiles(files: File[], droppedFolderName?: string, filePaths?: string[]) {
     const zipFiles = files.filter(f => isZipFile(f));
@@ -28,6 +29,7 @@ export async function asyncLoadAnyFiles(files: File[], droppedFolderName?: strin
     await loadFilesToStore(trc3Files);
     setAppTitle(files, droppedFolderName, filePaths);
 
+    appSettings.allTimes.needToRebuild = true;
     buildAlltimes();
 }
 
