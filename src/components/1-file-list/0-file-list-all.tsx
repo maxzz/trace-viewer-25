@@ -1,4 +1,4 @@
-import { type RefObject, useEffect, useRef, memo } from "react";
+import { type RefObject, useEffect, useRef } from "react";
 import { useAtomValue } from "jotai";
 import { useSnapshot } from "valtio";
 import { appSettings } from "../../store/1-ui-settings";
@@ -37,7 +37,7 @@ export function FileList() {
                     <div className="flex flex-col">
                         {filteredFiles.map(
                             (file) => (
-                                <FileListRowMemo
+                                <FileListRow
                                     key={file.id}
                                     fileState={file}
                                     isSelected={file.id === selectedFileId}
@@ -52,8 +52,6 @@ export function FileList() {
         </div>
     );
 }
-
-const FileListRowMemo = memo(FileListRow);
 
 // Keyboard navigation
 

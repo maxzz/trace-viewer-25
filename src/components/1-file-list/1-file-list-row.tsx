@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useSnapshot, type Snapshot } from "valtio";
 import { cn } from "@/utils/index";
@@ -11,7 +12,7 @@ import { allTimesStore } from "@/store/traces-store/3-all-times-store";
 import { dialogFileHeaderOpenAtom } from "@/store/2-ui-atoms";
 import { getFileLoadingAtom } from "@/store/traces-store/1-3-file-loading-atoms";
 
-export function FileListRow({ fileState, isSelected }: { fileState: Snapshot<FileState>; isSelected: boolean; }) {
+export const FileListRow = memo(function FileListRow({ fileState, isSelected }: { fileState: Snapshot<FileState>; isSelected: boolean; }) {
     const isLoading = useAtomValue(getFileLoadingAtom(fileState.id));
     const hasError = fileState.data.errorsInTraceCount > 0 || !!fileState.data.errorLoadingFile;
     const { highlightRules, highlightEnabled } = useSnapshot(appSettings);
@@ -97,7 +98,7 @@ export function FileListRow({ fileState, isSelected }: { fileState: Snapshot<Fil
             </ContextMenuContent>
         </ContextMenu>
     );
-}
+});
 
 function getHighlightColor(highlightEnabled: boolean, highlightRules: readonly { id: string; color?: string; }[], matchedHighlightIds: readonly string[] | undefined): string | undefined {
     if (!highlightEnabled || !matchedHighlightIds || matchedHighlightIds.length === 0) {
