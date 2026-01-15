@@ -1,4 +1,5 @@
 import { ref } from "valtio";
+import { atom } from "jotai";
 import { extractTracesFromZipInWorker, isTrc3File, isZipFile } from "@/workers-client";
 import { setAppTitle } from "@/store/3-ui-app-title";
 import { filesStore, type FileData, type FileState } from "./9-types-files-store";
@@ -83,7 +84,7 @@ function newTraceItemCreate(file: File): FileState {
         return {
             id,
             data, // Placeholder, will update after adding to store
-            currentLineIndex: -1,
+            currentLineIndex: atom(-1),
             matchedFilterIds: [],
             matchedHighlightIds: []
         };

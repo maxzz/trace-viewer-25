@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
-import { useAtomValue } from "jotai";
+import { useAtomValue, atom } from "jotai";
 import { useSnapshot } from "valtio";
 import { appSettings } from "../../store/1-ui-settings";
 import { currentFileStateAtom } from "../../store/traces-store/0-files-current-state";
@@ -9,6 +9,8 @@ import { ITEM_HEIGHT } from "./9-trace-view-constants";
 import { handlePendingTimestampScroll, scrollToSelection } from "./2-trace-view-scroll";
 import { handleKeyboardNavigation } from "./3-trace-view-keyboard";
 
+const fallbackLineIndexAtom = atom(-1);
+
 export function TraceList() {
     const currentFileState = useAtomValue(currentFileStateAtom);
     const { pendingScrollTimestamp } = useSnapshot(allTimesStore);
@@ -17,7 +19,7 @@ export function TraceList() {
     // Derived from currentFileState
     const selectedFileId = currentFileState?.id ?? null;
     const fileData = currentFileState?.data;
-    const currentLineIndex = currentFileState?.currentLineIndex ?? -1;
+    const currentLineIndex = useAtomValue(currentFileState?.currentLineIndex ?? fallbackLineIndexAtom);
     const viewLines = fileData?.viewLines || [];
     const threadIds = fileData?.uniqueThreadIds || [];
 
