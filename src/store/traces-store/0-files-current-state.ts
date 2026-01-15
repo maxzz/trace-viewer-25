@@ -16,6 +16,6 @@ export function setCurrentFileState(fileState: FileState | null): void {
 export function setCurrentLineIndex(lineIndex: number): void {
     const state = getDefaultStore().get(currentFileStateAtom);
     if (state) {
-        getDefaultStore().set(state.currentLineIndex, lineIndex);
+        getDefaultStore().set(state.currentLineIdxAtom, lineIndex);
     }
 }

@@ -20,7 +20,7 @@ export function handleKeyboardNavigation(e: KeyboardEvent, scrollRef: React.RefO
     const totalLines = currentFileState?.data.viewLines.length ?? 0;
     if (totalLines === 0) return;
 
-    const currentIndex = currentFileState ? getDefaultStore().get(currentFileState.currentLineIndex) : -1;
+    const currentIndex = currentFileState ? getDefaultStore().get(currentFileState.currentLineIdxAtom) : -1;
     const linesPerPage = Math.floor(containerHeight / ITEM_HEIGHT);
     
     // Calculate current visible range based on scrollTop

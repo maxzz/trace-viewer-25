@@ -1,5 +1,4 @@
 import { proxy } from "valtio";
-import type { PrimitiveAtom } from "jotai";
 import { type TraceLine, type TraceHeader } from "../../trace-viewer-core/9-core-types";
 
 export interface FileData  {
@@ -20,7 +19,7 @@ export interface FileState {
     id: string;
     data: FileData;
     
-    currentLineIndex: PrimitiveAtom<number>;
+    currentLineIdxAtom: PA<number>;             // current line index in the trace file. -1 if no line is selected.
     matchedFilterIds: string[];                 // Cache for FILTERS that match this file (for hiding).
     matchedHighlightIds: string[];              // Cache for HIGHLIGHT rules that match this file (for coloring).
 }

@@ -19,7 +19,7 @@ export function TraceList() {
     // Derived from currentFileState
     const selectedFileId = currentFileState?.id ?? null;
     const fileData = currentFileState?.data;
-    const currentLineIndex = useAtomValue(currentFileState?.currentLineIndex ?? fallbackLineIndexAtom);
+    const currentLineIndex = useAtomValue(currentFileState?.currentLineIdxAtom ?? fallbackLineIndexAtom);
     const viewLines = fileData?.viewLines || [];
     const threadIds = fileData?.uniqueThreadIds || [];
 
