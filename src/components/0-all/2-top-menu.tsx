@@ -4,9 +4,10 @@ import { useSnapshot } from "valtio";
 import { notice } from "../ui/local-ui/7-toaster";
 import { cancelAllTimesBuild } from "@/workers-client";
 import { currentFileStateAtom } from "@/store/traces-store/0-files-current-state";
-import { closeAllFiles } from "@/store/traces-store/0-files-actions";
+import { closeAllFiles, closeFile, closeOtherFiles } from "@/store/traces-store/0-files-actions";
 import { allTimesStore } from "@/store/traces-store/3-all-times-store";
 import { asyncLoadAnyFiles } from "@/store/traces-store/1-1-load-files";
+import { filesCountAtom } from "@/store/6-filtered-files";
 import { Input } from "../ui/shadcn/input";
 import { Button } from "../ui/shadcn/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/shadcn/dialog";
@@ -34,9 +35,7 @@ export function TopMenu() {
                     </MenubarTrigger>
                     <MenubarContent>
                         <MenuItemOpenFile onClick={() => fileInputRef.current?.click()} />
-                        <MenubarItem onClick={() => setOptionsOpen(true)}>
-                            Options...
-                        </MenubarItem>
+                        <MenuItemCloseOptions />
 
                         {/* Exit Menu Item - not implemented yet */}
                         {/* <MenubarSeparator />
@@ -56,6 +55,9 @@ export function TopMenu() {
                         </MenubarItem>
                         <MenubarItem onClick={() => setEditHighlightsOpen(true)}>
                             Highlight Rules...
+                        </MenubarItem>
+                        <MenubarItem onClick={() => setOptionsOpen(true)}>
+                            Options...
                         </MenubarItem>
                         <MenubarSeparator />
                         <MenuItemShowFileHeader />
@@ -116,6 +118,27 @@ function MenuItemOpenFile({ onClick }: { onClick: () => void; }) {
             Open Trace File...
             <MenubarShortcut>Ctrl+O</MenubarShortcut>
         </MenubarItem>
+    );
+}
+
+function MenuItemCloseOptions() {
+    const currentFileState = useAtomValue(currentFileStateAtom);
+    const selectedFileId = currentFileState?.id;
+    const filesCount = useAtomValue(filesCountAtom);
+
+    return (
+        <>
+            <MenubarSeparator />
+            <MenubarItem disabled={!selectedFileId} onClick={() => selectedFileId && closeFile(selectedFileId)}>
+                Close
+            </MenubarItem>
+            <MenubarItem disabled={!selectedFileId || filesCount === 1} onClick={() => selectedFileId && closeOtherFiles(selectedFileId)}>
+                Close Others
+            </MenubarItem>
+            <MenubarItem disabled={filesCount === 0} onClick={() => closeAllFiles()}>
+                Close All
+            </MenubarItem>
+        </>
     );
 }
 
