@@ -1,5 +1,5 @@
 import React from "react";
-import { traceStore } from "../../store/traces-store/0-files-current-state";
+import { filesListStore } from "../../store/traces-store/0-files-current-state";
 import { ITEM_HEIGHT } from "./9-trace-view-constants";
 
 export function handleKeyboardNavigation(e: KeyboardEvent, scrollRef: React.RefObject<HTMLDivElement | null>, containerHeight: number, scrollTop: number) {
@@ -15,10 +15,10 @@ export function handleKeyboardNavigation(e: KeyboardEvent, scrollRef: React.RefO
         return;
     }
 
-    const totalLines = traceStore.currentFileState?.data.viewLines.length ?? 0;
+    const totalLines = filesListStore.currentFileState?.data.viewLines.length ?? 0;
     if (totalLines === 0) return;
 
-    const currentIndex = traceStore.currentFileState?.currentLineIndex ?? -1;
+    const currentIndex = filesListStore.currentFileState?.currentLineIndex ?? -1;
     const linesPerPage = Math.floor(containerHeight / ITEM_HEIGHT);
     
     // Calculate current visible range based on scrollTop
@@ -60,7 +60,7 @@ export function handleKeyboardNavigation(e: KeyboardEvent, scrollRef: React.RefO
     }
 
     e.preventDefault();
-    if (newIndex !== currentIndex && traceStore.currentFileState) {
-        traceStore.currentFileState.currentLineIndex = newIndex;
+    if (newIndex !== currentIndex && filesListStore.currentFileState) {
+        filesListStore.currentFileState.currentLineIndex = newIndex;
     }
 }
