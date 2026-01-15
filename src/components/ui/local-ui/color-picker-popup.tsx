@@ -1,9 +1,12 @@
+import { useState } from "react";
 import { cn } from "@/utils/index";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "../shadcn/dropdown-menu";
 
 export function ColorPickerPopup({ color, onChange, children }: ColorPickerPopupProps) {
+    const [open, setOpen] = useState(false);
+
     return (
-        <DropdownMenu>
+        <DropdownMenu open={open} onOpenChange={setOpen}>
             <DropdownMenuTrigger asChild>
                 {children}
             </DropdownMenuTrigger>
@@ -20,7 +23,10 @@ export function ColorPickerPopup({ color, onChange, children }: ColorPickerPopup
                                 label={c.label}
                                 letter={c.key}
                                 isSelected={color === c.name}
-                                onClick={() => onChange(c.name)}
+                                onClick={() => {
+                                    onChange(c.name);
+                                    setOpen(false);
+                                }}
                             />
                         )
                     )}
