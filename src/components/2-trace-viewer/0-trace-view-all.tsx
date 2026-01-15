@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
-import { useAtomValue, atom } from "jotai";
+import { useAtomValue, atom, type PrimitiveAtom } from "jotai";
 import { useSnapshot } from "valtio";
 import { appSettings } from "../../store/1-ui-settings";
 import { currentFileStateAtom } from "../../store/traces-store/0-files-current-state";
@@ -19,7 +19,7 @@ export function TraceList() {
     // Derived from currentFileState
     const selectedFileId = currentFileState?.id ?? null;
     const fileData = currentFileState?.data;
-    const currentLineIndex = useAtomValue(currentFileState?.currentLineIdxAtom ?? fallbackLineIndexAtom);
+    const currentLineIdxAtom = currentFileState?.currentLineIdxAtom ?? fallbackLineIndexAtom;
     const viewLines = fileData?.viewLines || [];
     const threadIds = fileData?.uniqueThreadIds || [];
 
@@ -63,12 +63,6 @@ export function TraceList() {
         }, [pendingScrollTimestamp, viewLines, containerHeight]
     );
 
-    useEffect( // Scroll to selection
-        () => {
-            scrollToSelection(currentLineIndex, scrollRef, containerHeight);
-        }, [currentLineIndex, containerHeight, selectedFileId]
-    );
-
     const onScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
         setScrollTop(e.currentTarget.scrollTop);
     }, []);
@@ -99,7 +93,7 @@ export function TraceList() {
                                 key={line.lineIndex}
                                 line={line}
                                 globalIndex={startIndex + idx}
-                                currentLineIndex={currentLineIndex}
+                                currentLineIdxAtom={currentLineIdxAtom}
                                 useIconsForEntryExit={useIconsForEntryExit}
                                 showLineNumbers={showLineNumbers}
                                 uniqueThreadIds={threadIds}
@@ -108,6 +102,29 @@ export function TraceList() {
                     )}
                 </div>
             </div>
+            <TraceViewScrollController
+                currentLineIdxAtom={currentLineIdxAtom}
+                scrollRef={scrollRef}
+                containerHeight={containerHeight}
+                selectedFileId={selectedFileId}
+            />
         </div>
     );
+}
+
+function TraceViewScrollController({ currentLineIdxAtom, scrollRef, containerHeight, selectedFileId }: {
+    currentLineIdxAtom: PrimitiveAtom<number>;
+    scrollRef: React.RefObject<HTMLDivElement | null>;
+    containerHeight: number;
+    selectedFileId: string | null;
+}) {
+    const currentLineIndex = useAtomValue(currentLineIdxAtom);
+
+    useEffect( // Scroll to selection
+        () => {
+            scrollToSelection(currentLineIndex, scrollRef, containerHeight);
+        }, [currentLineIndex, containerHeight, selectedFileId]
+    );
+
+    return null;
 }

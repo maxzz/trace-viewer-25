@@ -1,4 +1,7 @@
-import React from "react";
+import React, { useMemo } from "react";
+import { useAtomValue } from "jotai";
+import { selectAtom } from "jotai/utils";
+import type { PrimitiveAtom } from "jotai";
 import { cn } from "@/utils";
 import { type TraceLine, LineCode } from "../../trace-viewer-core/9-core-types";
 import { setCurrentLineIndex } from "../../store/traces-store/0-files-current-state";
@@ -7,18 +10,23 @@ import { columnLineNumberClasses, columnTimeClasses, columnThreadIdClasses, line
 
 export const TraceRowMemo = React.memo(TraceRow);
 
-function TraceRow({ line, globalIndex, currentLineIndex, useIconsForEntryExit, showLineNumbers, uniqueThreadIds }: {
+function TraceRow({ line, globalIndex, currentLineIdxAtom, useIconsForEntryExit, showLineNumbers, uniqueThreadIds }: {
     line: TraceLine,
     globalIndex: number,
-    currentLineIndex: number,
+    currentLineIdxAtom: PrimitiveAtom<number>,
     useIconsForEntryExit: boolean,
     showLineNumbers: boolean,
     uniqueThreadIds: readonly number[];
 }) {
+    const isSelectedAtom = useMemo(
+        () => selectAtom(currentLineIdxAtom, (s) => s === globalIndex),
+        [currentLineIdxAtom, globalIndex]
+    );
+    const isSelected = useAtomValue(isSelectedAtom);
     const showThreadBackground = uniqueThreadIds.length > 0 && uniqueThreadIds[0] !== line.threadId;
 
     return (
-        <div className={getRowClasses(line, globalIndex, currentLineIndex)} style={{ height: ITEM_HEIGHT }} onClick={() => setCurrentLineIndex(globalIndex)}>
+        <div className={getRowClasses(line, isSelected)} style={{ height: ITEM_HEIGHT }} onClick={() => setCurrentLineIndex(globalIndex)}>
             {/* Line Number */}
             {showLineNumbers && (
                 <div className={columnLineNumberClasses}>
@@ -39,7 +47,7 @@ function TraceRow({ line, globalIndex, currentLineIndex, useIconsForEntryExit, s
             </div>
 
             {/* Thread ID */}
-            <div className={cn(columnThreadIdClasses, "w-auto h-full flex px-1", globalIndex === currentLineIndex ? "" : "bg-muted/40")}>
+            <div className={cn(columnThreadIdClasses, "w-auto h-full flex px-1", isSelected ? "" : "bg-muted/40")}>
                 {uniqueThreadIds.map((tid) => {
                     const color = getThreadColor(tid);
                     return (
@@ -133,12 +141,11 @@ const formatContent = (line: TraceLine, useIconsForEntryExit: boolean) => {
     return line.content;
 };
 
-function getRowClasses(line: TraceLine, globalIndex: number, currentLineIndex: number) {
-    const isCurrent = globalIndex === currentLineIndex;
+function getRowClasses(line: TraceLine, isSelected: boolean) {
     return cn(
         lineClasses,
-        isCurrent ? lineCurrentClasses : lineNotCurrentClasses,
-        line.code === LineCode.Error && !isCurrent && lineErrorClasses
+        isSelected ? lineCurrentClasses : lineNotCurrentClasses,
+        line.code === LineCode.Error && !isSelected && lineErrorClasses
     );
 }
 
