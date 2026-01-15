@@ -1,5 +1,5 @@
 import React from "react";
-import { getCurrentFileState } from "../../store/traces-store/0-files-current-state";
+import { getCurrentFileState, setCurrentLineIndex } from "../../store/traces-store/0-files-current-state";
 import { ITEM_HEIGHT } from "./9-trace-view-constants";
 
 export function handleKeyboardNavigation(e: KeyboardEvent, scrollRef: React.RefObject<HTMLDivElement | null>, containerHeight: number, scrollTop: number) {
@@ -61,7 +61,7 @@ export function handleKeyboardNavigation(e: KeyboardEvent, scrollRef: React.RefO
     }
 
     e.preventDefault();
-    if (newIndex !== currentIndex && currentFileState) {
-        currentFileState.currentLineIndex = newIndex;
+    if (newIndex !== currentIndex) {
+        setCurrentLineIndex(newIndex);
     }
 }

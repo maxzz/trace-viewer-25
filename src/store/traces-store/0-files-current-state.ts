@@ -12,3 +12,12 @@ export function getCurrentFileState(): FileState | null {
 export function setCurrentFileState(fileState: FileState | null): void {
     getDefaultStore().set(currentFileStateAtom, fileState);
 }
+
+export function setCurrentLineIndex(lineIndex: number): void {
+    const state = getDefaultStore().get(currentFileStateAtom);
+    if (state) {
+        state.currentLineIndex = lineIndex;
+        // Trigger Jotai reactivity by re-setting the same object
+        getDefaultStore().set(currentFileStateAtom, state);
+    }
+}
