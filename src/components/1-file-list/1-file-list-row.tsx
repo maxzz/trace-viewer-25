@@ -13,11 +13,10 @@ import { allTimesStore } from "@/store/traces-store/3-all-times-store";
 import { dialogFileHeaderOpenAtom } from "@/store/2-ui-atoms";
 import { getFileLoadingAtom } from "@/store/traces-store/1-3-file-loading-atoms";
 
-export function FileListRow({ fileState, selectedFileIdAtom }: { fileState: Snapshot<FileState>; selectedFileIdAtom: Atom<string | null>; }) {
-    // Selection optimization: derive an atom that only updates when THIS item's selection state changes
+export function FileListRow({ fileState, currentFileStateAtom }: { fileState: Snapshot<FileState>; currentFileStateAtom: Atom<FileState | null>; }) {
     const isSelectedAtom = useMemo(
-        () => selectAtom(selectedFileIdAtom, (selectedId) => selectedId === fileState.id),
-        [selectedFileIdAtom, fileState.id]
+        () => selectAtom(currentFileStateAtom, (s) => s?.id === fileState.id),
+        [currentFileStateAtom, fileState.id]
     );
     const isSelected = useAtomValue(isSelectedAtom);
 
