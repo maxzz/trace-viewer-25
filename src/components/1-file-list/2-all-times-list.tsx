@@ -21,7 +21,7 @@ function AllTimesList() {
     let lastDate = "";
 
     return (
-        <div className={classNames("w-max h-full bg-muted/10 select-none flex flex-col", onLeft ? "border-r" : "border-l")}>
+        <div className={classNames("w-max h-full bg-green-100/20 select-none flex flex-col", onLeft ? "border-r" : "border-l")}>
             <ScrollArea className="flex-1">
                 <div className="flex flex-col">
                     {allTimes.map(
@@ -32,7 +32,8 @@ function AllTimesList() {
                             const showDateHeader = currentDate && currentDate !== lastDate;
                             if (currentDate) lastDate = currentDate;
 
-                            return (<Fragment key={idx}>
+                            return (
+                                <Fragment key={idx}>
                                     {showDateHeader && (
                                         <div className={dateHeaderClasses} key={`date-header-${item.timestamp}`}>
                                             {currentDate}
@@ -63,7 +64,8 @@ function AllTimesList() {
 }
 
 const dateHeaderClasses = "mx-2 px-0.5 h-5 text-[10px] text-center font-bold text-foreground dark:text-background bg-green-200 border border-muted-foreground/20 rounded shadow flex items-center justify-center";
-const rowClasses = "h-5 text-[10px] px-2.5 py-0.5 cursor-pointer hover:bg-muted/50 truncate font-mono text-center flex items-center justify-center";
+
+const rowClasses = "h-5 text-[0.6rem] px-2.5 py-0.5 cursor-pointer text-gray-500 hover:bg-muted/50 truncate font-mono text-center flex items-center justify-center";
 
 function splitTimestampIntoDateAndTime(timestamp: string): { displayTime: string; currentDate: string; } {
     // Parse timestamp to separate date and time. Expected format: "MM/DD/YYYY HH:MM:SS.mmm" or "HH:MM:SS.mmm"
