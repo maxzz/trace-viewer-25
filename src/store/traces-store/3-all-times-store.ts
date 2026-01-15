@@ -13,12 +13,13 @@ export interface AllTimesStore {
     allTimesError: string | null;                      // Error message for the all times
     allTimesSelectedTimestamp: string | null;          // Timestamp of the selected item in the all times
     pendingScrollTimestamp: string | null;             // Timestamp to scroll TraceList to when the all times item is selected
+    pendingScrollFileId: string | null;                // File ID to scroll TraceList to
 
     // Actions
     setAllTimes: (items: AllTimesItemOutput[]) => void;
     setAllTimesLoading: (loading: boolean) => void;
     setAllTimesSelectedTimestamp: (timestamp: string | null) => void;
-    setPendingScrollTimestamp: (timestamp: string | null) => void;
+    setPendingScrollTimestamp: (timestamp: string | null, fileId?: string) => void;
     asyncBuildAllTimes: (precision: number) => Promise<void>;
 }
 
@@ -29,6 +30,7 @@ export const allTimesStore = proxy<AllTimesStore>({
     allTimesError: null,
     allTimesSelectedTimestamp: null,
     pendingScrollTimestamp: null,
+    pendingScrollFileId: null,
 
     // Actions
     setAllTimes: (items: AllTimesItemOutput[]) => {
@@ -48,8 +50,9 @@ export const allTimesStore = proxy<AllTimesStore>({
         allTimesStore.allTimesSelectedTimestamp = timestamp;
     },
 
-    setPendingScrollTimestamp: (timestamp: string | null) => {
+    setPendingScrollTimestamp: (timestamp: string | null, fileId?: string) => {
         allTimesStore.pendingScrollTimestamp = timestamp;
+        allTimesStore.pendingScrollFileId = fileId ?? null;
     },
 
     asyncBuildAllTimes: async (precision: number) => {

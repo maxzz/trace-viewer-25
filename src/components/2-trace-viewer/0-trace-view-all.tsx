@@ -13,7 +13,7 @@ const fallbackLineIndexAtom = atom(-1);
 
 export function TraceList() {
     const currentFileState = useAtomValue(currentFileStateAtom);
-    const { pendingScrollTimestamp } = useSnapshot(allTimesStore);
+    const { pendingScrollTimestamp, pendingScrollFileId } = useSnapshot(allTimesStore);
     const { useIconsForEntryExit, showLineNumbers } = useSnapshot(appSettings);
     
     // Derived from currentFileState
@@ -59,8 +59,8 @@ export function TraceList() {
 
     useEffect( // Handle pending timestamp scroll
         () => {
-            handlePendingTimestampScroll(pendingScrollTimestamp, viewLines, scrollRef, containerHeight);
-        }, [pendingScrollTimestamp, viewLines, containerHeight]
+            handlePendingTimestampScroll(pendingScrollTimestamp, pendingScrollFileId, viewLines, scrollRef, containerHeight, selectedFileId);
+        }, [pendingScrollTimestamp, pendingScrollFileId, viewLines, containerHeight, selectedFileId]
     );
 
     const onScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {

@@ -25,8 +25,13 @@ export function scrollToSelection(currentLineIndex: number, scrollRef: React.Ref
     // Since that effect updates currentLineIndex, this effect will trigger naturally.
 }
 
-export function handlePendingTimestampScroll(pendingScrollTimestamp: string | null, viewLines: readonly TraceLine[], scrollRef: React.RefObject<HTMLDivElement | null>, containerHeight: number) {
+export function handlePendingTimestampScroll(pendingScrollTimestamp: string | null, pendingScrollFileId: string | null | undefined, viewLines: readonly TraceLine[], scrollRef: React.RefObject<HTMLDivElement | null>, containerHeight: number, currentFileId: string | null) {
     if (!pendingScrollTimestamp || viewLines.length === 0) return;
+
+    // If pending scroll is for a specific file, ensure we are on that file
+    if (pendingScrollFileId && pendingScrollFileId !== currentFileId) {
+        return;
+    }
 
     // Clean timestamp (remove date if present)
     // Expected formats: "MM/DD/YYYY HH:MM:SS.mmm" or "HH:MM:SS.mmm"
@@ -136,4 +141,5 @@ export function handlePendingTimestampScroll(pendingScrollTimestamp: string | nu
 
     // Clear pending timestamp
     allTimesStore.pendingScrollTimestamp = null;
+    allTimesStore.pendingScrollFileId = null;
 }

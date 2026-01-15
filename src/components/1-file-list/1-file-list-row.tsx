@@ -68,7 +68,7 @@ export function FileListRow({ fileState, isSelected }: { fileState: Snapshot<Fil
                             onClick={(e) => {
                                 e.stopPropagation();
                                 selectFile(fileState.id);
-                                allTimesStore.setPendingScrollTimestamp(allTimesSelectedTimestamp);
+                                allTimesStore.setPendingScrollTimestamp(allTimesSelectedTimestamp, fileState.id);
                             }}
                         >
                             <div className="size-2 rounded-full bg-green-500 ring-1 ring-background" title="Present in selected timeline" />
