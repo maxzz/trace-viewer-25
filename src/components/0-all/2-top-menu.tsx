@@ -35,6 +35,7 @@ export function TopMenu() {
                     </MenubarTrigger>
                     <MenubarContent>
                         <MenuItemOpenFile onClick={() => fileInputRef.current?.click()} />
+                        <MenubarSeparator />
                         <MenuItemCloseOptions />
 
                         {/* Exit Menu Item - not implemented yet */}
@@ -81,36 +82,6 @@ export function TopMenu() {
     </>);
 }
 
-// Legacy files input
-
-function InputWatchFilesLoad({ inputRef }: { inputRef: React.RefObject<HTMLInputElement | null>; }) {
-    // const { isLoading } = useSnapshot(traceStore);
-
-    const handleFileChange = useCallback(
-        async (e: React.ChangeEvent<HTMLInputElement>) => {
-            const files = e.target.files;
-            if (files && files.length > 0) {
-                closeAllFiles(); // Clear previously uploaded files
-
-                const fileList = Array.from(files);
-                asyncLoadAnyFiles(fileList);
-            }
-            e.target.value = ''; // Reset input so same file can be selected again if needed
-        }, []
-    );
-
-    return (
-        <Input
-            type="file"
-            accept=".trc3,.zip"
-            multiple
-            onChange={handleFileChange}
-            className="hidden"
-            ref={inputRef}
-        />
-    );
-}
-
 function MenuItemOpenFile({ onClick }: { onClick: () => void; }) {
     // const { isLoading } = useSnapshot(traceStore);
     return (
@@ -122,24 +93,20 @@ function MenuItemOpenFile({ onClick }: { onClick: () => void; }) {
 }
 
 function MenuItemCloseOptions() {
-    const currentFileState = useAtomValue(currentFileStateAtom);
-    const selectedFileId = currentFileState?.id;
+    const selectedFileId = useAtomValue(currentFileStateAtom)?.id;
     const filesCount = useAtomValue(filesCountAtom);
 
-    return (
-        <>
-            <MenubarSeparator />
-            <MenubarItem disabled={!selectedFileId} onClick={() => selectedFileId && closeFile(selectedFileId)}>
-                Close
-            </MenubarItem>
-            <MenubarItem disabled={!selectedFileId || filesCount === 1} onClick={() => selectedFileId && closeOtherFiles(selectedFileId)}>
-                Close Others
-            </MenubarItem>
-            <MenubarItem disabled={filesCount === 0} onClick={() => closeAllFiles()}>
-                Close All
-            </MenubarItem>
-        </>
-    );
+    return (<>
+        <MenubarItem disabled={!selectedFileId} onClick={() => selectedFileId && closeFile(selectedFileId)}>
+            Close
+        </MenubarItem>
+        <MenubarItem disabled={!selectedFileId || filesCount === 1} onClick={() => selectedFileId && closeOtherFiles(selectedFileId)}>
+            Close Others
+        </MenubarItem>
+        <MenubarItem disabled={filesCount === 0} onClick={() => closeAllFiles()}>
+            Close All
+        </MenubarItem>
+    </>);
 }
 
 function MenuItemShowFileHeader() {
@@ -198,4 +165,34 @@ function TimelineProgress() {
             </DialogContent>
         </Dialog>
     </>);
+}
+
+// Legacy files input
+
+function InputWatchFilesLoad({ inputRef }: { inputRef: React.RefObject<HTMLInputElement | null>; }) {
+    // const { isLoading } = useSnapshot(traceStore);
+
+    const handleFileChange = useCallback(
+        async (e: React.ChangeEvent<HTMLInputElement>) => {
+            const files = e.target.files;
+            if (files && files.length > 0) {
+                closeAllFiles(); // Clear previously uploaded files
+
+                const fileList = Array.from(files);
+                asyncLoadAnyFiles(fileList);
+            }
+            e.target.value = ''; // Reset input so same file can be selected again if needed
+        }, []
+    );
+
+    return (
+        <Input
+            type="file"
+            accept=".trc3,.zip"
+            multiple
+            onChange={handleFileChange}
+            className="hidden"
+            ref={inputRef}
+        />
+    );
 }
