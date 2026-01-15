@@ -1,11 +1,8 @@
 import { filesStore } from "./9-types-files-store";
-import { fileListStore } from "./0-files-list-selection";
 import { traceStore } from "./0-files-current-state";
 import { removeFileLoadingAtom } from "./1-3-file-loading-atoms";
 
 export function selectFile(id: string | null) {
-    fileListStore.selectedFileId = id;
-
     if (id) {
         const fileState = filesStore.states.find(f => f.id === id);
         if (fileState) {
@@ -24,7 +21,7 @@ export function closeFile(id: string) {
         removeFileLoadingAtom(id);
 
         // If closed file was selected, select another one
-        if (fileListStore.selectedFileId === id) {
+        if (traceStore.currentFileState?.id === id) {
             if (filesStore.states.length > 0) {
                 // Select the next file, or the previous one if we closed the last one
                 const nextIndex = Math.min(index, filesStore.states.length - 1);
@@ -52,7 +49,7 @@ export function closeOtherFiles(id: string) {
         }
     });
 
-    if (fileListStore.selectedFileId !== id) {
+    if (traceStore.currentFileState?.id !== id) {
         selectFile(id);
     }
 }

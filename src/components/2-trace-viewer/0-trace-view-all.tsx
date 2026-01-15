@@ -3,7 +3,6 @@ import { useSnapshot } from "valtio";
 import { appSettings } from "../../store/1-ui-settings";
 import { traceStore } from "../../store/traces-store/0-files-current-state";
 import { allTimesStore } from "../../store/traces-store/3-all-times-store";
-import { fileListStore } from "../../store/traces-store/0-files-list-selection";
 import { TraceRowMemo } from "./1-trace-view-row";
 import { ITEM_HEIGHT } from "./9-trace-view-constants";
 import { handlePendingTimestampScroll, scrollToSelection } from "./2-trace-view-scroll";
@@ -12,10 +11,10 @@ import { handleKeyboardNavigation } from "./3-trace-view-keyboard";
 export function TraceList() {
     const { currentFileState } = useSnapshot(traceStore);
     const { pendingScrollTimestamp } = useSnapshot(allTimesStore);
-    const { selectedFileId } = useSnapshot(fileListStore);
     const { useIconsForEntryExit, showLineNumbers } = useSnapshot(appSettings);
     
     // Derived from currentFileState
+    const selectedFileId = currentFileState?.id ?? null;
     const fileData = currentFileState?.data;
     const currentLineIndex = currentFileState?.currentLineIndex ?? -1;
     const viewLines = fileData?.viewLines || [];

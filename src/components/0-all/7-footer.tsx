@@ -1,7 +1,6 @@
 import { useAtomValue } from "jotai";
 import { useSnapshot } from "valtio";
 import { traceStore } from "../../store/traces-store/0-files-current-state";
-import { fileListStore } from "../../store/traces-store/0-files-list-selection";
 import { filesStore } from "../../store/traces-store/9-types-files-store";
 import { appSettings } from "../../store/1-ui-settings";
 import { filesCountAtom } from "../../store/6-filtered-files";
@@ -103,10 +102,8 @@ function FooterLineCount() {
 }
 
 function FooterErrorCount() {
-    const { selectedFileId } = useSnapshot(fileListStore);
-    const { states } = useSnapshot(filesStore);
-    const selectedFile = selectedFileId ? states.find(f => f.id === selectedFileId) : null;
-    const errorCount = selectedFile?.data.errorsInTraceCount || 0;
+    const { currentFileState } = useSnapshot(traceStore);
+    const errorCount = currentFileState?.data.errorsInTraceCount || 0;
 
     if (errorCount === 0) {
         return null;
