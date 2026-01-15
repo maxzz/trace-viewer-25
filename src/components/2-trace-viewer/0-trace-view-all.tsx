@@ -3,9 +3,10 @@ import { useAtomValue, atom, type PrimitiveAtom } from "jotai";
 import { useSnapshot } from "valtio";
 import { appSettings } from "../../store/1-ui-settings";
 import { currentFileStateAtom } from "../../store/traces-store/0-files-current-state";
+import { LineCode } from "../../trace-viewer-core/9-core-types";
+import { ITEM_HEIGHT } from "./9-trace-view-constants";
 import { allTimesStore } from "../../store/traces-store/3-all-times-store";
 import { TraceRowMemo } from "./1-trace-view-row";
-import { ITEM_HEIGHT } from "./9-trace-view-constants";
 import { handlePendingTimestampScroll, scrollToSelection } from "./2-trace-view-scroll";
 import { handleKeyboardNavigation } from "./3-trace-view-keyboard";
 
@@ -78,6 +79,10 @@ export function TraceList() {
     const visibleLines = viewLines.slice(startIndex, endIndex);
     const offsetY = startIndex * ITEM_HEIGHT;
 
+    // determine firstLineLength from the first line that has a timestamp
+    const firstLineWithTimestamp = viewLines.find(l => l.timestamp && l.code !== LineCode.Day);
+    const firstLineLength = firstLineWithTimestamp?.timestamp?.length ?? 0;
+
     return (
         <div
             ref={scrollRef}
@@ -97,11 +102,13 @@ export function TraceList() {
                                 useIconsForEntryExit={useIconsForEntryExit}
                                 showLineNumbers={showLineNumbers}
                                 uniqueThreadIds={threadIds}
+                                firstLineLength={firstLineLength}
                             />
                         )
                     )}
                 </div>
             </div>
+            
             <TraceViewScrollController
                 currentLineIdxAtom={currentLineIdxAtom}
                 scrollRef={scrollRef}

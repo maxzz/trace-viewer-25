@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { useAtomValue } from "jotai";
 import { selectAtom } from "jotai/utils";
 import type { PrimitiveAtom } from "jotai";
-import { cn } from "@/utils";
+import { classNames } from "@/utils";
 import { type TraceLine, LineCode } from "../../trace-viewer-core/9-core-types";
 import { setCurrentLineIndex } from "../../store/traces-store/0-files-current-state";
 import { ITEM_HEIGHT } from "./9-trace-view-constants";
@@ -10,13 +10,14 @@ import { columnLineNumberClasses, columnTimeClasses, columnThreadIdClasses, line
 
 export const TraceRowMemo = React.memo(TraceRow);
 
-function TraceRow({ line, globalIndex, currentLineIdxAtom, useIconsForEntryExit, showLineNumbers, uniqueThreadIds }: {
+function TraceRow({ line, globalIndex, currentLineIdxAtom, useIconsForEntryExit, showLineNumbers, uniqueThreadIds, firstLineLength }: {
     line: TraceLine,
     globalIndex: number,
     currentLineIdxAtom: PrimitiveAtom<number>,
     useIconsForEntryExit: boolean,
     showLineNumbers: boolean,
     uniqueThreadIds: readonly number[];
+    firstLineLength: number;
 }) {
     const isSelectedAtom = useMemo(
         () => selectAtom(currentLineIdxAtom, (s) => s === globalIndex),
@@ -35,7 +36,7 @@ function TraceRow({ line, globalIndex, currentLineIdxAtom, useIconsForEntryExit,
             )}
 
             {/* Time Column */}
-            <div className={cn(columnTimeClasses, line.code === LineCode.Day && "pl-0 justify-center")} title={line.timestamp}>
+            <div className={classNames(columnTimeClasses, firstLineLength === 12 ? "w-18" : "w-20", line.code === LineCode.Day && "pl-0 justify-center")} title={line.timestamp}>
                 {line.code === LineCode.Day
                     ? (
                         <div className="mx-2 px-1 h-5 text-[10px] text-center font-bold text-foreground dark:text-background bg-green-200/50 border border-muted-foreground/20 rounded shadow flex items-center justify-center">
@@ -47,7 +48,7 @@ function TraceRow({ line, globalIndex, currentLineIdxAtom, useIconsForEntryExit,
             </div>
 
             {/* Thread ID */}
-            <div className={cn(columnThreadIdClasses, "w-auto h-full flex px-1", isSelected ? "" : "bg-muted/40")}>
+            <div className={classNames(columnThreadIdClasses, "w-auto h-full flex px-1", isSelected ? "" : "bg-muted/40")}>
                 {uniqueThreadIds.map((tid) => {
                     const color = getThreadColor(tid);
                     return (
@@ -63,7 +64,7 @@ function TraceRow({ line, globalIndex, currentLineIdxAtom, useIconsForEntryExit,
 
             {/* Content with Indent */}
             <div
-                className={cn("flex-1 h-full truncate flex items-center", line.textColor, getLineColor(line))}
+                className={classNames("flex-1 h-full truncate flex items-center", line.textColor, getLineColor(line))}
                 title={line.content}
                 style={{
                     paddingLeft: `${line.indent * 12 + 8}px`, // 8px is space at the beginning of the trace line
@@ -142,7 +143,7 @@ const formatContent = (line: TraceLine, useIconsForEntryExit: boolean) => {
 };
 
 function getRowClasses(line: TraceLine, isSelected: boolean) {
-    return cn(
+    return classNames(
         lineClasses,
         isSelected ? lineCurrentClasses : lineNotCurrentClasses,
         line.code === LineCode.Error && !isSelected && lineErrorClasses
