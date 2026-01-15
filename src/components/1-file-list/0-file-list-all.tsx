@@ -2,7 +2,7 @@ import { type RefObject, useEffect, useRef } from "react";
 import { useAtomValue } from "jotai";
 import { useSnapshot } from "valtio";
 import { appSettings } from "../../store/1-ui-settings";
-import { currentFileStateAtom } from "../../store/traces-store/0-files-current-state";
+import { currentFileStateAtom, selectedFileIdAtom } from "../../store/traces-store/0-files-current-state";
 import { selectFile, closeFile } from "../../store/traces-store/0-files-actions";
 import { filteredFilesAtom, filteredFilesSelectionEffectAtom } from "../../store/6-filtered-files";
 import { ScrollArea } from "../ui/shadcn/scroll-area";
@@ -40,7 +40,7 @@ export function FileList() {
                                 <FileListRow
                                     key={file.id}
                                     fileState={file}
-                                    isSelected={file.id === selectedFileId}
+                                    selectedFileIdAtom={selectedFileIdAtom}
                                 />
                             )
                         )}

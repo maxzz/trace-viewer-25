@@ -1,5 +1,6 @@
-import { memo } from "react";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useMemo } from "react";
+import { type Atom, useAtomValue, useSetAtom } from "jotai";
+import { selectAtom } from "jotai/utils";
 import { useSnapshot, type Snapshot } from "valtio";
 import { cn } from "@/utils/index";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger, } from "../ui/shadcn/context-menu";
@@ -12,7 +13,14 @@ import { allTimesStore } from "@/store/traces-store/3-all-times-store";
 import { dialogFileHeaderOpenAtom } from "@/store/2-ui-atoms";
 import { getFileLoadingAtom } from "@/store/traces-store/1-3-file-loading-atoms";
 
-export const FileListRow = memo(function FileListRow({ fileState, isSelected }: { fileState: Snapshot<FileState>; isSelected: boolean; }) {
+export function FileListRow({ fileState, selectedFileIdAtom }: { fileState: Snapshot<FileState>; selectedFileIdAtom: Atom<string | null>; }) {
+    // Selection optimization: derive an atom that only updates when THIS item's selection state changes
+    const isSelectedAtom = useMemo(
+        () => selectAtom(selectedFileIdAtom, (selectedId) => selectedId === fileState.id),
+        [selectedFileIdAtom, fileState.id]
+    );
+    const isSelected = useAtomValue(isSelectedAtom);
+
     const isLoading = useAtomValue(getFileLoadingAtom(fileState.id));
     const hasError = fileState.data.errorsInTraceCount > 0 || !!fileState.data.errorLoadingFile;
     const { highlightRules, highlightEnabled } = useSnapshot(appSettings);
@@ -98,7 +106,7 @@ export const FileListRow = memo(function FileListRow({ fileState, isSelected }: 
             </ContextMenuContent>
         </ContextMenu>
     );
-});
+}
 
 function getHighlightColor(highlightEnabled: boolean, highlightRules: readonly { id: string; color?: string; }[], matchedHighlightIds: readonly string[] | undefined): string | undefined {
     if (!highlightEnabled || !matchedHighlightIds || matchedHighlightIds.length === 0) {
