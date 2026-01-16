@@ -25,7 +25,7 @@ export function closeFile(id: string) {
             if (filesStore.states.length > 0) {
                 // Select the next file, or the previous one if we closed the last one
                 const nextIndex = Math.min(index, filesStore.states.length - 1);
-                selectFile(filesStore.states[nextIndex].id);
+                selectFile(filesStore.states[nextIndex]?.id ?? null);
             } else {
                 selectFile(null);
             }
@@ -41,13 +41,20 @@ export function closeOtherFiles(id: string) {
         }
     });
 
-    filesStore.states = filesStore.states.filter(f => f.id === id);
+    const keep = filesStore.states.find(f => f.id === id);
+    if (keep) {
+        filesStore.states.splice(0, filesStore.states.length, keep);
+    } else {
+        filesStore.states.splice(0, filesStore.states.length);
+    }
     const keys = Object.keys(filesStore.quickFileData);
-    keys.forEach(key => {
-        if (key !== id) {
-            delete filesStore.quickFileData[key];
+    keys.forEach(
+        (key) => {
+            if (key !== id) {
+                delete filesStore.quickFileData[key];
+            }
         }
-    });
+    );
 
     if (getCurrentFileState()?.id !== id) {
         selectFile(id);
@@ -58,7 +65,7 @@ export function closeAllFiles() {
     // Clean up all loading atoms
     filesStore.states.forEach(f => removeFileLoadingAtom(f.id));
 
-    filesStore.states = [];
+    filesStore.states.splice(0, filesStore.states.length);
     filesStore.quickFileData = {};
     selectFile(null);
 }
