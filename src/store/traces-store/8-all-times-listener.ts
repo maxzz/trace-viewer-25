@@ -15,7 +15,16 @@ export const listenerToBuildAllTimesEffectAtom = atomEffect(
             buildAlltimes();
         });
 
-        const unsubFilesData = subscribe(filesStore.states, () => {
+        const unsubFilesData = subscribe(filesStore.states, (ops) => {
+            const isIgnorable = ops.every((op) => {
+                const path = op[1];
+                return path.length >= 2 && path[1] === 'matchedHighlightIds';
+            });
+
+            if (isIgnorable) {
+                return;
+            }
+
             appSettings.allTimes.needToRebuild = true;
             buildAlltimes();
         });
