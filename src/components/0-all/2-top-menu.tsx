@@ -22,9 +22,11 @@ export function TopMenu() {
     const setEditHighlightsOpen = useSetAtom(dialogEditHighlightsOpenAtom);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const folderInputRef = useRef<HTMLInputElement>(null);
 
     return (<>
         <InputWatchFilesLoad inputRef={fileInputRef} />
+        <InputWatchFolderLoad inputRef={folderInputRef} />
 
         <div className="border-b flex items-center justify-between bg-background">
             <Menubar className="px-2 border-none shadow-none rounded-none bg-transparent">
@@ -35,6 +37,7 @@ export function TopMenu() {
                     </MenubarTrigger>
                     <MenubarContent>
                         <MenuItemOpenFile onClick={() => fileInputRef.current?.click()} />
+                        <MenuItemOpenFolder onClick={() => folderInputRef.current?.click()} />
                         <MenubarSeparator />
                         <MenuItemCloseOptions />
 
@@ -86,8 +89,17 @@ function MenuItemOpenFile({ onClick }: { onClick: () => void; }) {
     // const { isLoading } = useSnapshot(traceStore);
     return (
         <MenubarItem onClick={onClick}>
-            Open Trace File...
+            Open File...
             <MenubarShortcut>Ctrl+O</MenubarShortcut>
+        </MenubarItem>
+    );
+}
+
+function MenuItemOpenFolder({ onClick }: { onClick: () => void; }) {
+    return (
+        <MenubarItem onClick={onClick}>
+            Open Folder...
+            <MenubarShortcut>Ctrl+K Ctrl+O</MenubarShortcut>
         </MenubarItem>
     );
 }
@@ -189,6 +201,35 @@ function InputWatchFilesLoad({ inputRef }: { inputRef: React.RefObject<HTMLInput
         <Input
             type="file"
             accept=".trc3,.zip"
+            multiple
+            onChange={handleFileChange}
+            className="hidden"
+            ref={inputRef}
+        />
+    );
+}
+
+function InputWatchFolderLoad({ inputRef }: { inputRef: React.RefObject<HTMLInputElement | null>; }) {
+    const handleFileChange = useCallback(
+        async (e: React.ChangeEvent<HTMLInputElement>) => {
+            const files = e.target.files;
+            if (files && files.length > 0) {
+                closeAllFiles(); // Clear previously uploaded files
+
+                const fileList = Array.from(files);
+                asyncLoadAnyFiles(fileList);
+            }
+            e.target.value = ''; // Reset input so same file can be selected again if needed
+        }, []
+    );
+
+    return (
+        <Input
+            type="file"
+            // @ts-ignore
+            webkitdirectory=""
+            // @ts-ignore
+            directory=""
             multiple
             onChange={handleFileChange}
             className="hidden"
