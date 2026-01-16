@@ -10,11 +10,13 @@ import { appSettings } from "../1-ui-settings";
 import { buildAlltimes } from "./8-all-times-listener";
 import { setFileLoading } from "./1-3-file-loading-atoms";
 import { recomputeHighlightMatches } from "../5-highlight-rules";
+import { allTimesStore } from "./3-all-times-store";
 
 export const isLoadingFilesAtom = atom(false);
 
 export async function asyncLoadAnyFiles(files: File[], droppedFolderName?: string, filePaths?: string[]) {
     getDefaultStore().set(isLoadingFilesAtom, true);
+    allTimesStore.setAllTimes([]);
     try {
         const zipFiles = files.filter(f => isZipFile(f));
         const trc3Files = files.filter(f => isTrc3File(f));
