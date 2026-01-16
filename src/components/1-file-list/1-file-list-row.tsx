@@ -10,8 +10,9 @@ import { SymbolSpinner } from "../ui/icons/symbols";
 import { type FileState } from "@/store/traces-store/9-types-files-store";
 import { selectFile, closeFile, closeOtherFiles, closeAllFiles } from "@/store/traces-store/0-files-actions";
 import { allTimesStore } from "@/store/traces-store/3-all-times-store";
-import { dialogFileHeaderOpenAtom } from "@/store/2-ui-atoms";
+import { dialogFileHeaderOpenAtom, dialogEditHighlightsOpenAtom } from "@/store/2-ui-atoms";
 import { getFileLoadingAtom } from "@/store/traces-store/1-3-file-loading-atoms";
+import { highlightActions } from "@/store/5-highlight-rules";
 
 export const FileListRow = memo(
     function FileListRow({ fileState, currentFileStateAtom }: { fileState: Snapshot<FileState>; currentFileStateAtom: Atom<FileState | null>; }) {
@@ -26,6 +27,7 @@ export const FileListRow = memo(
         const { highlightRules, highlightEnabled } = useSnapshot(appSettings);
         const { allTimes, allTimesSelectedTimestamp } = useSnapshot(allTimesStore);
         const setFileHeaderOpen = useSetAtom(dialogFileHeaderOpenAtom);
+        const setEditHighlightsOpen = useSetAtom(dialogEditHighlightsOpenAtom);
 
         const highlightColor = getHighlightColor(highlightEnabled, highlightRules, fileState.matchedHighlightIds);
 
@@ -87,6 +89,12 @@ export const FileListRow = memo(
                 </ContextMenuTrigger>
 
                 <ContextMenuContent>
+                    <ContextMenuItem onClick={() => {
+                        highlightActions.addRule(fileState.data.fileName, fileState.data.fileName);
+                        setEditHighlightsOpen(true);
+                    }}>
+                        Add Highlight Rule
+                    </ContextMenuItem>
                     <ContextMenuItem onClick={() => {
                         // traceStore.selectFile(file.id);
                         setFileHeaderOpen(fileState.id);
