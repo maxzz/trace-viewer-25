@@ -24,12 +24,16 @@ export function TopMenu() {
                 e.preventDefault();
                 setOptionsOpen(true);
             }
+            if (e.altKey && (e.key === 'r' || e.key === 'R')) {
+                e.preventDefault();
+                setEditHighlightsOpen(true);
+            }
         };
 
         const controller = new AbortController();   
         window.addEventListener('keydown', handleKeyDown, { signal: controller.signal });
         return () => controller.abort();
-    }, [setOptionsOpen]);
+    }, [setOptionsOpen, setEditHighlightsOpen]);
 
     return (<>
         <InputWatchFilesLoad inputRef={fileInputRef} />
@@ -66,6 +70,7 @@ export function TopMenu() {
                         </MenubarItem>
                         <MenubarItem onClick={() => setEditHighlightsOpen(true)}>
                             Highlight Rules...
+                            <MenubarShortcut>Alt+R</MenubarShortcut>
                         </MenubarItem>
                         <MenubarItem onClick={() => setOptionsOpen(true)}>
                             Options...
