@@ -7,29 +7,23 @@ import { Fragment } from "react/jsx-runtime";
 import { motion, AnimatePresence } from "motion/react";
 
 export function AllTimesPanel() {
-    const { onLeft } = useSnapshot(appSettings.allTimes);
-    return <AllTimesList showOnLeft={onLeft} />;
-}
-
-function AllTimesList({ showOnLeft }: { showOnLeft: boolean }) {
-    const { show } = useSnapshot(appSettings.allTimes);
-    const { allTimes, allTimesIsLoading, allTimesSelectedTimestamp } = useSnapshot(allTimesStore);
-
-    const shouldShow = show && !allTimesIsLoading && allTimes.length > 0;
+    const { allTimes, allTimesSelectedTimestamp } = useSnapshot(allTimesStore);
+    const { show, onLeft } = useSnapshot(appSettings).allTimes;
+    const shouldShow = show && allTimes.length > 0;
 
     let lastDate = "";
 
     return (
-        <AnimatePresence>
+        <AnimatePresence initial={false}>
             {shouldShow && (
                 <motion.div
                     initial={{ width: 0, opacity: 0 }}
                     animate={{ width: "auto", opacity: 1 }}
                     exit={{ width: 0, opacity: 0 }}
                     transition={{ duration: 0.2 }}
-                    className={classNames("h-full bg-green-100/20 dark:bg-green-950/20 select-none flex flex-col overflow-hidden", showOnLeft ? "border-r" : "border-l")}
+                    className={classNames("h-full bg-green-100/20 dark:bg-green-950/20 select-none flex flex-col overflow-hidden", onLeft ? "border-r" : "border-l")}
                 >
-                    <div className="w-48 h-full flex flex-col">
+                    <div className="w-max h-full flex flex-col">
                         <ScrollArea className="flex-1">
                             <div className="flex flex-col">
                                 {allTimes.map(
@@ -60,11 +54,11 @@ function AllTimesList({ showOnLeft }: { showOnLeft: boolean }) {
                                     }
                                 )}
 
-                                {allTimes.length === 0 && (
+                                {/* {allTimes.length === 0 && (
                                     <div className="text-[10px] text-muted-foreground p-2 text-center">
                                         No data
                                     </div>
-                                )}
+                                )} */}
                             </div>
                         </ScrollArea>
                     </div>

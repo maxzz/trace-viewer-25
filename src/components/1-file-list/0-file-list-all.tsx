@@ -10,7 +10,7 @@ import { FileListRow } from "./1-file-list-row";
 import { AllTimesPanel } from "./2-all-times-list";
 
 export function FileList() {
-    const { allTimes } = useSnapshot(appSettings);
+    const { onLeft } = useSnapshot(appSettings).allTimes;
     const filteredFiles = useAtomValue(filteredFilesAtom);
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -28,7 +28,7 @@ export function FileList() {
 
     return (
         <div ref={containerRef} className="h-full flex flex-row bg-muted/10 select-none outline-none focus-visible:ring-1 focus-visible:ring-ring" tabIndex={0}>
-            {allTimes.onLeft && <AllTimesPanel />}
+            {onLeft && <AllTimesPanel />}
 
             <div className="flex-1 flex flex-col h-full min-w-0">
                 <ScrollArea className="flex-1" fixedWidth>
@@ -46,7 +46,7 @@ export function FileList() {
                 </ScrollArea>
             </div>
 
-            {!allTimes.onLeft && <AllTimesPanel />}
+            {!onLeft && <AllTimesPanel />}
         </div>
     );
 }
