@@ -1,18 +1,18 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useSetAtom, useAtom, useAtomValue } from "jotai";
 import { useSnapshot } from "valtio";
 import { notice } from "../ui/local-ui/7-toaster";
-import { cancelAllTimesBuild } from "@/workers-client";
-import { currentFileStateAtom } from "@/store/traces-store/0-files-current-state";
-import { closeAllFiles, closeFile, closeOtherFiles } from "@/store/traces-store/0-files-actions";
-import { allTimesStore } from "@/store/traces-store/3-all-times-store";
-import { asyncLoadAnyFiles } from "@/store/traces-store/1-1-load-files";
-import { filesCountAtom } from "@/store/6-filtered-files";
 import { Input } from "../ui/shadcn/input";
 import { Button } from "../ui/shadcn/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/shadcn/dialog";
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarShortcut, MenubarTrigger } from "../ui/shadcn/menubar";
 import { Loader2 } from "lucide-react";
+import { cancelAllTimesBuild } from "@/workers-client";
+import { currentFileStateAtom } from "@/store/traces-store/0-files-current-state";
+import { closeAllFiles, closeFile, closeOtherFiles } from "@/store/traces-store/0-files-actions";
+import { allTimesStore } from "@/store/traces-store/3-all-times-store";
+import { asyncLoadAnyFiles, isLoadingFilesAtom } from "@/store/traces-store/1-1-load-files";
+import { filesCountAtom } from "@/store/6-filtered-files";
 import { dialogFileHeaderOpenAtom, dialogAboutOpenAtom, dialogOptionsOpenAtom, dialogEditFiltersOpenAtom, dialogEditHighlightsOpenAtom, dialogTimelineCancelOpenAtom } from "@/store/2-ui-atoms";
 
 export function TopMenu() {
@@ -23,6 +23,19 @@ export function TopMenu() {
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const folderInputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === ',') {
+                e.preventDefault();
+                setOptionsOpen(true);
+            }
+        };
+
+        const controller = new AbortController();   
+        window.addEventListener('keydown', handleKeyDown, { signal: controller.signal });
+        return () => controller.abort();
+    }, [setOptionsOpen]);
 
     return (<>
         <InputWatchFilesLoad inputRef={fileInputRef} />
@@ -62,6 +75,7 @@ export function TopMenu() {
                         </MenubarItem>
                         <MenubarItem onClick={() => setOptionsOpen(true)}>
                             Options...
+                            <MenubarShortcut>Ctrl+,</MenubarShortcut>
                         </MenubarItem>
                         <MenubarSeparator />
                         <MenuItemShowFileHeader />
@@ -74,7 +88,7 @@ export function TopMenu() {
                     </MenubarTrigger>
                     <MenubarContent>
                         <MenubarItem onClick={() => setAboutOpen(true)}>
-                            About ViewTrace...
+                            About
                         </MenubarItem>
                     </MenubarContent>
                 </MenubarMenu>
@@ -135,8 +149,19 @@ function MenuItemShowFileHeader() {
 
 function TimelineProgress() {
     const [open, setOpen] = useAtom(dialogTimelineCancelOpenAtom);
+    const isLoadingFiles = useAtomValue(isLoadingFilesAtom);
 
     const { allTimesIsLoading } = useSnapshot(allTimesStore);
+    
+    if (isLoadingFiles) {
+        return (
+            <Button className="mr-2 h-8 px-2 text-xs" variant="ghost" size="sm" disabled>
+                <Loader2 className="h-3 w-3 animate-spin mr-2" />
+                Loading Files...
+            </Button>
+        );
+    }
+
     if (!allTimesIsLoading) {
         return null;
     }

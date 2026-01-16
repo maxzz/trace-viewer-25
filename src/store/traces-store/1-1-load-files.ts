@@ -1,4 +1,4 @@
-import { atom } from "jotai";
+import { atom, getDefaultStore } from "jotai";
 import { ref } from "valtio";
 import { extractTracesFromZipInWorker, isTrc3File, isZipFile } from "@/workers-client";
 import { setAppTitle } from "@/store/3-ui-app-title";
@@ -11,26 +11,33 @@ import { buildAlltimes } from "./8-all-times-listener";
 import { setFileLoading } from "./1-3-file-loading-atoms";
 import { recomputeHighlightMatches } from "../5-highlight-rules";
 
+export const isLoadingFilesAtom = atom(false);
+
 export async function asyncLoadAnyFiles(files: File[], droppedFolderName?: string, filePaths?: string[]) {
-    const zipFiles = files.filter(f => isZipFile(f));
-    const trc3Files = files.filter(f => isTrc3File(f));
+    getDefaultStore().set(isLoadingFilesAtom, true);
+    try {
+        const zipFiles = files.filter(f => isZipFile(f));
+        const trc3Files = files.filter(f => isTrc3File(f));
 
-    // Extract and load files from ZIPs
-    for (const file of zipFiles) {
-        const result = await extractTracesFromZipInWorker(file);
+        // Extract and load files from ZIPs
+        for (const file of zipFiles) {
+            const result = await extractTracesFromZipInWorker(file);
 
-        if (result.files.length > 0) {
-            await loadFilesToStore(result.files);
-            setAppTitle(result.files, result.zipFileName);
+            if (result.files.length > 0) {
+                await loadFilesToStore(result.files);
+                setAppTitle(result.files, result.zipFileName);
+            }
         }
+
+        // Load .TRC3 files directly
+        await loadFilesToStore(trc3Files);
+        setAppTitle(files, droppedFolderName, filePaths);
+
+        appSettings.allTimes.needToRebuild = true;
+        buildAlltimes();
+    } finally {
+        getDefaultStore().set(isLoadingFilesAtom, false);
     }
-
-    // Load .TRC3 files directly
-    await loadFilesToStore(trc3Files);
-    setAppTitle(files, droppedFolderName, filePaths);
-
-    appSettings.allTimes.needToRebuild = true;
-    buildAlltimes();
 }
 
 async function loadFilesToStore(files: File[]) {
