@@ -31,7 +31,7 @@ export const listenerToBuildAllTimesEffectAtom = atomEffect(
 
 export function buildAlltimes() {
     const { show, precision, needToRebuild } = appSettings.allTimes;
-    const { quickFileData } = filesStore;
+    // const { quickFileData } = filesStore; // Use states directly
 
     if (!show) {
         // Don't clear if hidden, just don't build?
@@ -60,14 +60,15 @@ export function buildAlltimes() {
         return;
     }
 
-    const files = Object.values(quickFileData);
+    // Use states directly to determine if we have files, as it is the primary source of truth
+    const hasFiles = filesStore.states.length > 0;
+    const someFileIsLoading = filesStore.states.some(f => f.data.isLoading);
 
-    const someFileIsLoading = files.some(f => f.isLoading);
     if (someFileIsLoading) {
         return;
     }
 
-    if (files.length === 0) {
+    if (!hasFiles) {
         allTimesStore.setAllTimes([]);
         appSettings.allTimes.needToRebuild = false; // "Built" empty
         return;
