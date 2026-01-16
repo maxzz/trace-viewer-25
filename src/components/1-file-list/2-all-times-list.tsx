@@ -4,62 +4,73 @@ import { classNames } from "@/utils/classnames";
 import { allTimesStore } from "@/store/traces-store/3-all-times-store";
 import { ScrollArea } from "../ui/shadcn/scroll-area";
 import { Fragment } from "react/jsx-runtime";
+import { motion, AnimatePresence } from "motion/react";
 
 export function AllTimesPanel() {
-    const { allTimes } = useSnapshot(appSettings);
-    if (!allTimes.show) {
-        return null;
-    }
-
-    return <AllTimesList />;
+    const { onLeft } = useSnapshot(appSettings.allTimes);
+    return <AllTimesList showOnLeft={onLeft} />;
 }
 
-function AllTimesList() {
-    const { onLeft } = useSnapshot(appSettings.allTimes);
-    const { allTimes, allTimesSelectedTimestamp } = useSnapshot(allTimesStore);
+function AllTimesList({ showOnLeft }: { showOnLeft: boolean }) {
+    const { show } = useSnapshot(appSettings.allTimes);
+    const { allTimes, allTimesIsLoading, allTimesSelectedTimestamp } = useSnapshot(allTimesStore);
+
+    const shouldShow = show && !allTimesIsLoading && allTimes.length > 0;
 
     let lastDate = "";
 
     return (
-        <div className={classNames("w-max h-full bg-green-100/20 dark:bg-green-950/20 select-none flex flex-col", onLeft ? "border-r" : "border-l")}>
-            <ScrollArea className="flex-1">
-                <div className="flex flex-col">
-                    {allTimes.map(
-                        (item, idx) => {
-                            const isSelected = item.timestamp === allTimesSelectedTimestamp;
-                            const { displayTime, currentDate } = splitTimestampIntoDateAndTime(item.timestamp);
+        <AnimatePresence>
+            {shouldShow && (
+                <motion.div
+                    initial={{ width: 0, opacity: 0 }}
+                    animate={{ width: "auto", opacity: 1 }}
+                    exit={{ width: 0, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className={classNames("h-full bg-green-100/20 dark:bg-green-950/20 select-none flex flex-col overflow-hidden", showOnLeft ? "border-r" : "border-l")}
+                >
+                    <div className="w-48 h-full flex flex-col">
+                        <ScrollArea className="flex-1">
+                            <div className="flex flex-col">
+                                {allTimes.map(
+                                    (item, idx) => {
+                                        const isSelected = item.timestamp === allTimesSelectedTimestamp;
+                                        const { displayTime, currentDate } = splitTimestampIntoDateAndTime(item.timestamp);
 
-                            const showDateHeader = currentDate && currentDate !== lastDate;
-                            if (currentDate) lastDate = currentDate;
+                                        const showDateHeader = currentDate && currentDate !== lastDate;
+                                        if (currentDate) lastDate = currentDate;
 
-                            return (
-                                <Fragment key={idx}>
-                                    {showDateHeader && (
-                                        <div className={dateHeaderClasses} key={`date-header-${item.timestamp}`}>
-                                            {currentDate}
-                                        </div>
-                                    )}
-                                    <div
-                                        className={classNames(rowClasses, isSelected && "bg-primary text-primary-foreground hover:bg-primary/90")}
-                                        onClick={() => allTimesStore.setAllTimesSelectedTimestamp(isSelected ? null : item.timestamp)}
-                                        title={item.timestamp}
-                                        key={item.timestamp}
-                                    >
-                                        {displayTime}
+                                        return (
+                                            <Fragment key={idx}>
+                                                {showDateHeader && (
+                                                    <div className={dateHeaderClasses} key={`date-header-${item.timestamp}`}>
+                                                        {currentDate}
+                                                    </div>
+                                                )}
+                                                <div
+                                                    className={classNames(rowClasses, isSelected && "bg-primary text-primary-foreground hover:bg-primary/90")}
+                                                    onClick={() => allTimesStore.setAllTimesSelectedTimestamp(isSelected ? null : item.timestamp)}
+                                                    title={item.timestamp}
+                                                    key={item.timestamp}
+                                                >
+                                                    {displayTime}
+                                                </div>
+                                            </Fragment>
+                                        );
+                                    }
+                                )}
+
+                                {allTimes.length === 0 && (
+                                    <div className="text-[10px] text-muted-foreground p-2 text-center">
+                                        No data
                                     </div>
-                                </Fragment>
-                            );
-                        }
-                    )}
-
-                    {allTimes.length === 0 && (
-                        <div className="text-[10px] text-muted-foreground p-2 text-center">
-                            No data
-                        </div>
-                    )}
-                </div>
-            </ScrollArea>
-        </div>
+                                )}
+                            </div>
+                        </ScrollArea>
+                    </div>
+                </motion.div>
+            )}
+        </AnimatePresence>
     );
 }
 
