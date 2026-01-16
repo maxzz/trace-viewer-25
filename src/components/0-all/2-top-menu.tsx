@@ -1,19 +1,13 @@
 import { useCallback, useEffect, useRef } from "react";
-import { useSetAtom, useAtom, useAtomValue } from "jotai";
-import { useSnapshot } from "valtio";
-import { notice } from "../ui/local-ui/7-toaster";
+import { useSetAtom, useAtomValue } from "jotai";
 import { Input } from "../ui/shadcn/input";
-import { Button } from "../ui/shadcn/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/shadcn/dialog";
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarShortcut, MenubarTrigger } from "../ui/shadcn/menubar";
-import { Loader2 } from "lucide-react";
-import { cancelAllTimesBuild } from "@/workers-client";
 import { currentFileStateAtom } from "@/store/traces-store/0-files-current-state";
 import { closeAllFiles, closeFile, closeOtherFiles } from "@/store/traces-store/0-files-actions";
-import { allTimesStore } from "@/store/traces-store/3-all-times-store";
-import { asyncLoadAnyFiles, isLoadingFilesAtom } from "@/store/traces-store/1-1-load-files";
+import { asyncLoadAnyFiles } from "@/store/traces-store/1-1-load-files";
 import { filesCountAtom } from "@/store/6-filtered-files";
-import { dialogFileHeaderOpenAtom, dialogAboutOpenAtom, dialogOptionsOpenAtom, dialogEditFiltersOpenAtom, dialogEditHighlightsOpenAtom, dialogTimelineCancelOpenAtom } from "@/store/2-ui-atoms";
+import { dialogFileHeaderOpenAtom, dialogAboutOpenAtom, dialogOptionsOpenAtom, dialogEditFiltersOpenAtom, dialogEditHighlightsOpenAtom } from "@/store/2-ui-atoms";
+import { TimelineProgress } from "./4-loading-progress";
 
 export function TopMenu() {
     const setOptionsOpen = useSetAtom(dialogOptionsOpenAtom);
@@ -94,6 +88,7 @@ export function TopMenu() {
                 </MenubarMenu>
 
             </Menubar>
+            
             <TimelineProgress />
         </div>
     </>);
@@ -145,63 +140,6 @@ function MenuItemShowFileHeader() {
             Show File Header ...
         </MenubarItem>
     );
-}
-
-function TimelineProgress() {
-    const [open, setOpen] = useAtom(dialogTimelineCancelOpenAtom);
-    const isLoadingFiles = useAtomValue(isLoadingFilesAtom);
-
-    const { allTimesIsLoading } = useSnapshot(allTimesStore);
-    
-    if (isLoadingFiles) {
-        return (
-            <Button className="mr-2 h-8 px-2 text-xs" variant="ghost" size="sm" disabled>
-                <Loader2 className="h-3 w-3 animate-spin mr-2" />
-                Loading Files...
-            </Button>
-        );
-    }
-
-    if (!allTimesIsLoading) {
-        return null;
-    }
-
-    return (<>
-        <Button className="mr-2 h-8 px-2 text-xs" variant="ghost" size="sm" onClick={() => setOpen(true)} title="Building timeline... Click to cancel.">
-            <Loader2 className="h-3 w-3 animate-spin mr-2" />
-            Building Timeline...
-        </Button>
-
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>
-                        Cancel Timeline Build?
-                    </DialogTitle>
-                    <DialogDescription>
-                        Are you sure you want to stop the timeline generation? The current progress will be lost.
-                    </DialogDescription>
-                </DialogHeader>
-
-                <DialogFooter>
-                    <Button variant="secondary" onClick={() => setOpen(false)}>Continue</Button>
-                    <Button variant="destructive"
-                        onClick={
-                            () => {
-                                cancelAllTimesBuild();
-                                allTimesStore.setAllTimesLoading(false);
-                                allTimesStore.setAllTimes([]);
-                                notice.info("Timeline build cancelled");
-                                setOpen(false);
-                            }
-                        }
-                    >
-                        Stop Build
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-    </>);
 }
 
 // Legacy files input
