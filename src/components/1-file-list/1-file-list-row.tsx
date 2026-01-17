@@ -38,24 +38,11 @@ export const FileListRow = memo(
         return (
             <ContextMenu>
                 <ContextMenuTrigger asChild>
-                    <div
-                        className={cn(
-                            getRowClasses(isSelected, hasError),
-                            isSelected && highlightColor && "group-focus/filelist:bg-transparent group-focus/filelist:outline-none"
-                        )}
-                        onClick={() => selectFile(fileState.id)}
-                    >
+                    <div className={cn(getRowClasses(isSelected, hasError, highlightColor))} onClick={() => selectFile(fileState.id)}>
+
                         {/* Highlight Background Layer */}
-                        {highlightColor && (
-                            <div
-                                className={cn(
-                                    "absolute inset-0 opacity-20 pointer-events-none",
-                                    isSelected
-                                        ? "hidden group-focus/filelist:block border-2 border-blue-500"
-                                        : ""
-                                )}
-                                style={{ backgroundColor: `var(--color-${highlightColor})` }}
-                            />
+                        {!isSelected && highlightColor && (
+                            <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundColor: `var(--color-${highlightColor})` }} />
                         )}
 
                         {/* File icon */}
@@ -131,26 +118,14 @@ export const FileListRow = memo(
     }
 );
 
-function getHighlightColor(highlightEnabled: boolean, highlightRules: readonly { id: string; color?: string; enabled?: boolean }[], matchedHighlightIds: readonly string[] | undefined): string | undefined {
-    if (!highlightEnabled || !matchedHighlightIds || matchedHighlightIds.length === 0) {
-        return undefined;
-    }
-
-    // Find the first rule in appSettings that matches one of the file's matched IDs.
-    // We iterate through highlightRules to preserve order priority
-    const rule = highlightRules.find(r => matchedHighlightIds.includes(r.id));
-    return (rule && rule.enabled !== false) ? rule.color : undefined;
-}
-
-function getRowClasses(isSelected: boolean, hasError: boolean) {
+function getRowClasses(isSelected: boolean, hasError: boolean, highlightColor: string | undefined) {
     return cn(
-        "relative flex items-center gap-2 px-3 py-0.5 text-xs cursor-pointer transition-colors border-l-2 select-none group",
+        "relative flex items-center gap-2 px-3 py-0.5 text-xs cursor-pointer 1transition-colors border-l-2 select-none group",
         isSelected
             ? "bg-muted-foreground/20 border-primary outline -outline-offset-1 outline-primary"
             : "text-muted-foreground hover:text-foreground hover:bg-muted-foreground/10 border-transparent",
-        hasError
-            ? "text-red-600 dark:text-red-400"
-            : ""
+        hasError && "text-red-600 dark:text-red-400",
+        isSelected && highlightColor && "group-focus/filelist:bg-blue-100 dark:group-focus/filelist:bg-blue-900 dark:group-focus/filelist:outline-blue-500"
     );
 }
 
@@ -167,3 +142,14 @@ border-red-500/50 \
 dark:border-red-600 \
 border-[1.5px] \
 rounded-full";
+
+function getHighlightColor(highlightEnabled: boolean, highlightRules: readonly { id: string; color?: string; enabled?: boolean; }[], matchedHighlightIds: readonly string[] | undefined): string | undefined {
+    if (!highlightEnabled || !matchedHighlightIds || matchedHighlightIds.length === 0) {
+        return undefined;
+    }
+
+    // Find the first rule in appSettings that matches one of the file's matched IDs.
+    // We iterate through highlightRules to preserve order priority
+    const rule = highlightRules.find(r => matchedHighlightIds.includes(r.id));
+    return (rule && rule.enabled !== false) ? rule.color : undefined;
+}
