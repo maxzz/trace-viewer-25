@@ -46,7 +46,7 @@ export const FileListRow = memo(
                         )}
 
                         {/* File icon */}
-                        <div className="relative shrink-0 z-10">
+                        <div className="relative shrink-0 1pl-1 1border-l-4 z-10">
                             <FileText className={cn("size-4", isSelected ? "text-primary" : "opacity-70", hasError && "text-red-600 dark:text-red-400")} />
 
                             {fileState.data.errorsInTraceCount === 0 && !!fileState.data.errorLoadingFile && (
@@ -120,7 +120,7 @@ export const FileListRow = memo(
 
 function getRowClasses(isSelected: boolean, hasError: boolean) {
     return cn(
-        "group relative px-3 py-0.5 text-xs border-l-2 cursor-pointer select-none flex items-center gap-2",
+        "group relative 1pl-px 1pr-3 px-3 py-0.5 border-l-2 text-xs cursor-pointer select-none flex items-center gap-2",
         isSelected
             ? localClasses.rowSelected
             : "text-muted-foreground hover:text-foreground hover:bg-muted-foreground/10 border-transparent",
@@ -143,12 +143,9 @@ absolute -top-1 -right-1 \
 px-1 py-px \
 text-[0.5rem] \
 font-mono \
-text-red-700 \
-bg-red-100 \
-dark:text-black \
-dark:bg-red-400 \
-border-red-500/50 \
-dark:border-red-600 \
+text-red-700 dark:text-black \
+bg-red-100 dark:bg-red-400 \
+border-red-500/50 dark:border-red-600 \
 border-[1.5px] \
 rounded-full",
 };
