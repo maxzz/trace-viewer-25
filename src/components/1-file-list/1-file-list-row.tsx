@@ -46,7 +46,7 @@ export const FileListRow = memo(
                         )}
 
                         {/* File icon */}
-                        <div className={classNames("relative shrink-0 h-full pl-1 flex items-center z-10", isSelected ? localClasses.iconsSelected : "pl-2")}>
+                        <div className={classNames("relative shrink-0 z-10", isSelected ? localClasses.iconsSelected : "pl-2")}>
                             <FileText className={cn("size-4", isSelected ? "text-primary" : "opacity-70", hasError && "text-red-600 dark:text-red-400")} />
 
                             {fileState.data.errorsInTraceCount === 0 && !!fileState.data.errorLoadingFile && (
@@ -120,7 +120,7 @@ export const FileListRow = memo(
 
 function getRowClasses(isSelected: boolean, hasError: boolean) {
     return cn(
-        "group relative pl-px pr-3 1py-0.5 h-5 1border-l-2 text-xs cursor-pointer select-none flex items-center gap-2",
+        "group relative pl-px pr-3 py-0.5 1border-l-2 text-xs cursor-pointer select-none flex items-center gap-2",
         isSelected
             ? localClasses.rowSelected
             : "text-muted-foreground hover:text-foreground hover:bg-muted-foreground/10 border-transparent",
@@ -138,8 +138,8 @@ outline -outline-offset-1 outline-primary \
 group-focus/filelist:bg-blue-100 \
 dark:group-focus/filelist:bg-blue-900 \
 dark:group-focus/filelist:outline-blue-500",
-    iconsSelected: "\
-border-l-4 border-primary",
+    iconsSelected:     "\
+    pl-1 border-l-4 border-red-500",
     errorCountBadge: "\
 absolute -top-1 -right-1 \
 px-1 py-px \
