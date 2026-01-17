@@ -85,7 +85,7 @@ export function TraceList() {
     return (
         <div
             ref={scrollRef}
-            className="size-full overflow-auto relative outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-ring"
+            className="group/tracelist relative size-full outline-none overflow-auto"
             onScroll={onScroll}
             tabIndex={0}
         >

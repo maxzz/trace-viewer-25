@@ -50,19 +50,24 @@ flex items-center \
 ";
 
 export const lineCurrentClasses = "\
-bg-blue-100 dark:bg-blue-900 \
-border-blue-500 \
-outline-1 outline-blue-300 dark:outline-blue-700 \
--outline-offset-1 \
+bg-muted-foreground/20 \
+group-focus/tracelist:bg-blue-100 group-focus/tracelist:dark:bg-blue-900 \
+group-focus-visible/tracelist:bg-blue-100 group-focus-visible/tracelist:dark:bg-blue-900 \
+\
+border-foreground dark:border-foreground/50 \
+group-focus/tracelist:border-blue-500 group-focus/tracelist:dark:border-blue-500 \
+\
+outline-1 -outline-offset-1 \
+outline-primary dark:outline-primary/50 \
+\
+group-focus/tracelist:outline-blue-500 group-focus/tracelist:dark:outline-blue-500 \
+group-focus-visible/tracelist:outline-blue-500 group-focus-visible/tracelist:dark:outline-blue-500 \
 ";
 
 export const lineNotCurrentClasses = "\
 hover:bg-gray-100 dark:hover:bg-gray-800 \
-border-transparent \
-";
+border-transparent";
 
-export const lineErrorClasses = "\
-bg-red-50 dark:bg-red-900/20 \
-";
+export const lineErrorClasses = "bg-red-50 dark:bg-red-900/20";
 
 //
