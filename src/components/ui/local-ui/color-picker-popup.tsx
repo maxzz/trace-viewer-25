@@ -61,8 +61,13 @@ function ColorSwatch({ colorName, bgClass, textClass, label, letter, isSelected,
             {colorName ? (
                 <div className={cn("size-full opacity-20 rounded-md", bgClass)} />
             ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" className="size-full rounded-md fill-red-500 stroke-red-500 stroke-1">
-                    <path d="M0 0h4v4H0zm4 4h4v4H4z" />
+                <svg xmlns="http://www.w3.org/2000/svg" className="size-full rounded-md opacity-20">
+                    <defs>
+                        <pattern id="checkerboard" width="8" height="8" patternUnits="userSpaceOnUse">
+                            <path d="M0 0h4v4H0zm4 4h4v4H4z" className="fill-red-500" />
+                        </pattern>
+                    </defs>
+                    <rect width="100%" height="100%" fill="url(#checkerboard)" />
                 </svg>
             )}
 
