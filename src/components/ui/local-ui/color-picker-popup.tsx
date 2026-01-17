@@ -58,10 +58,13 @@ function ColorSwatch({ colorName, bgClass, textClass, label, letter, isSelected,
             title={label}
         >
             {/* Background */}
-            <div
-                className={cn("size-full opacity-20 rounded-md", !colorName && "fill-red-500! stroke-red-500 stroke-1 opacity-100", colorName && bgClass)}
-                style={!colorName ? { backgroundImage: checkerboardSvg, fill: "red", stroke: "red" } : undefined}
-            />
+            {colorName ? (
+                <div className={cn("size-full opacity-20 rounded-md", bgClass)} />
+            ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" className="size-full rounded-md fill-red-500 stroke-red-500 stroke-1">
+                    <path d="M0 0h4v4H0zm4 4h4v4H4z" />
+                </svg>
+            )}
 
             {/* Letter overlay */}
             <span className={cn(
@@ -112,7 +115,3 @@ const COLOR_GRID_Classes: ReadonlyArray<HighlightRule> = [
     // Row 4
     { name: "pink-500",    /**/ label: "Pink", key: "d", bgClass: "bg-pink-500", textClass: "text-white" },
 ];
-
-// Checkerboard for transparent
-//const checkerboardSvg = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"><path d="M0 0h4v4H0zm4 4h4v4H4z" fill="%23ccc" fill-opacity=".4"/></svg>')`;
-const checkerboardSvg = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"><path d="M0 0h4v4H0zm4 4h4v4H4z"/></svg>')`;
