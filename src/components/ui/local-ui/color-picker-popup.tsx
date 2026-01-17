@@ -89,7 +89,7 @@ type HighlightRule = {
 // We also store the full class name for the background to ensure Tailwind generates it.
 const COLOR_GRID_Classes: ReadonlyArray<HighlightRule> = [
     // Row 1
-    { name: "none",        /**/ label: "None",     /**/ key: "q", bgClass: "bg-transparent", /**/ textClass: "text-foreground" },
+    { name: undefined,     /**/ label: "None",     /**/ key: "q", bgClass: "bg-transparent", /**/ textClass: "text-foreground" },
     { name: "red-500",     /**/ label: "Red",    /**/ key: "w", bgClass: "bg-red-500",     /**/ textClass: "text-white" },
     { name: "orange-500",  /**/ label: "Orange", /**/ key: "e", bgClass: "bg-orange-500",  /**/ textClass: "text-black" },
     { name: "amber-500",   /**/ label: "Amber",    /**/ key: "r", bgClass: "bg-amber-500",   /**/ textClass: "text-black" },
@@ -112,4 +112,4 @@ const COLOR_GRID_Classes: ReadonlyArray<HighlightRule> = [
 
 // Checkerboard for transparent
 //const checkerboardSvg = "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxwYXRoIGQ9Ik0wIDBoNHY0SDB6bTQgNGg0djRINHoiIGZpbGw9IiNjY2MiIGZpbGwtb3BhY2l0eT0iLjQiLz48L3N2Zz4=')";
-const checkerboardSvg = "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\"><path d=\"M0 0h4v4H0zm4 4h4v4H4z\" fill=\"%23ccc\" fill-opacity=\".4\"/></svg>')";
+const checkerboardSvg = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"><path d="M0 0h4v4H0zm4 4h4v4H4z" fill="%23f00" fill-opacity=".4"/></svg>')`;
