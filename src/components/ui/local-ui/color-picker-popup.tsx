@@ -50,7 +50,7 @@ function ColorSwatch({ colorName, bgClass, textClass, label, letter, isSelected,
     return (
         <button
             className={cn(
-                "relative size-8 hover:scale-110 focus:outline-none focus:ring focus:ring-ring focus:ring-offset-2 rounded-md transition-all flex items-center justify-center",
+                "relative size-8 border border-foreground/30 hover:scale-110 focus:outline-none focus:ring focus:ring-ring focus:ring-offset-2 rounded-md transition-all flex items-center justify-center",
                 isSelected && "ring ring-primary ring-offset-2",
                 !colorName && "bg-muted border border-border", // Transparent/None styling
             )}
@@ -58,7 +58,7 @@ function ColorSwatch({ colorName, bgClass, textClass, label, letter, isSelected,
             title={label}
         >
             {/* Background */}
-            <div className={cn("size-full opacity-20 rounded-md", !colorName && `bg-[${checkerboarSvg}]`, colorName && bgClass)} />
+            <div className={cn("size-full opacity-20 rounded-md", !colorName && `bg-[${checkerboarSvg}] fill-red-500 stroke-red-500 stroke-1 opacity-100`, colorName && bgClass)} />
 
             {/* Letter overlay */}
             <span className={cn(
