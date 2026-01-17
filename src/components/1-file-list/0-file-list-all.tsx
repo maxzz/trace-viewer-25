@@ -27,7 +27,7 @@ export function FileList() {
     );
 
     return (
-        <div ref={containerRef} className="h-full flex flex-row bg-muted/10 select-none outline-none focus-visible:ring-1 focus-visible:ring-ring" tabIndex={0}>
+        <div ref={containerRef} className="group/filelist h-full flex flex-row bg-muted/10 select-none outline-none focus-visible:ring-1 focus-visible:ring-ring" tabIndex={0}>
             {onLeft && <AllTimesPanel />}
 
             <div className="flex-1 flex flex-col h-full min-w-0">

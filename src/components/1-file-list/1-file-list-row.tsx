@@ -38,10 +38,24 @@ export const FileListRow = memo(
         return (
             <ContextMenu>
                 <ContextMenuTrigger asChild>
-                    <div className={getRowClasses(isSelected, hasError)} onClick={() => selectFile(fileState.id)}>
+                    <div
+                        className={cn(
+                            getRowClasses(isSelected, hasError),
+                            isSelected && highlightColor && "group-focus/filelist:bg-transparent group-focus/filelist:outline-none"
+                        )}
+                        onClick={() => selectFile(fileState.id)}
+                    >
                         {/* Highlight Background Layer */}
-                        {!isSelected && highlightColor && (
-                            <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundColor: `var(--color-${highlightColor})` }} />
+                        {highlightColor && (
+                            <div
+                                className={cn(
+                                    "absolute inset-0 opacity-20 pointer-events-none",
+                                    isSelected
+                                        ? "hidden group-focus/filelist:block border-2 border-blue-500"
+                                        : ""
+                                )}
+                                style={{ backgroundColor: `var(--color-${highlightColor})` }}
+                            />
                         )}
 
                         {/* File icon */}
