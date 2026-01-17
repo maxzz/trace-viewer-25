@@ -27,11 +27,11 @@ export function FileList() {
     );
 
     return (
-        <div className="h-full flex flex-row bg-muted/10 select-none outline-none">
+        <div className="h-full flex flex-row bg-muted/10 select-none">
             {onLeft && <AllTimesPanel />}
 
-            <div ref={containerRef} className="group/filelist flex-1 min-w-0 h-full flex flex-col" tabIndex={0}>
-                <ScrollArea className="flex-1" fixedWidth>
+            <div className="group/filelist flex-1 min-w-0 h-full focus:outline-none focus-visible:outline-none flex flex-col" tabIndex={0}>
+                <ScrollArea ref={containerRef} className="flex-1" fixedWidth>
                     <div className="flex flex-col">
                         {filteredFiles.map(
                             (file) => (
