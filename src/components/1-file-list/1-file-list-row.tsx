@@ -29,7 +29,7 @@ export const FileListRow = memo(
         const setFileHeaderOpen = useSetAtom(dialogFileHeaderOpenAtom);
         const setEditHighlightsOpen = useSetAtom(dialogEditHighlightsOpenAtom);
 
-        const highlightColor = getHighlightColor(highlightEnabled, highlightRules, fileState.matchedHighlightIds);
+        const highlightRuleColor = getHighlightColor(highlightEnabled, highlightRules, fileState.matchedHighlightIds);
 
         const isMarked = allTimesSelectedTimestamp
             ? allTimes.find((t) => t.timestamp === allTimesSelectedTimestamp)?.fileIds.includes(fileState.id)
@@ -38,11 +38,11 @@ export const FileListRow = memo(
         return (
             <ContextMenu>
                 <ContextMenuTrigger asChild>
-                    <div className={cn(getRowClasses(isSelected, hasError, highlightColor))} onClick={() => selectFile(fileState.id)}>
+                    <div className={cn(getRowClasses(isSelected, hasError))} onClick={() => selectFile(fileState.id)}>
 
                         {/* Highlight Background Layer */}
-                        {!isSelected && highlightColor && (
-                            <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundColor: `var(--color-${highlightColor})` }} />
+                        {!isSelected && highlightRuleColor && (
+                            <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundColor: `var(--color-${highlightRuleColor})` }} />
                         )}
 
                         {/* File icon */}
@@ -57,7 +57,7 @@ export const FileListRow = memo(
 
                             {/* Error count badge */}
                             {fileState.data.errorsInTraceCount > 0 && (
-                                <span className={errorCountBadgeClasses}>
+                                <span className={localClasses.errorCountBadge}>
                                     {fileState.data.errorsInTraceCount}
                                 </span>
                             )}
@@ -118,18 +118,27 @@ export const FileListRow = memo(
     }
 );
 
-function getRowClasses(isSelected: boolean, hasError: boolean, highlightColor: string | undefined) {
+function getRowClasses(isSelected: boolean, hasError: boolean) {
     return cn(
-        "relative flex items-center gap-2 px-3 py-0.5 text-xs cursor-pointer 1transition-colors border-l-2 select-none group",
+        "group relative px-3 py-0.5 text-xs border-l-2 cursor-pointer select-none flex items-center gap-2",
         isSelected
-            ? "bg-muted-foreground/20 border-primary outline -outline-offset-1 outline-primary"
+            ? localClasses.rowSelected
             : "text-muted-foreground hover:text-foreground hover:bg-muted-foreground/10 border-transparent",
         hasError && "text-red-600 dark:text-red-400",
-        isSelected && highlightColor && "group-focus/filelist:bg-blue-100 dark:group-focus/filelist:bg-blue-900 dark:group-focus/filelist:outline-blue-500"
     );
 }
 
-const errorCountBadgeClasses = "\
+const localClasses = {
+    rowSelected: "\
+bg-muted-foreground/20 \
+border-primary \
+\
+outline -outline-offset-1 outline-primary \
+\
+group-focus/filelist:bg-blue-100 \
+dark:group-focus/filelist:bg-blue-900 \
+dark:group-focus/filelist:outline-blue-500",
+    errorCountBadge: "\
 absolute -top-1 -right-1 \
 px-1 py-px \
 text-[0.5rem] \
@@ -141,7 +150,8 @@ dark:bg-red-400 \
 border-red-500/50 \
 dark:border-red-600 \
 border-[1.5px] \
-rounded-full";
+rounded-full",
+};
 
 function getHighlightColor(highlightEnabled: boolean, highlightRules: readonly { id: string; color?: string; enabled?: boolean; }[], matchedHighlightIds: readonly string[] | undefined): string | undefined {
     if (!highlightEnabled || !matchedHighlightIds || matchedHighlightIds.length === 0) {
