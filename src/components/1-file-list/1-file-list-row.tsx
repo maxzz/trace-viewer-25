@@ -120,7 +120,7 @@ export const FileListRow = memo(
 
 function getRowClasses(isSelected: boolean, hasError: boolean) {
     return cn(
-        "group relative 1pl-px 1pr-3 px-3 py-0.5 border-l-2 text-xs cursor-pointer select-none flex items-center gap-2",
+        "group relative 1pl-px 1pr-3 px-2 py-0.5 1border-l-2 text-xs cursor-pointer select-none flex items-center gap-2",
         isSelected
             ? localClasses.rowSelected
             : "text-muted-foreground hover:text-foreground hover:bg-muted-foreground/10 border-transparent",
@@ -137,8 +137,16 @@ outline -outline-offset-1 outline-primary \
 \
 group-focus/filelist:bg-blue-100 \
 dark:group-focus/filelist:bg-blue-900 \
-dark:group-focus/filelist:outline-blue-500",
-    iconsSelected: "1pl-1 1border-l-4",
+dark:group-focus/filelist:outline-blue-500 \
+\
+before:absolute \
+before:left-0 \
+before:top-0 \
+before:bottom-0 \
+before:w-1 \
+before:bg-primary \
+before:pointer-events-none",
+    iconsSelected: "  ",
     errorCountBadge: "\
 absolute -top-1 -right-1 \
 px-1 py-px \
