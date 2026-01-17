@@ -58,7 +58,7 @@ function ColorSwatch({ colorName, bgClass, textClass, label, letter, isSelected,
             title={label}
         >
             {/* Background */}
-            <div className={cn("size-full opacity-20 rounded-md", !colorName && `bg-[${checkerboarSvg}] fill-red-500 stroke-red-500 stroke-1 opacity-100`, colorName && bgClass)} />
+            <div className={cn("size-full opacity-20 rounded-md", !colorName && `bg-[${checkerboardSvg}] fill-red-500 stroke-red-500 stroke-1 opacity-100`, colorName && bgClass)} />
 
             {/* Letter overlay */}
             <span className={cn(
@@ -111,4 +111,5 @@ const COLOR_GRID_Classes: ReadonlyArray<HighlightRule> = [
 ];
 
 // Checkerboard for transparent
-const checkerboarSvg = "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxwYXRoIGQ9Ik0wIDBoNHY0SDB6bTQgNGg0djRINHoiIGZpbGw9IiNjY2MiIGZpbGwtb3BhY2l0eT0iLjQiLz48L3N2Zz4=')";
+//const checkerboardSvg = "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxwYXRoIGQ9Ik0wIDBoNHY0SDB6bTQgNGg0djRINHoiIGZpbGw9IiNjY2MiIGZpbGwtb3BhY2l0eT0iLjQiLz48L3N2Zz4=')";
+const checkerboardSvg = "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\"><path d=\"M0 0h4v4H0zm4 4h4v4H4z\" fill=\"%23ccc\" fill-opacity=\".4\"/></svg>')";
