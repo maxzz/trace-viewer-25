@@ -3,20 +3,18 @@ import { useAtomValue, atom, type PrimitiveAtom } from "jotai";
 import { useSnapshot } from "valtio";
 import { appSettings } from "../../store/1-ui-settings";
 import { currentFileStateAtom } from "../../store/traces-store/0-files-current-state";
-import { LineCode } from "../../trace-viewer-core/9-core-types";
+import { type TraceLine } from "../../trace-viewer-core/9-core-types";
 import { ITEM_HEIGHT } from "./9-trace-view-constants";
 import { allTimesStore } from "../../store/traces-store/3-all-times-store";
 import { TraceRowMemo } from "./1-trace-view-row";
 import { handlePendingTimestampScroll, scrollToSelection } from "./2-trace-view-scroll";
 import { handleKeyboardNavigation } from "./3-trace-view-keyboard";
 
-const fallbackLineIndexAtom = atom(-1);
-
 export function TraceList() {
     const currentFileState = useAtomValue(currentFileStateAtom);
     const { pendingScrollTimestamp, pendingScrollFileId } = useSnapshot(allTimesStore);
     const { useIconsForEntryExit, showLineNumbers } = useSnapshot(appSettings);
-    
+
     // Derived from currentFileState
     const selectedFileId = currentFileState?.id ?? null;
     const fileData = currentFileState?.data;
@@ -33,8 +31,8 @@ export function TraceList() {
             const controller = new AbortController();
             window.addEventListener('keydown', (e) => handleKeyboardNavigation(e, scrollRef, containerHeight, scrollTop), { signal: controller.signal });
             return () => controller.abort();
-        }, [containerHeight, scrollTop]
-    );
+        },
+        [containerHeight, scrollTop]);
 
     useEffect( // Update container height on resize
         () => {
@@ -48,25 +46,27 @@ export function TraceList() {
             const controller = new AbortController();
             window.addEventListener('resize', updateHeight, { signal: controller.signal });
             return () => controller.abort();
-        }, []
-    );
+        },
+        []);
 
     useEffect( // Reset scroll on file change
         () => {
             setScrollTop(0);
             scrollRef.current && (scrollRef.current.scrollTop = 0);
-        }, [selectedFileId]
-    );
+        },
+        [selectedFileId]);
 
     useEffect( // Handle pending timestamp scroll
         () => {
             handlePendingTimestampScroll(pendingScrollTimestamp, pendingScrollFileId, viewLines, scrollRef, containerHeight, selectedFileId);
-        }, [pendingScrollTimestamp, pendingScrollFileId, viewLines, containerHeight, selectedFileId]
-    );
+        },
+        [pendingScrollTimestamp, pendingScrollFileId, viewLines, containerHeight, selectedFileId]);
 
-    const onScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
-        setScrollTop(e.currentTarget.scrollTop);
-    }, []);
+    const onScroll = useCallback(
+        (e: React.UIEvent<HTMLDivElement>) => {
+            setScrollTop(e.currentTarget.scrollTop);
+        },
+        []);
 
     // Virtualization logic
     const totalHeight = viewLines.length * ITEM_HEIGHT;
@@ -92,7 +92,7 @@ export function TraceList() {
             <div style={{ height: totalHeight, position: 'relative' }}>
                 <div style={{ transform: `translateY(${offsetY}px)` }}>
                     {visibleLines.map(
-                        (line, idx) => (
+                        (line: TraceLine, idx: number) => (
                             <TraceRowMemo
                                 key={line.lineIndex}
                                 line={line}
@@ -107,18 +107,20 @@ export function TraceList() {
                     )}
                 </div>
             </div>
-            
+
             <TraceViewScrollController
-                currentLineIdxAtom={currentLineIdxAtom}
                 scrollRef={scrollRef}
                 containerHeight={containerHeight}
                 selectedFileId={selectedFileId}
+                currentLineIdxAtom={currentLineIdxAtom}
             />
         </div>
     );
 }
 
-function TraceViewScrollController({ currentLineIdxAtom, scrollRef, containerHeight, selectedFileId }: {
+const fallbackLineIndexAtom = atom(-1);
+
+function TraceViewScrollController({ scrollRef, containerHeight, selectedFileId, currentLineIdxAtom }: {
     currentLineIdxAtom: PrimitiveAtom<number>;
     scrollRef: React.RefObject<HTMLDivElement | null>;
     containerHeight: number;
@@ -129,8 +131,8 @@ function TraceViewScrollController({ currentLineIdxAtom, scrollRef, containerHei
     useEffect( // Scroll to selection
         () => {
             scrollToSelection(currentLineIndex, scrollRef, containerHeight);
-        }, [currentLineIndex, containerHeight, selectedFileId]
-    );
+        },
+        [currentLineIndex, containerHeight, selectedFileId]);
 
     return null;
 }
