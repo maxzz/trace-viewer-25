@@ -4,11 +4,11 @@ import { listenerToBuildAllTimesEffectAtom } from "@/store/traces-store/8-all-ti
 import { appSettings } from "../../store/1-ui-settings";
 import { TopMenu } from "./2-top-menu";
 import { TraceMainView } from "./6-resizable-panels";
-import { TraceEmptyView } from "../2-trace-viewer/7-trace-empty-view";
 import { TraceFooter } from "./7-footer";
 import { FileFilterDropdown, ButtonHighlightToggle } from "./3-btn-filters-select";
 import { ButtonThemeToggle } from "./3-btn-theme-toggle";
 import { filesCountAtom } from "@/store/6-filtered-files";
+import { IconBinocular } from "../ui/icons";
 
 export function TraceViewerApp() {
     useAtomValue(listenerToBuildAllTimesEffectAtom);
@@ -50,4 +50,15 @@ function Footer({ hasFile }: { hasFile: boolean; }) {
     return (<>
         {showFooter && hasFile && <TraceFooter />}
     </>);
+}
+
+function TraceEmptyView() {
+    return (
+        <div className="absolute inset-0 bg-muted flex flex-col items-center justify-center pointer-events-none">
+            <IconBinocular className="size-8" />
+            <p className="max-w-76 text-center text-sm text-foreground">
+                Drag and drop the .trc3 file, folder, ZIP archive, or use the file selection dialog to view the traces.
+            </p>
+        </div>
+    );
 }

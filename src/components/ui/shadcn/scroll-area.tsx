@@ -1,4 +1,4 @@
-import { forwardRef, type ElementRef, type ComponentPropsWithoutRef } from "react";
+import { forwardRef, type ElementRef, type ComponentPropsWithoutRef } from "react"; //01.17.26
 import * as Prim from "@radix-ui/react-scroll-area";
 import { cn } from "@/utils";
 
@@ -7,6 +7,8 @@ export type ScrollAreaProps = ComponentPropsWithoutRef<typeof Prim.Root> & {
     fullHeight?: boolean;           // sets ScrollArea height to 100%
     fixedWidth?: boolean;           // prevents ScrollArea width from growing; i.e. removes display: table from Prim.Viewport
     parentContentWidth?: boolean;   // allows to truncate items to parent width
+    viewportClassName?: string;     // additional class name for the viewport element
+    viewportProps?: ComponentPropsWithoutRef<typeof Prim.Viewport>;
 };
 
 /**
@@ -28,7 +30,7 @@ const fixedWidthClasses = "[&_[data-radix-scroll-area-viewport]>div]:block!"; //
 const parentContentWidthClasses = "**:data-radix-scroll-area-content:min-w-0!";
 
 const ScrollArea = forwardRef<ElementRef<typeof Prim.Root>, ScrollAreaProps>(
-    ({ className, children, horizontal, fixedWidth, fullHeight, parentContentWidth, ...rest }, ref) => (
+    ({ className, children, horizontal, fixedWidth, fullHeight, parentContentWidth, viewportClassName, viewportProps, ...rest }, ref) => (
         <Prim.Root ref={ref}
             className={cn(
                 "relative overflow-hidden",
@@ -39,7 +41,7 @@ const ScrollArea = forwardRef<ElementRef<typeof Prim.Root>, ScrollAreaProps>(
             )}
             {...rest}
         >
-            <Prim.Viewport className="h-full w-full rounded-[inherit]">
+            <Prim.Viewport className={cn("h-full w-full rounded-[inherit]", viewportClassName)} {...viewportProps}>
                 {children}
             </Prim.Viewport>
 

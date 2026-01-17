@@ -30,8 +30,8 @@ export function FileList() {
         <div className="h-full flex flex-row bg-muted/10 select-none">
             {onLeft && <AllTimesPanel />}
 
-            <div className="group/filelist flex-1 min-w-0 h-full focus:outline-none focus-visible:outline-none flex flex-col" tabIndex={0}>
-                <ScrollArea ref={containerRef} className="flex-1" fixedWidth>
+            <div className="flex-1 min-w-0 h-full focus:outline-none focus-visible:outline-none flex flex-col" tabIndex={-1}>
+                <ScrollArea ref={containerRef} className="flex-1" fixedWidth viewportClassName="group/filelist focus:outline-none focus-visible:outline-none" viewportProps={{ tabIndex: 0 }}>
                     <div className="flex flex-col">
                         {filteredFiles.map(
                             (file) => (

@@ -18,28 +18,31 @@ export function TopMenu() {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const folderInputRef = useRef<HTMLInputElement>(null);
 
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if ((e.ctrlKey || e.metaKey) && e.key === ',') {
-                e.preventDefault();
-                setOptionsOpen(true);
-            }
-            if (e.altKey && (e.key === 'r' || e.key === 'R')) {
-                e.preventDefault();
-                setEditHighlightsOpen(true);
-            }
-        };
+    // Global keyboard shortcuts
+    useEffect(
+        () => {
+            const handleKeyDown = (e: KeyboardEvent) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === ',') {
+                    e.preventDefault();
+                    setOptionsOpen(true);
+                }
+                if (e.altKey && (e.key === 'r' || e.key === 'R')) {
+                    e.preventDefault();
+                    setEditHighlightsOpen(true);
+                }
+            };
 
-        const controller = new AbortController();   
-        window.addEventListener('keydown', handleKeyDown, { signal: controller.signal });
-        return () => controller.abort();
-    }, [setOptionsOpen, setEditHighlightsOpen]);
+            const controller = new AbortController();
+            window.addEventListener('keydown', handleKeyDown, { signal: controller.signal });
+            return () => controller.abort();
+        }, [setOptionsOpen, setEditHighlightsOpen]
+    );
 
     return (<>
         <InputWatchFilesLoad inputRef={fileInputRef} />
         <InputWatchFolderLoad inputRef={folderInputRef} />
 
-        <div className="border-b flex items-center justify-between bg-background">
+        <div className="bg-background flex items-center justify-between">
             <Menubar className="px-2 border-none shadow-none rounded-none bg-transparent">
 
                 <MenubarMenu>
@@ -93,7 +96,7 @@ export function TopMenu() {
                 </MenubarMenu>
 
             </Menubar>
-            
+
             <TimelineProgress />
         </div>
     </>);
