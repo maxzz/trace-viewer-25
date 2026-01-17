@@ -40,7 +40,7 @@ export const FileListRow = memo(
                 <ContextMenuTrigger asChild>
                     <div className={cn(getRowClasses(isSelected, hasError))} onClick={() => selectFile(fileState.id)}>
 
-                        {/* Highlight Background Layer */}
+                        {/* Highlight rule background overlay */}
                         {!isSelected && highlightRuleColor && (
                             <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundColor: `var(--color-${highlightRuleColor})` }} />
                         )}
@@ -129,6 +129,7 @@ function getRowClasses(isSelected: boolean, hasError: boolean) {
 }
 
 const localClasses = {
+
     rowSelected: "\
 bg-muted-foreground/20 \
 border-primary \
@@ -144,6 +145,7 @@ before:absolute before:left-0 before:top-0 before:bottom-0 before:w-[3px] \
 before:bg-primary dark:before:bg-primary/70 \
 group-focus/filelist:before:bg-blue-500 group-focus/filelist:dark:before:bg-blue-500 \
 ",
+
     errorCountBadge: "\
 absolute -top-1 -right-1 \
 px-1 py-px \
@@ -154,6 +156,7 @@ bg-red-100 dark:bg-red-400 \
 border-red-500/50 dark:border-red-600 \
 border-[1.5px] \
 rounded-full",
+
 };
 
 function getHighlightColor(highlightEnabled: boolean, highlightRules: readonly { id: string; color?: string; enabled?: boolean; }[], matchedHighlightIds: readonly string[] | undefined): string | undefined {

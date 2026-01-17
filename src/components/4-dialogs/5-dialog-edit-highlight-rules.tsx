@@ -164,6 +164,7 @@ function HighlightRow({ rule, onDelete, isNameInvalid, isPatternInvalid }: { rul
             />
 
             <div className="flex-1 grid grid-cols-[1fr_1fr_36px] gap-1">
+                {/* Name */}
                 <Input
                     className={`h-8 ${isNameInvalid ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
                     placeholder="Highlight Name"
@@ -171,16 +172,15 @@ function HighlightRow({ rule, onDelete, isNameInvalid, isPatternInvalid }: { rul
                     onChange={(e) => highlightActions.updateRule(rule.id, { name: e.target.value })}
                     {...turnOffAutoComplete}
                 />
+                {/* Pattern */}
                 <InputPattern
                     ruleId={rule.id}
                     pattern={rule.pattern}
                     isPatternInvalid={isPatternInvalid ?? false}
                 />
+                {/* Color */}
                 <div className="flex justify-center items-center">
-                    <ColorPickerPopup
-                        color={rule.color}
-                        onChange={(color) => highlightActions.updateRule(rule.id, { color })}
-                    >
+                    <ColorPickerPopup color={rule.color} onChange={(color) => highlightActions.updateRule(rule.id, { color })}>
                         <Button
                             variant="outline"
                             className="size-8 p-0 overflow-hidden"
@@ -204,13 +204,6 @@ function HighlightRow({ rule, onDelete, isNameInvalid, isPatternInvalid }: { rul
 }
 
 function InputPattern({ ruleId, pattern, isPatternInvalid }: { ruleId: string, pattern: string, isPatternInvalid: boolean; }) {
-    return (
-        <InputPatternInner ruleId={ruleId} pattern={pattern} isPatternInvalid={isPatternInvalid} />
-    );
-}
-
-// Inner component to use hooks properly
-function InputPatternInner({ ruleId, pattern, isPatternInvalid }: { ruleId: string, pattern: string, isPatternInvalid: boolean; }) {
     const isRegex = pattern.startsWith('/') && pattern.endsWith('/') && pattern.length > 1;
     const patternWithoutSlashes = isRegex ? pattern.slice(1, -1) : pattern;
 
