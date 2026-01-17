@@ -9,17 +9,19 @@ import { cancelAllTimesBuild } from "../../workers-client/all-times-client";
 export const listenerToBuildAllTimesEffectAtom = atomEffect(
     (get, set) => {
         const unsubShow = subscribeKey(appSettings.allTimes, 'show', buildAlltimes);
-        
+
         const unsubPrecision = subscribeKey(appSettings.allTimes, 'precision', () => {
             appSettings.allTimes.needToRebuild = true;
             buildAlltimes();
         });
 
         const unsubFilesData = subscribe(filesStore.states, (ops) => {
-            const isIgnorable = ops.every((op) => {
-                const path = op[1];
-                return path.length >= 2 && path[1] === 'matchedHighlightIds';
-            });
+            const isIgnorable = ops.every( // Each operation is a tuple: [opType, path, value?, previous?]; to check as composer1 "@src/store/traces-store/8-all-times-listener.ts:19-26 explain".
+                (op) => {
+                    const path = op[1];
+                    return path.length >= 2 && path[1] === 'matchedHighlightIds';
+                }
+            );
 
             if (isIgnorable) {
                 return;
@@ -49,16 +51,16 @@ export function buildAlltimes() {
         // But previously we cleared it: traceStore.setAllTimes([]);
         // If we clear it, we MUST rebuild it when shown.
         // So we should NOT clear it if we want to avoid rebuild.
-        
+
         // However, if I remove `traceStore.setAllTimes([])` here, then the memory is held.
         // Maybe the user wants to keep it in memory.
-        
+
         // But if I clear it, then `needToRebuild` must be true next time?
         // Or `needToRebuild` tracks if *inputs* changed.
         // If inputs haven't changed, but I cleared the output, I still need to rebuild to show it.
-        
+
         // If the user wants to avoid rebuild, I must NOT clear the data when hiding.
-        
+
         cancelAllTimesBuild();
         allTimesStore.setAllTimes([]);
         appSettings.allTimes.needToRebuild = false; // not valid and needs to be rebuilt

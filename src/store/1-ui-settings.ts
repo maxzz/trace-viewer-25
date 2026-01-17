@@ -16,6 +16,7 @@ export interface HighlightRule {
     name: string;
     pattern: string;
     color?: string; // Tailwind color name (e.g. "red-500")
+    enabled?: boolean;
 }
 
 export interface AppSettings {

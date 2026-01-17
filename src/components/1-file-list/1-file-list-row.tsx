@@ -117,7 +117,7 @@ export const FileListRow = memo(
     }
 );
 
-function getHighlightColor(highlightEnabled: boolean, highlightRules: readonly { id: string; color?: string; }[], matchedHighlightIds: readonly string[] | undefined): string | undefined {
+function getHighlightColor(highlightEnabled: boolean, highlightRules: readonly { id: string; color?: string; enabled?: boolean }[], matchedHighlightIds: readonly string[] | undefined): string | undefined {
     if (!highlightEnabled || !matchedHighlightIds || matchedHighlightIds.length === 0) {
         return undefined;
     }
@@ -125,7 +125,7 @@ function getHighlightColor(highlightEnabled: boolean, highlightRules: readonly {
     // Find the first rule in appSettings that matches one of the file's matched IDs.
     // We iterate through highlightRules to preserve order priority
     const rule = highlightRules.find(r => matchedHighlightIds.includes(r.id));
-    return rule?.color;
+    return (rule && rule.enabled !== false) ? rule.color : undefined;
 }
 
 function getRowClasses(isSelected: boolean, hasError: boolean) {

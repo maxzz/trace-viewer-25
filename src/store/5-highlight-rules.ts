@@ -5,7 +5,7 @@ import { isFileNameMatch } from '@/utils/filter-match';
 export const highlightActions = {
     addRule: (name: string, pattern: string, color?: string) => {
         const id = Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
-        appSettings.highlightRules.push({ id, name, pattern, color });
+        appSettings.highlightRules.push({ id, name, pattern, color, enabled: true });
         recomputeHighlightMatches();
     },
 
@@ -22,7 +22,7 @@ export const highlightActions = {
         if (rule) {
             Object.assign(rule, updates);
             // Recompute if pattern changed
-            if (updates.pattern !== undefined) {
+            if (updates.pattern !== undefined || updates.enabled !== undefined) {
                 recomputeHighlightMatches();
             }
         }
@@ -52,6 +52,7 @@ export function recomputeHighlightMatches() {
             
             rules.forEach(
                 (rule: HighlightRule) => {
+                    if (rule.enabled === false) return; // Skip disabled rules
                     if (isFileNameMatch(fileState.data.fileName, rule.pattern)) {
                         matchedIds.push(rule.id);
                     }

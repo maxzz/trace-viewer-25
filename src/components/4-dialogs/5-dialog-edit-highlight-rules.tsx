@@ -4,6 +4,7 @@ import { useSnapshot } from "valtio";
 import { Reorder, useDragControls } from "motion/react";
 import { Button } from "../ui/shadcn/button";
 import { Input } from "../ui/shadcn/input";
+import { Checkbox } from "../ui/shadcn/checkbox";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/shadcn/dialog";
 import { GripVertical, Trash2, Plus, Regex } from "lucide-react";
 import { appSettings, type HighlightRule } from "../../store/1-ui-settings";
@@ -127,7 +128,7 @@ const codeClasses = "px-1 bg-muted outline rounded";
 
 function Header() {
     return (
-        <div className="mt-4 px-5 grid grid-cols-[1fr_1fr_52px] gap-1 select-none">
+        <div className="mt-4 pl-16 pr-5 grid grid-cols-[1fr_1fr_52px] gap-1 select-none">
             <div className="text-xs font-semibold">
                 Name
             </div>
@@ -155,6 +156,12 @@ function HighlightRow({ rule, onDelete, isNameInvalid, isPatternInvalid }: { rul
             <div className="py-2 px-1 hover:bg-muted cursor-grab touch-none rounded" onPointerDown={(e) => dragControls.start(e)}>
                 <GripVertical className="size-3 text-muted-foreground" />
             </div>
+
+            <Checkbox
+                className="mr-2"
+                checked={rule.enabled !== false}
+                onCheckedChange={(checked) => highlightActions.updateRule(rule.id, { enabled: !!checked })}
+            />
 
             <div className="flex-1 grid grid-cols-[1fr_1fr_36px] gap-1">
                 <Input
