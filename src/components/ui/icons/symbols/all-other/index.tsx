@@ -21,6 +21,7 @@ import { SvgSymbolEllipsis } from "./26-ellipsis";
 import { SvgSymbolLockOpen } from "./30-lock-open";
 import { SvgSymbolLockClosed } from "./31-lock-closed";
 import { SvgSymbolCheckerboard } from "./32-checkerboard";
+import { SvgSymbolArrowCircleLeft } from "./33-arrow-circle-left";
 
 export * from "./06-folder";
 export * from "./08-dot";
@@ -70,5 +71,6 @@ export function DefAllOtherTypes() {
         {SvgSymbolLockOpen()}
         {SvgSymbolLockClosed()}
         {SvgSymbolCheckerboard()}
+        {SvgSymbolArrowCircleLeft()}
     </>);
 }

@@ -22,7 +22,7 @@ export function TraceViewerApp() {
                 <TopMenu />
                 <TopMenuToolbar />
             </div>
-
+        
             <div className="flex-1 flex flex-col overflow-hidden relative">
                 {!!fileCount
                     ? <TraceMainView />

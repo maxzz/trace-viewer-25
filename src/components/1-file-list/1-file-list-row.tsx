@@ -6,6 +6,7 @@ import { cn } from "@/utils/index";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger, } from "../ui/shadcn/context-menu";
 import { appSettings } from "@/store/1-ui-settings";
 import { AlertCircle, FileText } from "lucide-react";
+import { SymbolArrowCircleLeft } from "../ui/icons/symbols/all-other/33-arrow-circle-left";
 import { SymbolSpinner } from "../ui/icons/symbols";
 import { type FileState } from "@/store/traces-store/9-types-files-store";
 import { selectFile, closeFile, closeOtherFiles, closeAllFiles } from "@/store/traces-store/0-files-actions";
@@ -76,14 +77,15 @@ export const FileListRow = memo(
                         {/* Timeline Marker */}
                         {isMarked && (
                             <div
-                                className="ml-auto shrink-0 z-10 hover:scale-125 transition-transform"
+                                className="ml-auto shrink-0 z-10 hover:scale-125 transition-transform cursor-pointer"
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     selectFile(fileState.id);
                                     allTimesStore.setPendingScrollTimestamp(allTimesSelectedTimestamp, fileState.id);
                                 }}
                             >
-                                <div className="size-2 rounded-full bg-green-500 ring-1 ring-background" title="Present in selected timeline" />
+                                <SymbolArrowCircleLeft className="mr-1 size-4 rotate-180 1border border-green-700 rounded-full stroke-green-700 1fill-green-300!" />
+                                {/* <div className="size-2 rounded-full bg-green-500 ring-1 ring-background" title="Present in selected timeline" /> */}
                             </div>
                         )}
                     </div>
@@ -120,7 +122,7 @@ export const FileListRow = memo(
 
 function getRowClasses(isSelected: boolean, hasError: boolean) {
     return cn(
-        "group relative px-2 py-0.5 text-xs cursor-pointer select-none flex items-center gap-1.5",
+        "group relative px-2 py-0.5 text-xs cursor-default select-none flex items-center gap-1.5",
         isSelected
             ? localClasses.rowSelected
             : "text-muted-foreground hover:text-foreground hover:bg-muted-foreground/10 border-transparent",
