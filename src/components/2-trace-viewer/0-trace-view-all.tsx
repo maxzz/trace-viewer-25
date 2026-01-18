@@ -1,6 +1,8 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
-import { useAtomValue, atom, type PrimitiveAtom } from "jotai";
+import { useAtomValue, useAtom, atom, type PrimitiveAtom } from "jotai";
 import { useSnapshot } from "valtio";
+import { ArrowLeft } from "lucide-react";
+import { formatTimestamp } from "@/utils";
 import { appSettings } from "../../store/1-ui-settings";
 import { currentFileStateAtom } from "../../store/traces-store/0-files-current-state";
 import { type TraceLine } from "../../trace-viewer-core/9-core-types";
@@ -9,6 +11,9 @@ import { allTimesStore } from "../../store/traces-store/3-all-times-store";
 import { TraceRowMemo } from "./1-trace-view-row";
 import { handlePendingTimestampScroll, scrollToSelection } from "./2-trace-view-scroll";
 import { handleKeyboardNavigation } from "./3-trace-view-keyboard";
+
+// Atom to track hovered timestamp info
+const hoveredTimestampAtom = atom<{ timestamp: string; top: number } | null>(null);
 
 export function TraceList() {
     const currentFileState = useAtomValue(currentFileStateAtom);
@@ -25,6 +30,42 @@ export function TraceList() {
     const scrollRef = useRef<HTMLDivElement>(null);
     const [scrollTop, setScrollTop] = useState(0);
     const [containerHeight, setContainerHeight] = useState(800); // Default
+    const [hoveredTimestamp, setHoveredTimestamp] = useAtom(hoveredTimestampAtom);
+
+    const onMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+        const target = e.target as HTMLElement;
+        // Check if we are over the icon itself to prevent flickering
+        if (target.closest('#trace-timestamp-icon')) return;
+
+        const timestampDiv = target.closest('[data-timestamp]') as HTMLElement;
+        if (timestampDiv && scrollRef.current) {
+            const timestamp = timestampDiv.getAttribute('data-timestamp');
+            if (timestamp) {
+                const rect = timestampDiv.getBoundingClientRect();
+                const containerRect = scrollRef.current.getBoundingClientRect();
+                setHoveredTimestamp({
+                    timestamp,
+                    top: rect.top - containerRect.top,
+                });
+                return;
+            }
+        }
+        setHoveredTimestamp(null);
+    }, [setHoveredTimestamp]);
+
+    const onIconClick = useCallback((e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (hoveredTimestamp) {
+            const precision = appSettings.allTimes.precision;
+            const formatted = formatTimestamp(hoveredTimestamp.timestamp, precision);
+            if (formatted) {
+                // Get date from the trace line if available and prepend it
+                const currentLine = viewLines.find(l => l.timestamp === hoveredTimestamp.timestamp);
+                const fullTimestamp = currentLine?.date ? `${currentLine.date} ${formatted}` : formatted;
+                allTimesStore.setAllTimesSelectedTimestamp(fullTimestamp);
+            }
+        }
+    }, [hoveredTimestamp, viewLines]);
 
     useEffect( // Keyboard navigation
         () => {
@@ -87,8 +128,27 @@ export function TraceList() {
             ref={scrollRef}
             className="group/tracelist relative size-full outline-none overflow-auto"
             onScroll={onScroll}
+            onMouseMove={onMouseMove}
+            onMouseLeave={() => setHoveredTimestamp(null)}
             tabIndex={0}
         >
+            {/* Locate in Timeline icon */}
+            {hoveredTimestamp && (
+                <div
+                    id="trace-timestamp-icon"
+                    className="absolute z-20 flex items-center justify-center cursor-pointer hover:scale-110 transition-transform bg-background/80 rounded-full shadow-sm border border-border text-muted-foreground hover:text-foreground"
+                    style={{
+                        top: hoveredTimestamp.top + scrollTop + (ITEM_HEIGHT - 16) / 2,
+                        left: 0,
+                        width: 16,
+                        height: 16,
+                    }}
+                    onClick={onIconClick}
+                    title="Locate in Timeline"
+                >
+                    <ArrowLeft className="size-3" />
+                </div>
+            )}
             <div style={{ height: totalHeight, position: 'relative' }}>
                 <div style={{ transform: `translateY(${offsetY}px)` }}>
                     {visibleLines.map(

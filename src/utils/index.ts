@@ -1,5 +1,6 @@
 export * from "./util-hooks";
 export * from "./classnames";
+export * from "./format-timestamp";
 export * from "./console-styles";
 export * from "./debounce";
 export * from "./debug-time";

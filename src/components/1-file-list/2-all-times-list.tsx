@@ -1,7 +1,10 @@
 import { useSnapshot } from "valtio";
+import { useSetAtom, useAtomValue } from "jotai";
+import { useRef, useEffect } from "react";
 import { appSettings } from "@/store/1-ui-settings";
 import { classNames } from "@/utils/classnames";
 import { allTimesStore } from "@/store/traces-store/3-all-times-store";
+import { allTimesPanelRefAtom, allTimesScrollEffectAtom } from "@/store/traces-store/9-all-times-scroll-effect";
 import { ScrollArea } from "../ui/shadcn/scroll-area";
 import { Fragment } from "react/jsx-runtime";
 import { motion, AnimatePresence } from "motion/react";
@@ -10,6 +13,18 @@ export function AllTimesPanel() {
     const { allTimes, allTimesSelectedTimestamp } = useSnapshot(allTimesStore);
     const { show, onLeft } = useSnapshot(appSettings).allTimes;
     const shouldShow = show && allTimes.length > 0;
+    
+    const contentRef = useRef<HTMLDivElement>(null);
+    const setAllTimesPanelRef = useSetAtom(allTimesPanelRefAtom);
+    
+    // Activate the scroll effect
+    useAtomValue(allTimesScrollEffectAtom);
+    
+    // Store ref in atom on mount
+    useEffect(() => {
+        setAllTimesPanelRef(contentRef.current);
+        return () => setAllTimesPanelRef(null);
+    }, [setAllTimesPanelRef]);
 
     let lastDate = "";
 
@@ -25,7 +40,7 @@ export function AllTimesPanel() {
                 >
                     <div className="w-max h-full flex flex-col">
                         <ScrollArea className="flex-1">
-                            <div className="flex flex-col">
+                            <div className="flex flex-col" ref={contentRef}>
                                 {allTimes.map(
                                     (item, idx) => {
                                         const isSelected = item.timestamp === allTimesSelectedTimestamp;
@@ -45,6 +60,7 @@ export function AllTimesPanel() {
                                                     className={classNames(rowClasses, isSelected && "bg-primary text-primary-foreground hover:bg-primary/90")}
                                                     onClick={() => allTimesStore.setAllTimesSelectedTimestamp(isSelected ? null : item.timestamp)}
                                                     title={item.timestamp}
+                                                    data-timestamp={item.timestamp}
                                                     key={item.timestamp}
                                                 >
                                                     {displayTime}

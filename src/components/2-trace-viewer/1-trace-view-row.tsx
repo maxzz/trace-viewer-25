@@ -35,7 +35,7 @@ function TraceRow({ line, globalIndex, currentLineIdxAtom, useIconsForEntryExit,
             )}
 
             {/* Time Column */}
-            <div className={classNames(columnTimeClasses, firstLineLength === 12 ? "w-18" : "w-20", line.code === LineCode.Day && "pl-0 justify-center")} title={line.timestamp}>
+            <div className={classNames(columnTimeClasses, firstLineLength === 12 ? "w-18" : "w-20", line.code === LineCode.Day && "pl-0 justify-center")} title={line.timestamp} data-timestamp={line.timestamp}>
                 {line.code === LineCode.Day
                     ? (
                         <div className="mx-2 px-1 h-5 text-[10px] text-center font-bold text-foreground dark:text-background bg-green-200/50 border border-muted-foreground/20 rounded shadow flex items-center justify-center">
