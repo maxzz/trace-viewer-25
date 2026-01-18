@@ -13,7 +13,7 @@ import { handlePendingTimestampScroll, scrollToSelection } from "./2-trace-view-
 import { handleKeyboardNavigation } from "./3-trace-view-keyboard";
 
 // Atom to track hovered timestamp info
-const hoveredTimestampAtom = atom<{ timestamp: string; top: number } | null>(null);
+const hoveredTimestampAtom = atom<{ timestamp: string; top: number; } | null>(null);
 
 export function TraceList() {
     const currentFileState = useAtomValue(currentFileStateAtom);
@@ -32,40 +32,41 @@ export function TraceList() {
     const [containerHeight, setContainerHeight] = useState(800); // Default
     const [hoveredTimestamp, setHoveredTimestamp] = useAtom(hoveredTimestampAtom);
 
-    const onMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-        const target = e.target as HTMLElement;
-        // Check if we are over the icon itself to prevent flickering
-        if (target.closest('#trace-timestamp-icon')) return;
+    const onMouseMove = useCallback(
+        (e: React.MouseEvent<HTMLDivElement>) => {
+            const target = e.target as HTMLElement;
+            // Check if we are over the icon itself to prevent flickering
+            if (target.closest('#trace-timestamp-icon')) return;
 
-        const timestampDiv = target.closest('[data-timestamp]') as HTMLElement;
-        if (timestampDiv && scrollRef.current) {
-            const timestamp = timestampDiv.getAttribute('data-timestamp');
-            if (timestamp) {
-                const rect = timestampDiv.getBoundingClientRect();
-                const containerRect = scrollRef.current.getBoundingClientRect();
-                setHoveredTimestamp({
-                    timestamp,
-                    top: rect.top - containerRect.top,
-                });
-                return;
+            const timestampDiv = target.closest('[data-timestamp]') as HTMLElement;
+            if (timestampDiv && scrollRef.current) {
+                const timestamp = timestampDiv.getAttribute('data-timestamp');
+                if (timestamp) {
+                    const rect = timestampDiv.getBoundingClientRect();
+                    const containerRect = scrollRef.current.getBoundingClientRect();
+                    setHoveredTimestamp({ timestamp, top: rect.top - containerRect.top, });
+                    return;
+                }
             }
-        }
-        setHoveredTimestamp(null);
-    }, [setHoveredTimestamp]);
+            setHoveredTimestamp(null);
+        },
+        [setHoveredTimestamp]);
 
-    const onIconClick = useCallback((e: React.MouseEvent) => {
-        e.stopPropagation();
-        if (hoveredTimestamp) {
-            const precision = appSettings.allTimes.precision;
-            const formatted = formatTimestamp(hoveredTimestamp.timestamp, precision);
-            if (formatted) {
-                // Get date from the trace line if available and prepend it
-                const currentLine = viewLines.find(l => l.timestamp === hoveredTimestamp.timestamp);
-                const fullTimestamp = currentLine?.date ? `${currentLine.date} ${formatted}` : formatted;
-                allTimesStore.setAllTimesSelectedTimestamp(fullTimestamp);
+    const onIconClick = useCallback(
+        (e: React.MouseEvent) => {
+            e.stopPropagation();
+            if (hoveredTimestamp) {
+                const precision = appSettings.allTimes.precision;
+                const formatted = formatTimestamp(hoveredTimestamp.timestamp, precision);
+                if (formatted) {
+                    // Get date from the trace line if available and prepend it
+                    const currentLine = viewLines.find(l => l.timestamp === hoveredTimestamp.timestamp);
+                    const fullTimestamp = currentLine?.date ? `${currentLine.date} ${formatted}` : formatted;
+                    allTimesStore.setAllTimesSelectedTimestamp(fullTimestamp);
+                }
             }
-        }
-    }, [hoveredTimestamp, viewLines]);
+        },
+        [hoveredTimestamp, viewLines]);
 
     useEffect( // Keyboard navigation
         () => {
@@ -112,7 +113,7 @@ export function TraceList() {
     // Virtualization logic
     const totalHeight = viewLines.length * ITEM_HEIGHT;
     // Calculate buffer based on visible items (50% of visible, minimum 20)
-    // 08.01.2026: Increased buffer to avoid empty screen on fast scroll
+    // 01.08.2026: Increased buffer to avoid empty screen on fast scroll
     const BUFFER = Math.max(50, Math.floor(containerHeight / ITEM_HEIGHT * 2));
     const startIndex = Math.max(0, Math.floor(scrollTop / ITEM_HEIGHT) - BUFFER);
     const endIndex = Math.min(viewLines.length, Math.floor((scrollTop + containerHeight) / ITEM_HEIGHT) + BUFFER);
@@ -136,19 +137,16 @@ export function TraceList() {
             {hoveredTimestamp && (
                 <div
                     id="trace-timestamp-icon"
-                    className="absolute z-20 flex items-center justify-center cursor-pointer hover:scale-110 transition-transform bg-background/80 rounded-full shadow-sm border border-border text-muted-foreground hover:text-foreground"
-                    style={{
-                        top: hoveredTimestamp.top + scrollTop + (ITEM_HEIGHT - 16) / 2,
-                        left: 0,
-                        width: 16,
-                        height: 16,
-                    }}
+                    className={timestampIconClasses}
+                    style={{ top: hoveredTimestamp.top + scrollTop + (ITEM_HEIGHT - 16) / 2 }}
+                    title="Locate in all times timeline"
                     onClick={onIconClick}
-                    title="Locate in Timeline"
                 >
-                    <ArrowLeft className="size-3" />
+                    <ArrowLeft className="" />
                 </div>
             )}
+
+            {/* Trace list */}
             <div style={{ height: totalHeight, position: 'relative' }}>
                 <div style={{ transform: `translateY(${offsetY}px)` }}>
                     {visibleLines.map(
@@ -168,6 +166,7 @@ export function TraceList() {
                 </div>
             </div>
 
+            {/* Scroll to selection controller */}
             <TraceViewScrollController
                 scrollRef={scrollRef}
                 containerHeight={containerHeight}
@@ -196,3 +195,16 @@ function TraceViewScrollController({ scrollRef, containerHeight, selectedFileId,
 
     return null;
 }
+
+const timestampIconClasses = "\
+absolute left-1 size-4 z-20 \
+hover:scale-110 \
+text-muted-foreground hover:text-foreground \
+bg-background/80 \
+border \
+rounded-full \
+shadow-sm \
+border-border \
+transition-transform \
+cursor-pointer \
+flex items-center justify-center";

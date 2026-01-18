@@ -1,13 +1,13 @@
+import { useRef, useEffect } from "react";
 import { useSnapshot } from "valtio";
 import { useSetAtom, useAtomValue } from "jotai";
-import { useRef, useEffect } from "react";
-import { appSettings } from "@/store/1-ui-settings";
 import { classNames } from "@/utils/classnames";
+import { motion, AnimatePresence } from "motion/react";
+import { appSettings } from "@/store/1-ui-settings";
 import { allTimesStore } from "@/store/traces-store/3-all-times-store";
 import { allTimesPanelRefAtom, allTimesScrollEffectAtom } from "@/store/traces-store/9-all-times-scroll-effect";
 import { ScrollArea2 } from "../ui/shadcn/scroll-area";
 import { Fragment } from "react/jsx-runtime";
-import { motion, AnimatePresence } from "motion/react";
 
 export function AllTimesPanel() {
     const { allTimes, allTimesSelectedTimestamp } = useSnapshot(allTimesStore);
