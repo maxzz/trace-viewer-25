@@ -4,7 +4,7 @@ import { subscribeKey } from "valtio/utils";
 import { allTimesStore } from "./3-all-times-store";
 
 /**
- * Atom to store the AllTimesPanel scroll container element.
+ * Atom to store the AllTimesPanel scroll viewport element.
  * Set this from the AllTimesPanel component on mount.
  */
 export const allTimesPanelRefAtom = atom<HTMLElement | null>(null);
@@ -18,29 +18,27 @@ export const allTimesScrollEffectAtom = atomEffect(
         const unsubscribe = subscribeKey(allTimesStore, 'allTimesSelectedTimestamp', (timestamp) => {
             if (!timestamp) return;
 
-            const root = get(allTimesPanelRefAtom);
-            if (!root) return;
-
-            // Find the viewport within the root
-            const viewport = root.querySelector('[data-radix-scroll-area-viewport]') as HTMLElement;
+            const viewport = get(allTimesPanelRefAtom);
             if (!viewport) return;
 
             // Find the element with matching data-timestamp
             const element = viewport.querySelector(`[data-timestamp="${timestamp}"]`) as HTMLElement;
             if (!element) return;
 
-            // Check if element is visible in the viewport
-            const elementRect = element.getBoundingClientRect();
-            const viewportRect = viewport.getBoundingClientRect();
+            // Calculate element position relative to the viewport's scroll container
+            const elementTop = element.offsetTop;
+            const elementBottom = elementTop + element.offsetHeight;
+            const viewportScrollTop = viewport.scrollTop;
+            const viewportHeight = viewport.clientHeight;
+            const viewportScrollBottom = viewportScrollTop + viewportHeight;
 
-            const isVisible = (
-                elementRect.top >= viewportRect.top &&
-                elementRect.bottom <= viewportRect.bottom
-            );
+            // Check if element is visible
+            const isVisible = elementTop >= viewportScrollTop && elementBottom <= viewportScrollBottom;
 
-            // Only scroll if not visible
+            // Only scroll if not visible - center the element
             if (!isVisible) {
-                element.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                const targetScrollTop = elementTop - (viewportHeight / 2) + (element.offsetHeight / 2);
+                viewport.scrollTo({ top: targetScrollTop, behavior: 'smooth' });
             }
         });
 

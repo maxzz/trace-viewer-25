@@ -5,7 +5,7 @@ import { appSettings } from "@/store/1-ui-settings";
 import { classNames } from "@/utils/classnames";
 import { allTimesStore } from "@/store/traces-store/3-all-times-store";
 import { allTimesPanelRefAtom, allTimesScrollEffectAtom } from "@/store/traces-store/9-all-times-scroll-effect";
-import { ScrollArea } from "../ui/shadcn/scroll-area";
+import { ScrollArea2 } from "../ui/shadcn/scroll-area";
 import { Fragment } from "react/jsx-runtime";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -14,15 +14,15 @@ export function AllTimesPanel() {
     const { show, onLeft } = useSnapshot(appSettings).allTimes;
     const shouldShow = show && allTimes.length > 0;
     
-    const scrollAreaRef = useRef<HTMLDivElement>(null);
+    const viewportRef = useRef<HTMLDivElement>(null);
     const setAllTimesPanelRef = useSetAtom(allTimesPanelRefAtom);
     
     // Activate the scroll effect
     useAtomValue(allTimesScrollEffectAtom);
     
-    // Store ref in atom on mount
+    // Store viewport ref in atom on mount
     useEffect(() => {
-        setAllTimesPanelRef(scrollAreaRef.current);
+        setAllTimesPanelRef(viewportRef.current);
         return () => setAllTimesPanelRef(null);
     }, [setAllTimesPanelRef]);
 
@@ -39,7 +39,7 @@ export function AllTimesPanel() {
                     className={classNames("h-full bg-green-100/20 dark:bg-green-950/20 select-none flex flex-col overflow-hidden", onLeft ? "border-r" : "border-l")}
                 >
                     <div className="w-max h-full flex flex-col">
-                        <ScrollArea className="flex-1" ref={scrollAreaRef}>
+                        <ScrollArea2 className="flex-1" ref={viewportRef}>
                             <div className="flex flex-col">
                                 {allTimes.map(
                                     (item, idx) => {
@@ -76,7 +76,7 @@ export function AllTimesPanel() {
                                     </div>
                                 )} */}
                             </div>
-                        </ScrollArea>
+                        </ScrollArea2>
                     </div>
                 </motion.div>
             )}
