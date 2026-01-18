@@ -50,7 +50,11 @@ interface ColorSwatchProps {
 
 function ColorSwatch({ colorName, bgClass, textClass, label, letter, isSelected, onClick, index }: ColorSwatchProps) {
     return (
-        <button className={cn(swatchClasses, isSelected && "ring ring-primary ring-offset-2 ring-offset-background", index === 0 && "col-span-full")} onClick={onClick} title={label}>
+        <button
+            className={cn(swatchClasses, isSelected && "ring ring-primary ring-offset-2 ring-offset-background", index === 0 && "col-span-full")}
+            onClick={(e) => { e.currentTarget.blur(); setTimeout(() => onClick(), 50); }} // to avoid "Blocked aria-hidden on an element because its descendant retained focus."
+            title={label}
+        >
             {/* Background */}
             {colorName ? (
                 <div className={cn("size-full opacity-20 rounded-md", bgClass)} />

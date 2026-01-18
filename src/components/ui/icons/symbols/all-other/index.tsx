@@ -20,6 +20,7 @@ import { SvgSymbolForms } from "./25-forms";
 import { SvgSymbolEllipsis } from "./26-ellipsis";
 import { SvgSymbolLockOpen } from "./30-lock-open";
 import { SvgSymbolLockClosed } from "./31-lock-closed";
+import { SvgSymbolCheckerboard } from "./32-checkerboard";
 
 export * from "./06-folder";
 export * from "./08-dot";
@@ -68,5 +69,6 @@ export function DefAllOtherTypes() {
         {SvgSymbolEllipsis()}
         {SvgSymbolLockOpen()}
         {SvgSymbolLockClosed()}
+        {SvgSymbolCheckerboard()}
     </>);
 }
