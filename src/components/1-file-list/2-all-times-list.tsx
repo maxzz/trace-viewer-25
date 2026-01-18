@@ -14,7 +14,7 @@ export function AllTimesPanel() {
     const { show, onLeft } = useSnapshot(appSettings).allTimes;
     const shouldShow = show && allTimes.length > 0;
     
-    const contentRef = useRef<HTMLDivElement>(null);
+    const scrollAreaRef = useRef<HTMLDivElement>(null);
     const setAllTimesPanelRef = useSetAtom(allTimesPanelRefAtom);
     
     // Activate the scroll effect
@@ -22,7 +22,7 @@ export function AllTimesPanel() {
     
     // Store ref in atom on mount
     useEffect(() => {
-        setAllTimesPanelRef(contentRef.current);
+        setAllTimesPanelRef(scrollAreaRef.current);
         return () => setAllTimesPanelRef(null);
     }, [setAllTimesPanelRef]);
 
@@ -39,8 +39,8 @@ export function AllTimesPanel() {
                     className={classNames("h-full bg-green-100/20 dark:bg-green-950/20 select-none flex flex-col overflow-hidden", onLeft ? "border-r" : "border-l")}
                 >
                     <div className="w-max h-full flex flex-col">
-                        <ScrollArea className="flex-1">
-                            <div className="flex flex-col" ref={contentRef}>
+                        <ScrollArea className="flex-1" ref={scrollAreaRef}>
+                            <div className="flex flex-col">
                                 {allTimes.map(
                                     (item, idx) => {
                                         const isSelected = item.timestamp === allTimesSelectedTimestamp;

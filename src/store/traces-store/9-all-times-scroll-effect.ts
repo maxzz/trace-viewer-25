@@ -18,15 +18,18 @@ export const allTimesScrollEffectAtom = atomEffect(
         const unsubscribe = subscribeKey(allTimesStore, 'allTimesSelectedTimestamp', (timestamp) => {
             if (!timestamp) return;
 
-            const container = get(allTimesPanelRefAtom);
-            if (!container) return;
+            const root = get(allTimesPanelRefAtom);
+            if (!root) return;
+
+            // Find the viewport within the root
+            const viewport = root.querySelector('[data-radix-scroll-area-viewport]') as HTMLElement;
+            if (!viewport) return;
 
             // Find the element with matching data-timestamp
-            const element = container.querySelector(`[data-timestamp="${timestamp}"]`) as HTMLElement;
+            const element = viewport.querySelector(`[data-timestamp="${timestamp}"]`) as HTMLElement;
             if (!element) return;
 
             // Check if element is visible in the viewport
-            const viewport = container.closest('[data-radix-scroll-area-viewport]') as HTMLElement || container;
             const elementRect = element.getBoundingClientRect();
             const viewportRect = viewport.getBoundingClientRect();
 
