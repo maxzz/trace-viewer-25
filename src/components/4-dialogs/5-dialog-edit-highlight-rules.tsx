@@ -24,44 +24,23 @@ export function DialogEditHighlightRules() {
         highlightActions.reorderRules(newOrder);
     }
 
-    function validateRules(): boolean {
-        const invalidNames = new Set<string>();
-        const invalidPatterns = new Set<string>();
-
-        highlightRules.forEach(
-            (rule) => {
-                if (!rule.name || rule.name.trim() === '') {
-                    invalidNames.add(rule.id);
-                }
-                if (!rule.pattern || rule.pattern.trim() === '') {
-                    invalidPatterns.add(rule.id);
-                }
-            }
-        );
-
-        setInvalidRuleIds({ name: invalidNames, pattern: invalidPatterns });
-
-        if (invalidNames.size > 0 || invalidPatterns.size > 0) {
-            notice.error('Highlight name and pattern cannot be empty');
-            return false;
-        }
-
-        return true;
-    }
-
     function handleOpenChange(newOpen: boolean) {
         if (newOpen) {
             setInvalidRuleIds({ name: new Set(), pattern: new Set() });
             setOpen(true);
         } else {
-            if (validateRules()) {
+            const { isValid, invalidRuleIds } = validateRules(highlightRules);
+            setInvalidRuleIds(invalidRuleIds);
+            if (isValid) {
                 setOpen(false);
             }
         }
     }
 
     function handleClose() {
-        if (validateRules()) {
+        const { isValid, invalidRuleIds } = validateRules(highlightRules);
+        setInvalidRuleIds(invalidRuleIds);
+        if (isValid) {
             setOpen(false);
         }
     }
@@ -186,11 +165,7 @@ function HighlightRow({ rule, onDelete, isNameInvalid, isPatternInvalid }: { rul
                             className="size-8 p-0 overflow-hidden"
                             title={rule.color ? `Color: ${rule.color}` : "Select color"}
                         >
-                            <div className={cn(
-                                "size-full",
-                                !rule.color && "bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxwYXRoIGQ9Ik0wIDBoNHY0SDB6bTQgNGg0djRINHoiIGZpbGw9IiNjY2MiIGZpbGwtb3BhY2l0eT0iLjQiLz48L3N2Zz4=')]", // Checkerboard for transparent
-                                rule.color && `bg-${rule.color}`
-                            )} />
+                            <div className={cn("size-full opacity-20", rule.color && `bg-${rule.color}`)} />
                         </Button>
                     </ColorPickerPopup>
                 </div>
@@ -256,4 +231,29 @@ function InputPattern({ ruleId, pattern, isPatternInvalid }: { ruleId: string, p
             </div>
         </div>
     );
+}
+
+function validateRules(highlightRules: readonly HighlightRule[]): { isValid: boolean; invalidRuleIds: { name: Set<string>; pattern: Set<string> } } {
+    const invalidNames = new Set<string>();
+    const invalidPatterns = new Set<string>();
+
+    highlightRules.forEach(
+        (rule) => {
+            if (!rule.name || rule.name.trim() === '') {
+                invalidNames.add(rule.id);
+            }
+            if (!rule.pattern || rule.pattern.trim() === '') {
+                invalidPatterns.add(rule.id);
+            }
+        }
+    );
+
+    const invalidRuleIds = { name: invalidNames, pattern: invalidPatterns };
+    const isValid = invalidNames.size === 0 && invalidPatterns.size === 0;
+
+    if (!isValid) {
+        notice.error('Highlight name and pattern cannot be empty');
+    }
+
+    return { isValid, invalidRuleIds };
 }
