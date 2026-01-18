@@ -41,7 +41,8 @@ bg-foreground/20 \
 dark:bg-foreground/20 \
 focus-visible:ring-ring \
 \
-hover:bg-blue-500 \
+hover:bg-sky-500 \
+focus:bg-sky-500 \
 transition-all \
 \
 after:absolute \
@@ -49,10 +50,6 @@ after:inset-y-0 \
 after:w-1 \
 after:left-1/2 \
 after:-translate-x-1/2 \
-\
-focus-visible:ring-1 \
-focus-visible:ring-offset-1 \
-focus-visible:outline-hidden \
 \
 group-data-[panel-group-direction=vertical]/panel-group:pb-0 \
 group-data-[panel-group-direction=vertical]/panel-group:w-full \
@@ -68,3 +65,9 @@ group-data-[panel-group-direction=vertical]/panel-group:after:-translate-y-1/2 \
 group-data-[panel-group-direction=vertical]/panel-group:[&>div]:rotate-90 \
 \
 flex items-end justify-center";
+
+// \
+// 1focus-visible:ring-1 \
+// 1focus-visible:ring-offset-1 \
+// 1focus-visible:ring-offset-blue-500 \
+// 1focus-visible:outline-hidden \

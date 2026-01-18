@@ -72,7 +72,7 @@ export function DialogEditHighlightRules() {
                             )}
                         </Reorder.Group>
 
-                        <Button className="mt-1 mx-5 h-7" variant="outline" size="xs" onClick={() => highlightActions.addRule("", "")}>
+                        <Button className="mt-1 mx-11 h-7" variant="outline" size="xs" onClick={() => highlightActions.addRule("", "")}>
                             <Plus className="size-3.5" />
                             Add Highlight Rule
                         </Button>
@@ -115,7 +115,7 @@ function Header() {
                 Pattern
             </div>
             <div className="text-xs font-semibold text-center">
-                Color
+                Overlay
             </div>
         </div>
     );
