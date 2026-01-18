@@ -84,7 +84,7 @@ export const FileListRow = memo(
                                     allTimesStore.setPendingScrollTimestamp(allTimesSelectedTimestamp, fileState.id);
                                 }}
                             >
-                                <SymbolArrowCircleLeft className="mr-1 size-4 rotate-180 1border border-green-700 rounded-full stroke-green-700 1fill-green-300!" />
+                                <SymbolArrowCircleLeft className="mr-0.5 size-4 rotate-180 1border border-foreground/60 rounded-full stroke-foreground/60 1fill-green-500/50!" />
                                 {/* <div className="size-2 rounded-full bg-green-500 ring-1 ring-background" title="Present in selected timeline" /> */}
                             </div>
                         )}
