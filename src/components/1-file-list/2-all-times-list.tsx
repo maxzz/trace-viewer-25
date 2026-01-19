@@ -1,32 +1,17 @@
-import { useRef, useEffect } from "react";
-import { useSnapshot } from "valtio";
+import { useRef, useEffect, Fragment } from "react";
 import { useSetAtom, useAtomValue } from "jotai";
-import { classNames } from "@/utils/classnames";
+import { useSnapshot } from "valtio";
+import { classNames } from "@/utils";
 import { motion, AnimatePresence } from "motion/react";
 import { appSettings } from "@/store/1-ui-settings";
+import { ScrollArea2 } from "../ui/shadcn/scroll-area";
 import { allTimesStore } from "@/store/traces-store/3-all-times-store";
 import { allTimesPanelRefAtom, allTimesScrollEffectAtom } from "@/store/traces-store/9-all-times-scroll-effect";
-import { ScrollArea2 } from "../ui/shadcn/scroll-area";
-import { Fragment } from "react/jsx-runtime";
 
 export function AllTimesPanel() {
-    const { allTimes, allTimesSelectedTimestamp } = useSnapshot(allTimesStore);
     const { show, onLeft } = useSnapshot(appSettings).allTimes;
+    const { allTimes } = useSnapshot(allTimesStore);
     const shouldShow = show && allTimes.length > 0;
-    
-    const viewportRef = useRef<HTMLDivElement>(null);
-    const setAllTimesPanelRef = useSetAtom(allTimesPanelRefAtom);
-    
-    // Activate the scroll effect
-    useAtomValue(allTimesScrollEffectAtom);
-    
-    // Store viewport ref in atom on mount
-    useEffect(() => {
-        setAllTimesPanelRef(viewportRef.current);
-        return () => setAllTimesPanelRef(null);
-    }, [setAllTimesPanelRef]);
-
-    let lastDate = "";
 
     return (
         <AnimatePresence initial={false}>
@@ -39,48 +24,66 @@ export function AllTimesPanel() {
                     className={classNames("h-full bg-green-100/20 dark:bg-green-950/20 select-none flex flex-col overflow-hidden", onLeft ? "border-r" : "border-l")}
                 >
                     <div className="w-max h-full flex flex-col">
-                        <ScrollArea2 className="flex-1" ref={viewportRef}>
-                            <div className="flex flex-col">
-                                {allTimes.map(
-                                    (item, idx) => {
-                                        const isSelected = item.timestamp === allTimesSelectedTimestamp;
-                                        const { displayTime, currentDate } = splitTimestampIntoDateAndTime(item.timestamp);
-
-                                        const showDateHeader = currentDate && currentDate !== lastDate;
-                                        if (currentDate) lastDate = currentDate;
-
-                                        return (
-                                            <Fragment key={idx}>
-                                                {showDateHeader && (
-                                                    <div className={dateHeaderClasses} key={`date-header-${item.timestamp}`}>
-                                                        {currentDate}
-                                                    </div>
-                                                )}
-                                                <div
-                                                    className={classNames(rowClasses, isSelected && "bg-primary text-primary-foreground hover:bg-primary/90")}
-                                                    onClick={() => allTimesStore.setAllTimesSelectedTimestamp(isSelected ? null : item.timestamp)}
-                                                    title={item.timestamp}
-                                                    data-timestamp={item.timestamp}
-                                                    key={item.timestamp}
-                                                >
-                                                    {displayTime}
-                                                </div>
-                                            </Fragment>
-                                        );
-                                    }
-                                )}
-
-                                {/* {allTimes.length === 0 && (
-                                    <div className="text-[10px] text-muted-foreground p-2 text-center">
-                                        No data
-                                    </div>
-                                )} */}
-                            </div>
-                        </ScrollArea2>
+                        <AllTimesListContent />
                     </div>
                 </motion.div>
             )}
         </AnimatePresence>
+    );
+}
+
+function AllTimesListContent() {
+    const { allTimes, allTimesSelectedTimestamp } = useSnapshot(allTimesStore);
+
+    const viewportRef = useRef<HTMLDivElement>(null);
+    const setAllTimesPanelRef = useSetAtom(allTimesPanelRefAtom);
+
+    // Activate the scroll effect
+    useAtomValue(allTimesScrollEffectAtom);
+
+    // Store viewport ref in atom on mount
+    useEffect(
+        () => {
+            setAllTimesPanelRef(viewportRef.current);
+            return () => setAllTimesPanelRef(null);
+        },
+        [setAllTimesPanelRef]);
+
+    let lastDate = "";
+
+    return (
+        <ScrollArea2 className="flex-1" ref={viewportRef}>
+            <div className="flex flex-col">
+                {allTimes.map(
+                    (item, idx) => {
+                        const isSelected = item.timestamp === allTimesSelectedTimestamp;
+                        const { displayTime, currentDate } = splitTimestampIntoDateAndTime(item.timestamp);
+
+                        const showDateHeader = currentDate && currentDate !== lastDate;
+                        if (currentDate) lastDate = currentDate;
+
+                        return (
+                            <Fragment key={idx}>
+                                {showDateHeader && (
+                                    <div className={dateHeaderClasses} key={`date-header-${item.timestamp}`}>
+                                        {currentDate}
+                                    </div>
+                                )}
+                                <div
+                                    className={classNames(rowClasses, isSelected && "bg-primary text-primary-foreground hover:bg-primary/90")}
+                                    onClick={() => allTimesStore.setAllTimesSelectedTimestamp(isSelected ? null : item.timestamp)}
+                                    title={item.timestamp}
+                                    data-timestamp={item.timestamp}
+                                    key={item.timestamp}
+                                >
+                                    {displayTime}
+                                </div>
+                            </Fragment>
+                        );
+                    }
+                )}
+            </div>
+        </ScrollArea2>
     );
 }
 
