@@ -2,9 +2,9 @@
 
 export const columnLineNumberClasses = "\
 shrink-0 \
-mr-2 \
-pr-2 \
-w-10 \
+1mr-2 \
+px-1 \
+w-7 \
 h-full \
 text-[0.6rem] \
 text-right \

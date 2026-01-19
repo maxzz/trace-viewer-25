@@ -27,13 +27,6 @@ function TraceRow({ line, globalIndex, currentLineIdxAtom, useIconsForEntryExit,
 
     return (
         <div className={getRowClasses(line, isSelected)} style={{ height: ITEM_HEIGHT }} onClick={() => setCurrentLineIndex(globalIndex)}>
-            {/* Line Number */}
-            {showLineNumbers && (
-                <div className={columnLineNumberClasses}>
-                    {line.lineIndex + 1}
-                </div>
-            )}
-
             {/* Time Column */}
             <div className={classNames(columnTimeClasses, firstLineLength === 12 ? "w-18" : "w-20", line.code === LineCode.Day && "pl-0 justify-center")} title={line.timestamp} data-timestamp={line.timestamp}>
                 {line.code === LineCode.Day
@@ -45,6 +38,13 @@ function TraceRow({ line, globalIndex, currentLineIdxAtom, useIconsForEntryExit,
                         line.timestamp || ""
                     )}
             </div>
+
+            {/* Line Number */}
+            {showLineNumbers && (
+                <div className={columnLineNumberClasses}>
+                    {line.lineIndex + 1}
+                </div>
+            )}
 
             {/* Thread ID */}
             <div className={classNames(columnThreadIdClasses, "w-auto h-full flex px-1", isSelected ? "" : "bg-muted/40")}>
