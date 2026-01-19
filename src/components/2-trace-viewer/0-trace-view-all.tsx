@@ -62,6 +62,12 @@ export function TraceList() {
                     // Get date from the trace line if available and prepend it
                     const currentLine = viewLines.find(l => l.timestamp === hoveredTimestamp.timestamp);
                     const fullTimestamp = currentLine?.date ? `${currentLine.date} ${formatted}` : formatted;
+                    
+                    // Ensure panel is visible
+                    if (!appSettings.allTimes.show) {
+                        appSettings.allTimes.show = true;
+                    }
+                    
                     allTimesStore.setAllTimesSelectedTimestamp(fullTimestamp);
                 }
             }
