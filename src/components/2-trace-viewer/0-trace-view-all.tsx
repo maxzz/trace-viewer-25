@@ -204,13 +204,9 @@ function TraceViewScrollController({ scrollRef, containerHeight, selectedFileId,
 const iconContainerClasses = "\
 absolute left-[5px] size-4 z-20 \
 hover:scale-125 \
-1text-muted-foreground \
-1hover:text-foreground \
-1bg-background/80 \
 \
-1border \
 rounded-full \
-shadow-sm \
+1shadow-sm \
 border-border \
 transition-transform \
 cursor-pointer \

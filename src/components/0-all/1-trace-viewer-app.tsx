@@ -54,9 +54,9 @@ function Footer({ hasFile }: { hasFile: boolean; }) {
 
 function TraceEmptyView() {
     return (
-        <div className="absolute inset-0 bg-muted flex flex-col items-center justify-center pointer-events-none">
+        <div className="absolute inset-0 bg-foreground/5 flex flex-col items-center justify-center pointer-events-none">
             <IconBinocular className="size-8" />
-            <p className="max-w-76 text-center text-sm text-foreground">
+            <p className="max-w-76 text-center text-xs text-foreground">
                 Drag and drop the .trc3 file, folder, ZIP archive, or use the file selection dialog to view the traces.
             </p>
         </div>

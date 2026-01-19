@@ -71,7 +71,7 @@ export const allTimesStore = proxy<AllTimesStore>({
             allTimesStore.setAllTimes(items);
 
             if (appSettings.allTimes.showBuildDoneNotice) {
-                notice.success("Timeline built");
+                notice.success("Timeline is ready");
             }
         } catch (e: any) {
             if (e.message === 'Timeline build cancelled') {
