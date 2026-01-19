@@ -69,6 +69,13 @@ export function DialogOptions() {
                         <Checkbox className="size-5" checked={extraInFooter} onCheckedChange={handleExtraInFooterChange} />
                         Show info from the file header in the footer
                     </Label>
+
+                    <div className="mt-2 font-semibold">History options:</div>
+
+                    <Label className="text-xs font-normal flex items-center space-x-1">
+                        Max history items
+                        <Input className="w-12 h-6 text-xs p-1" value={historyLimit} onChange={handleHistoryLimitChange} min={1} max={100} type="number" />
+                    </Label>
                 </div>
 
                 <DialogFooter className="justify-center!">

@@ -11,6 +11,7 @@ import { filesCountAtom } from "@/store/6-filtered-files";
 import { canGoBackAtom, canGoForwardAtom, historyActions } from "@/store/traces-store/0-files-history";
 import { Button } from "../ui/shadcn/button";
 import { IconBinocular, IconChevronLeft } from "../ui/icons";
+import { TimelineProgress } from "./4-loading-progress";
 
 export function TraceViewerApp() {
     useAtomValue(listenerToBuildAllTimesEffectAtom);
@@ -20,7 +21,7 @@ export function TraceViewerApp() {
 
     return (
         <div className="h-full text-xs flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between">
+            <div className="bg-background flex items-center justify-between">
                 <TopMenu />
                 <TopMenuToolbar />
             </div>
@@ -39,15 +40,17 @@ export function TraceViewerApp() {
 
 function TopMenuToolbar() {
     return (
-        <div className="px-2 flex items-center gap-2">
+        <div className="flex-1 px-2 flex items-center justify-between gap-2">
             <div className="flex items-center">
                 <ButtonHistoryBack />
                 <ButtonHistoryForward />
+                <TimelineProgress />
             </div>
-            <div className="w-px h-4 bg-border mx-1" />
-            <ButtonHighlightToggle />
-            <FileFilterDropdown />
-            <ButtonThemeToggle />
+            <div className="px-2 flex items-center gap-2">
+                <ButtonHighlightToggle />
+                <FileFilterDropdown />
+                <ButtonThemeToggle />
+            </div>
         </div>
     );
 }
@@ -57,7 +60,7 @@ function ButtonHistoryBack() {
     return (
         <Button
             className="size-6 rounded-l rounded-r-none"
-            variant="ghost"
+            variant="outline"
             size="icon"
             onClick={historyActions.goBack}
             disabled={!canGoBack}
@@ -73,7 +76,7 @@ function ButtonHistoryForward() {
     return (
         <Button
             className="size-6 rounded-r rounded-l-none border-l-0"
-            variant="ghost"
+            variant="outline"
             size="icon"
             onClick={historyActions.goForward}
             disabled={!canGoForward}

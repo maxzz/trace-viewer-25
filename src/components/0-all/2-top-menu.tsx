@@ -7,7 +7,6 @@ import { closeAllFiles, closeFile, closeOtherFiles } from "@/store/traces-store/
 import { asyncLoadAnyFiles } from "@/store/traces-store/1-1-load-files";
 import { filesCountAtom } from "@/store/6-filtered-files";
 import { dialogFileHeaderOpenAtom, dialogAboutOpenAtom, dialogOptionsOpenAtom, dialogEditFiltersOpenAtom, dialogEditHighlightsOpenAtom } from "@/store/2-ui-atoms";
-import { TimelineProgress } from "./4-loading-progress";
 
 export function TopMenu() {
     const setOptionsOpen = useSetAtom(dialogOptionsOpenAtom);
@@ -42,63 +41,59 @@ export function TopMenu() {
         <InputWatchFilesLoad inputRef={fileInputRef} />
         <InputWatchFolderLoad inputRef={folderInputRef} />
 
-        <div className="bg-background flex items-center justify-between">
-            <Menubar className="px-2 border-none shadow-none rounded-none bg-transparent">
+        <Menubar className="px-2 border-none shadow-none rounded-none bg-transparent">
 
-                <MenubarMenu>
-                    <MenubarTrigger>
-                        File
-                    </MenubarTrigger>
-                    <MenubarContent>
-                        <MenuItemOpenFile onClick={() => fileInputRef.current?.click()} />
-                        <MenuItemOpenFolder onClick={() => folderInputRef.current?.click()} />
-                        <MenubarSeparator />
-                        <MenuItemCloseOptions />
+            <MenubarMenu>
+                <MenubarTrigger>
+                    File
+                </MenubarTrigger>
+                <MenubarContent>
+                    <MenuItemOpenFile onClick={() => fileInputRef.current?.click()} />
+                    <MenuItemOpenFolder onClick={() => folderInputRef.current?.click()} />
+                    <MenubarSeparator />
+                    <MenuItemCloseOptions />
 
-                        {/* Exit Menu Item - not implemented yet */}
-                        {/* <MenubarSeparator />
+                    {/* Exit Menu Item - not implemented yet */}
+                    {/* <MenubarSeparator />
                         <MenubarItem disabled>
                             Exit <MenubarShortcut>Ctrl+Q</MenubarShortcut>
                         </MenubarItem> */}
-                    </MenubarContent>
-                </MenubarMenu>
+                </MenubarContent>
+            </MenubarMenu>
 
-                <MenubarMenu>
-                    <MenubarTrigger>
-                        View
-                    </MenubarTrigger>
-                    <MenubarContent>
-                        <MenubarItem onClick={() => setEditFiltersOpen(true)}>
-                            File Filters...
-                        </MenubarItem>
-                        <MenubarItem onClick={() => setEditHighlightsOpen(true)}>
-                            Highlight Rules...
-                            <MenubarShortcut>Alt+R</MenubarShortcut>
-                        </MenubarItem>
-                        <MenubarItem onClick={() => setOptionsOpen(true)}>
-                            Options...
-                            <MenubarShortcut>Ctrl+,</MenubarShortcut>
-                        </MenubarItem>
-                        <MenubarSeparator />
-                        <MenuItemShowFileHeader />
-                    </MenubarContent>
-                </MenubarMenu>
+            <MenubarMenu>
+                <MenubarTrigger>
+                    View
+                </MenubarTrigger>
+                <MenubarContent>
+                    <MenubarItem onClick={() => setEditFiltersOpen(true)}>
+                        File Filters...
+                    </MenubarItem>
+                    <MenubarItem onClick={() => setEditHighlightsOpen(true)}>
+                        Highlight Rules...
+                        <MenubarShortcut>Alt+R</MenubarShortcut>
+                    </MenubarItem>
+                    <MenubarItem onClick={() => setOptionsOpen(true)}>
+                        Options...
+                        <MenubarShortcut>Ctrl+,</MenubarShortcut>
+                    </MenubarItem>
+                    <MenubarSeparator />
+                    <MenuItemShowFileHeader />
+                </MenubarContent>
+            </MenubarMenu>
 
-                <MenubarMenu>
-                    <MenubarTrigger>
-                        Help
-                    </MenubarTrigger>
-                    <MenubarContent>
-                        <MenubarItem onClick={() => setAboutOpen(true)}>
-                            About
-                        </MenubarItem>
-                    </MenubarContent>
-                </MenubarMenu>
+            <MenubarMenu>
+                <MenubarTrigger>
+                    Help
+                </MenubarTrigger>
+                <MenubarContent>
+                    <MenubarItem onClick={() => setAboutOpen(true)}>
+                        About
+                    </MenubarItem>
+                </MenubarContent>
+            </MenubarMenu>
 
-            </Menubar>
-
-            <TimelineProgress />
-        </div>
+        </Menubar>
     </>);
 }
 

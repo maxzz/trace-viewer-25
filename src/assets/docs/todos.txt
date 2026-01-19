@@ -11,6 +11,7 @@
 	TODO: show open folder name in the browser tab caption - done
 	TODO: Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}. - done
 	TODO: Each child in a list should have a unique "key" prop. - done; fragment wo/ keys
+    TODO: file navigation history backward and forward - done 01.18.26
 
 01.03.26
     TODO: `-2147024894` add explanation

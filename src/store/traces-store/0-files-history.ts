@@ -7,12 +7,9 @@ interface FileHistory {
     currentIndex: number;
 }
 
-// Stores the history of selected files
-// items: array of file IDs
-// currentIndex: pointer to the current file in items array
 export const fileHistoryAtom = atom<FileHistory>({
-    items: [],
-    currentIndex: -1
+    items: [],                                  // Stores the history of selected files items: array of file IDs
+    currentIndex: -1,                           // currentIndex: pointer to the current file in items array
 });
 
 export const canGoBackAtom = atom((get) => {
@@ -48,7 +45,7 @@ export const historyActions = {
         // Typically browser history allows same page reload, but for file selection it might be redundant.
         // However, if we navigate A -> B -> A, we should record A.
         // If we are at A and click A, maybe not.
-        
+
         const currentFileId = history.currentIndex >= 0 ? history.items[history.currentIndex] : null;
         if (currentFileId === fileId) {
             return;
@@ -56,7 +53,7 @@ export const historyActions = {
 
         // If we're in the middle of history, discard future items
         const newItems = history.items.slice(0, history.currentIndex + 1);
-        
+
         newItems.push(fileId);
 
         // Apply limit
@@ -78,12 +75,12 @@ export const historyActions = {
             isNavigatingHistory = true;
             const newIndex = history.currentIndex - 1;
             const fileId = history.items[newIndex];
-            
+
             store.set(fileHistoryAtom, {
                 ...history,
                 currentIndex: newIndex
             });
-            
+
             selectFile(fileId);
             isNavigatingHistory = false;
         }
@@ -97,12 +94,12 @@ export const historyActions = {
             isNavigatingHistory = true;
             const newIndex = history.currentIndex + 1;
             const fileId = history.items[newIndex];
-            
+
             store.set(fileHistoryAtom, {
                 ...history,
                 currentIndex: newIndex
             });
-            
+
             selectFile(fileId);
             isNavigatingHistory = false;
         }
@@ -111,36 +108,36 @@ export const historyActions = {
     removeFromHistory: (fileId: string) => {
         const store = getDefaultStore();
         const history = store.get(fileHistoryAtom);
-        
+
         const newItems = history.items.filter(id => id !== fileId);
-        
+
         // If the removed file was in history, we need to adjust currentIndex
         // It's a bit tricky because we might remove a file that is before or after current index.
         // Or even the current index (though closeFile typically selects another file afterwards).
-        
+
         // If we just filter, the indices shift.
         // We need to find where the current file (if it wasn't the removed one) ended up.
         // If the removed file was the current one, we need to decide where to point.
         // Since closeFile() logic selects another file, that selection will trigger addToHistory.
         // So here we probably just want to clean up occurrences.
-        
+
         // However, if closeFile triggers selectFile, and we are not navigating, 
         // addToHistory will be called for the new file.
         // If we blindly remove the file from history, we might mess up the "back" stack logic if not careful.
-        
+
         // Simpler approach: 
         // 1. Remove all instances of fileId.
         // 2. Adjust currentIndex to point to the same file as before if possible, or clamp it.
-        
+
         let currentItem = history.currentIndex >= 0 ? history.items[history.currentIndex] : null;
-        
+
         if (currentItem === fileId) {
-             // The current file is being removed.
-             // We can let selectFile logic handle the new selection state, which will add to history.
-             // But we should remove this file from history so we don't navigate back to it.
-             // If we remove it, what becomes current?
-             // Usually closeFile selects next/prev.
-             currentItem = null; // It's gone
+            // The current file is being removed.
+            // We can let selectFile logic handle the new selection state, which will add to history.
+            // But we should remove this file from history so we don't navigate back to it.
+            // If we remove it, what becomes current?
+            // Usually closeFile selects next/prev.
+            currentItem = null; // It's gone
         }
 
         if (newItems.length === 0) {
@@ -151,20 +148,20 @@ export const historyActions = {
         // Find new index of currentItem
         let newIndex = -1;
         if (currentItem) {
-             // If duplicate IDs were possible, this might jump. But we assume unique IDs in file list usually.
-             // Wait, history can have [A, B, A]. If current is 2nd A.
-             // We need to be careful.
-             
-             // Let's rebuild the items and track where currentIndex goes.
-             // Actually, the requirements say: "If one file is closed, it should be removed from the history."
-             
-             // Implementation: Reconstruct history excluding the file, try to keep relative position close to where we were.
+            // If duplicate IDs were possible, this might jump. But we assume unique IDs in file list usually.
+            // Wait, history can have [A, B, A]. If current is 2nd A.
+            // We need to be careful.
+
+            // Let's rebuild the items and track where currentIndex goes.
+            // Actually, the requirements say: "If one file is closed, it should be removed from the history."
+
+            // Implementation: Reconstruct history excluding the file, try to keep relative position close to where we were.
         }
-        
+
         // Let's do a more robust filter and index adjustment
         const adjustedItems: string[] = [];
         let adjustedIndex = -1;
-        
+
         for (let i = 0; i < history.items.length; i++) {
             const item = history.items[i];
             if (item !== fileId) {
@@ -174,7 +171,7 @@ export const historyActions = {
                 } else if (i < history.currentIndex) {
                     // if we are keeping an item before current, no change needed to adjustedIndex calc logic 
                     // (wait, if we haven't found current yet, adjustedIndex is still -1)
-                } 
+                }
                 // If i > history.currentIndex, we just add it.
             } else {
                 // Item removed
@@ -182,7 +179,7 @@ export const historyActions = {
                     // Current item removed. 
                     // adjustedIndex remains at the last added item (or -1 if empty)
                     // We'll fix it up below.
-                    adjustedIndex = Math.max(0, adjustedItems.length - 1); 
+                    adjustedIndex = Math.max(0, adjustedItems.length - 1);
                     // Actually if we removed the current item, we might want to point to the previous one
                     // or just let the new selection (from closeFile) take over.
                     // But closeFile calls removeFromHistory BEFORE selectFile(next).
@@ -190,13 +187,13 @@ export const historyActions = {
                 }
             }
         }
-        
+
         // If we removed items before current index, we need to decrement adjustedIndex.
         // Let's try a different way: map old indices to new indices.
-        
+
         const keptIndices: number[] = [];
         const filteredItems: string[] = [];
-        
+
         history.items.forEach((item, idx) => {
             if (item !== fileId) {
                 filteredItems.push(item);
@@ -205,41 +202,41 @@ export const historyActions = {
         });
 
         let newCurrentIndex = -1;
-        
+
         // If current index was pointing to a kept item, find its new index
         // If current index was pointing to a removed item, find the nearest kept item?
-        
+
         // Use case: [A, B, C]. Current B (1). Close B.
         // Result: [A, C]. New current?
         // closeFile selects A or C. Let's say it selects A.
         // It calls selectFile(A). addToHistory(A).
         // If we leave index at A (0), then addToHistory(A) might add A again if we are not careful? 
         // No, addToHistory checks against current.
-        
+
         // Let's rely on simple filtering.
         // If we lost the current item, point to the previous valid one, or -1.
-        
+
         if (history.items[history.currentIndex] === fileId) {
             // We removed the current item.
             // Ideally we step back.
-            newCurrentIndex = -1; 
+            newCurrentIndex = -1;
             // We search backwards from current index for a kept item
             for (let i = history.currentIndex - 1; i >= 0; i--) {
                 if (history.items[i] !== fileId) {
-                     // Find where this item ended up in filtered list
-                     // This is inefficient but safe
-                     const keptItem = history.items[i];
-                     newCurrentIndex = filteredItems.lastIndexOf(keptItem); 
-                     // lastIndexOf might be risky if duplicates exist.
-                     // But we filtered properly.
-                     
-                     // Let's just correct the index based on how many items were removed before it.
-                     break;
+                    // Find where this item ended up in filtered list
+                    // This is inefficient but safe
+                    const keptItem = history.items[i];
+                    newCurrentIndex = filteredItems.lastIndexOf(keptItem);
+                    // lastIndexOf might be risky if duplicates exist.
+                    // But we filtered properly.
+
+                    // Let's just correct the index based on how many items were removed before it.
+                    break;
                 }
             }
             if (newCurrentIndex === -1 && filteredItems.length > 0) {
-                 // Try forward?
-                 newCurrentIndex = 0;
+                // Try forward?
+                newCurrentIndex = 0;
             }
         } else {
             // Current item kept. Find its new index.
@@ -257,8 +254,8 @@ export const historyActions = {
         } else if (newCurrentIndex >= filteredItems.length) {
             newCurrentIndex = filteredItems.length - 1;
         } else if (newCurrentIndex < 0 && filteredItems.length > 0) {
-             // if we couldn't find a place, maybe default to end?
-             newCurrentIndex = filteredItems.length - 1;
+            // if we couldn't find a place, maybe default to end?
+            newCurrentIndex = filteredItems.length - 1;
         }
 
         store.set(fileHistoryAtom, {
