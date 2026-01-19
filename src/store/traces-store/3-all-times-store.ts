@@ -58,14 +58,18 @@ export const allTimesStore = proxy<AllTimesStore>({
     asyncBuildAllTimes: async (precision: number) => {
         allTimesStore.setAllTimesLoading(true);
         try {
-            const inputFiles = filesStore.states.map(
-                (f: FileState) => ({
-                    id: f.id,
-                    lines: f.data.viewLines.map(
-                        (l: TraceLine) => ({ timestamp: l.timestamp, lineIndex: l.lineIndex, date: l.date })
-                    )
-                })
-            );
+            const { selectedFilterId } = appSettings;
+
+            const inputFiles = filesStore.states
+                .filter(f => !selectedFilterId || (f.matchedFilterIds && f.matchedFilterIds.includes(selectedFilterId)))
+                .map(
+                    (f: FileState) => ({
+                        id: f.id,
+                        lines: f.data.viewLines.map(
+                            (l: TraceLine) => ({ timestamp: l.timestamp, lineIndex: l.lineIndex, date: l.date })
+                        )
+                    })
+                );
 
             const items = await asyncBuildAllTimesInWorker(inputFiles, precision);
             allTimesStore.setAllTimes(items);

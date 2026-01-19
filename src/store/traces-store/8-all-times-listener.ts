@@ -5,35 +5,70 @@ import { appSettings } from "../1-ui-settings";
 import { allTimesStore } from "./3-all-times-store";
 import { filesStore } from "./9-types-files-store";
 import { cancelAllTimesBuild } from "../../workers-client/all-times-client";
+import { dialogEditFiltersOpenAtom } from "../2-ui-atoms";
 
 export const listenerToBuildAllTimesEffectAtom = atomEffect(
     (get, set) => {
+        const isFiltersOpen = get(dialogEditFiltersOpenAtom);
+
+        // If dialog just closed and we need to rebuild, do it
+        if (!isFiltersOpen && appSettings.allTimes.needToRebuild) {
+            buildAlltimes();
+        }
+
         const unsubShow = subscribeKey(appSettings.allTimes, 'show', buildAlltimes);
 
         const unsubPrecision = subscribeKey(appSettings.allTimes, 'precision', () => {
             appSettings.allTimes.needToRebuild = true;
-            buildAlltimes();
+            if (!isFiltersOpen) buildAlltimes();
+        });
+
+        const unsubSelectedFilter = subscribeKey(appSettings, 'selectedFilterId', () => {
+            appSettings.allTimes.needToRebuild = true;
+            if (!isFiltersOpen) buildAlltimes();
         });
 
         const unsubFilesData = subscribe(filesStore.states, (ops) => {
-            const isIgnorable = ops.every( // Each operation is a tuple: [opType, path, value?, previous?]; to check as composer1 "@src/store/traces-store/8-all-times-listener.ts:19-26 explain".
-                (op) => {
-                    const path = op[1];
-                    return path.length >= 2 && path[1] === 'matchedHighlightIds';
-                }
-            );
+            const selectedId = appSettings.selectedFilterId;
 
-            if (isIgnorable) {
+            const relevantChange = ops.some((op) => {
+                const path = op[1];
+                if (path.length >= 2 && path[1] === 'matchedHighlightIds') {
+                    return false;
+                }
+
+                if (path.length >= 2 && path[1] === 'matchedFilterIds') {
+                    if (!selectedId) {
+                        return false; // Changes to filters don't affect "All files" view
+                    }
+                    const newVal = (op[2] as string[]) || [];
+                    const oldVal = (op[3] as string[]) || [];
+                    
+                    // Defensive check
+                    if (!Array.isArray(newVal) || !Array.isArray(oldVal)) return true; 
+
+                    const hasNew = newVal.includes(selectedId);
+                    const hadOld = oldVal.includes(selectedId);
+                    return hasNew !== hadOld;
+                }
+
+                return true;
+            });
+
+            if (!relevantChange) {
                 return;
             }
 
             appSettings.allTimes.needToRebuild = true;
-            buildAlltimes();
+            if (!isFiltersOpen) {
+                buildAlltimes();
+            }
         });
 
         return () => {
             unsubShow();
             unsubPrecision();
+            unsubSelectedFilter();
             unsubFilesData();
             cancelAllTimesBuild();
         };
