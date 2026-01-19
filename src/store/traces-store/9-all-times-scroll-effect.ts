@@ -17,9 +17,11 @@ export const allTimesScrollEffectAtom = atomEffect(
     (get) => {
         // Get viewport - this creates a dependency, so effect re-runs when viewport changes
         const viewport = get(allTimesPanelRefAtom);
+        console.log('[allTimesScrollEffect] Effect run, viewport:', viewport ? 'element' : 'null');
 
         // Subscribe to timestamp changes
         const unsubscribe = subscribeKey(allTimesStore, 'allTimesSelectedTimestamp', (timestamp) => {
+            console.log('[allTimesScrollEffect] subscribeKey callback, timestamp:', timestamp, 'viewport in closure:', viewport ? 'element' : 'null');
             // Use requestAnimationFrame to ensure layout is ready
             requestAnimationFrame(() => {
                 scrollToTimestampIfNeeded(viewport, timestamp);
@@ -27,13 +29,20 @@ export const allTimesScrollEffectAtom = atomEffect(
         });
 
         // Also scroll immediately if viewport just became available and there's a selected timestamp
-        if (viewport && allTimesStore.allTimesSelectedTimestamp) {
+        const currentTimestamp = allTimesStore.allTimesSelectedTimestamp;
+        console.log('[allTimesScrollEffect] Initial check - viewport:', viewport ? 'element' : 'null', 'timestamp:', currentTimestamp);
+        
+        if (viewport && currentTimestamp) {
+            console.log('[allTimesScrollEffect] Initial check PASSED, scheduling scroll');
             requestAnimationFrame(() => {
-                scrollToTimestampIfNeeded(viewport, allTimesStore.allTimesSelectedTimestamp);
+                scrollToTimestampIfNeeded(viewport, currentTimestamp);
             });
         }
 
-        return () => unsubscribe();
+        return () => {
+            console.log('[allTimesScrollEffect] Cleanup');
+            unsubscribe();
+        };
     }
 );
 
@@ -42,6 +51,8 @@ export const allTimesScrollEffectAtom = atomEffect(
  * Uses getBoundingClientRect for robust position calculation regardless of DOM structure.
  */
 function scrollToTimestampIfNeeded(viewport: HTMLElement | null, timestamp: string | null) {
+    console.log('scrollToTimestampIfNeeded', timestamp, viewport);
+
     if (!timestamp || !viewport) return;
 
     // Find the element with matching data-timestamp
