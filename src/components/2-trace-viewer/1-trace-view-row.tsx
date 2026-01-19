@@ -48,17 +48,19 @@ function TraceRow({ line, globalIndex, currentLineIdxAtom, useIconsForEntryExit,
 
             {/* Thread ID */}
             <div className={classNames(columnThreadIdClasses, "w-auto h-full flex px-1", isSelected ? "" : "bg-muted/40")}>
-                {uniqueThreadIds.map((tid) => {
-                    const color = getThreadColor(tid);
-                    return (
-                        <div key={tid} className="relative w-3 h-full flex justify-center items-center" title={`Thread ${tid} (0x${tid.toString(16).toUpperCase()})`}>
-                            <div className="absolute w-px -top-1/2 -bottom-1/2 border-l" style={{ borderLeftColor: color, opacity: 0.5 }} />
-                            {tid === line.threadId && (
-                                <div className="size-2 bg-transparent border rounded-full z-10" style={{ borderColor: color }} />
-                            )}
-                        </div>
-                    );
-                })}
+                {uniqueThreadIds.map(
+                    (tid) => {
+                        const color = getThreadColor(tid);
+                        return (
+                            <div key={tid} className="relative w-3 h-full flex justify-center items-center" title={`Thread ${tid} (0x${tid.toString(16).toUpperCase()})`}>
+                                <div className="absolute w-px -top-1/2 -bottom-1/2 border-l" style={{ borderLeftColor: color, opacity: 0.5 }} />
+                                {tid === line.threadId && (
+                                    <div className="size-2 bg-transparent border rounded-full z-10" style={{ borderColor: color }} />
+                                )}
+                            </div>
+                        );
+                    }
+                )}
             </div>
 
             {/* Content with Indent */}
@@ -74,22 +76,6 @@ function TraceRow({ line, globalIndex, currentLineIdxAtom, useIconsForEntryExit,
             </div>
         </div>
     );
-}
-
-function getLineColor(line: TraceLine) {
-    // Priority: Override Color > LineCode Color > Default
-    if (line.textColor) {
-        return undefined; // Handled by inline style
-    }
-
-    switch (line.code) {
-        case LineCode.Error: return 'text-red-500 dark:text-red-400 font-bold';
-        case LineCode.Entry: return 'text-blue-600 dark:text-blue-400';
-        case LineCode.Exit: return 'text-blue-600 dark:text-blue-400';
-        case LineCode.Time: return 'text-green-600 dark:text-green-400';
-        case LineCode.Day: return 'text-green-600 dark:text-green-400 font-bold bg-green-100 dark:bg-green-200/50 w-full block';
-        default: return 'text-foreground';
-    }
 }
 
 const formatContent = (line: TraceLine, useIconsForEntryExit: boolean) => {
@@ -147,6 +133,22 @@ function getRowClasses(line: TraceLine, isSelected: boolean) {
         isSelected ? lineCurrentClasses : lineNotCurrentClasses,
         line.code === LineCode.Error && !isSelected && lineErrorClasses
     );
+}
+
+function getLineColor(line: TraceLine) {
+    // Priority: Override Color > LineCode Color > Default
+    if (line.textColor) {
+        return undefined; // Handled by inline style
+    }
+
+    switch (line.code) {
+        case LineCode.Error: return 'text-red-500 dark:text-red-400 font-bold';
+        case LineCode.Entry: return 'text-blue-600 dark:text-blue-400';
+        case LineCode.Exit: return 'text-blue-600 dark:text-blue-400';
+        case LineCode.Time: return 'text-green-600 dark:text-green-400';
+        case LineCode.Day: return 'text-green-600 dark:text-green-400 font-bold bg-green-100 dark:bg-green-200/50 w-full block';
+        default: return 'text-foreground';
+    }
 }
 
 function getThreadColor(tid: number, alpha = 1) {

@@ -45,7 +45,7 @@ text-xs \
 font-mono \
 whitespace-pre \
 border-l-4 \
-cursor-pointer \
+cursor-default \
 flex items-center \
 ";
 

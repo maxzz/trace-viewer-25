@@ -1,7 +1,6 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import { useAtomValue, useAtom, atom, type PrimitiveAtom } from "jotai";
 import { useSnapshot } from "valtio";
-import { ArrowLeft } from "lucide-react";
 import { formatTimestamp } from "@/utils";
 import { appSettings } from "../../store/1-ui-settings";
 import { currentFileStateAtom } from "../../store/traces-store/0-files-current-state";
@@ -11,6 +10,7 @@ import { allTimesStore } from "../../store/traces-store/3-all-times-store";
 import { TraceRowMemo } from "./1-trace-view-row";
 import { handlePendingTimestampScroll, scrollToSelection } from "./2-trace-view-scroll";
 import { handleKeyboardNavigation } from "./3-trace-view-keyboard";
+import { SymbolArrowCircleLeft } from "../ui/icons/symbols/all-other/33-arrow-circle-left";
 
 // Atom to track hovered timestamp info
 const hoveredTimestampAtom = atom<{ timestamp: string; top: number; } | null>(null);
@@ -133,16 +133,21 @@ export function TraceList() {
             onMouseLeave={() => setHoveredTimestamp(null)}
             tabIndex={0}
         >
+            {/* for styles debugging */}
+            {/* <div className={iconContainerClasses} title="Locate in all times timeline">
+                <SymbolArrowCircleLeft className={iconClasses} />
+            </div> */}
+
             {/* Locate in Timeline icon */}
             {hoveredTimestamp && (
                 <div
                     id="trace-timestamp-icon"
-                    className={timestampIconClasses}
+                    className={iconContainerClasses}
                     style={{ top: hoveredTimestamp.top + scrollTop + (ITEM_HEIGHT - 16) / 2 }}
                     title="Locate in all times timeline"
                     onClick={onIconClick}
                 >
-                    <ArrowLeft className="" />
+                    <SymbolArrowCircleLeft className={iconClasses} />
                 </div>
             )}
 
@@ -196,15 +201,24 @@ function TraceViewScrollController({ scrollRef, containerHeight, selectedFileId,
     return null;
 }
 
-const timestampIconClasses = "\
-absolute left-1 size-4 z-20 \
-hover:scale-110 \
-text-muted-foreground hover:text-foreground \
-bg-background/80 \
-border \
+const iconContainerClasses = "\
+absolute left-[5px] size-4 z-20 \
+hover:scale-125 \
+1text-muted-foreground \
+1hover:text-foreground \
+1bg-background/80 \
+\
+1border \
 rounded-full \
 shadow-sm \
 border-border \
 transition-transform \
 cursor-pointer \
 flex items-center justify-center";
+
+const iconClasses = "\
+size-full \
+stroke-foreground/80 dark:stroke-foreground/80 \
+hover:stroke-foreground dark:hover:stroke-foreground \
+fill-background! \
+";
