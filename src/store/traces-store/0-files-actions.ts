@@ -1,12 +1,14 @@
 import { filesStore } from "./9-types-files-store";
 import { getCurrentFileState, setCurrentFileState } from "./0-files-current-state";
 import { removeFileLoadingAtom } from "./1-3-file-loading-atoms";
+import { historyActions } from "./0-files-history";
 
 export function selectFile(id: string | null) {
     if (id) {
         const fileState = filesStore.states.find(f => f.id === id);
         if (fileState) {
             setCurrentFileState(fileState);
+            historyActions.addToHistory(id);
         }
     } else {
         setCurrentFileState(null);
@@ -16,6 +18,7 @@ export function selectFile(id: string | null) {
 export function closeFile(id: string) {
     const index = filesStore.states.findIndex(f => f.id === id);
     if (index !== -1) {
+        historyActions.removeFromHistory(id);
         filesStore.states.splice(index, 1);
         delete filesStore.quickFileData[id];
         removeFileLoadingAtom(id);
@@ -64,6 +67,7 @@ export function closeOtherFiles(id: string) {
 export function closeAllFiles() {
     // Clean up all loading atoms
     filesStore.states.forEach(f => removeFileLoadingAtom(f.id));
+    historyActions.clearHistory();
 
     filesStore.states.splice(0, filesStore.states.length);
     filesStore.quickFileData = {};

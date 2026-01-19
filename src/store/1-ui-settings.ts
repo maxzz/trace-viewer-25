@@ -35,6 +35,9 @@ export interface AppSettings {
     highlightRules: HighlightRule[];
     highlightEnabled: boolean;
 
+    // Navigation
+    historyLimit: number;
+
     // All Times
     allTimes: {
         show: boolean;
@@ -55,6 +58,7 @@ const DEFAULT_SETTINGS: AppSettings = {
     selectedFilterId: null,
     highlightRules: [],
     highlightEnabled: true,
+    historyLimit: 100,
     allTimes: {
         show: false,
         onLeft: true,

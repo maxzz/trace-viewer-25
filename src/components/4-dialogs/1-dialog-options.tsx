@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/shadcn/label';
 
 export function DialogOptions() {
     const [open, onOpenChange] = useAtom(dialogOptionsOpenAtom);
-    const { showFooter, useIconsForEntryExit, showLineNumbers, extraInFooter, allTimes } = useSnapshot(appSettings);
+    const { showFooter, useIconsForEntryExit, showLineNumbers, extraInFooter, allTimes, historyLimit } = useSnapshot(appSettings);
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -94,6 +94,13 @@ function handleExtraInFooterChange(checked: boolean) {
 
 function handleShowLineNumbersChange(checked: boolean) {
     appSettings.showLineNumbers = checked;
+}
+
+function handleHistoryLimitChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const val = parseInt(e.target.value, 10);
+    if (!isNaN(val) && val > 0) {
+        appSettings.historyLimit = val;
+    }
 }
 
 function handleShowTimelineChange(checked: boolean) {
