@@ -11,7 +11,17 @@
 	TODO: show open folder name in the browser tab caption - done
 	TODO: Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}. - done
 	TODO: Each child in a list should have a unique "key" prop. - done; fragment wo/ keys
+	
+	TODO: add checkbox to each filter to activate/deactivate this color filter - done 01.09.26
+	TODO: where from 5 digits for ms are comming it should be 3. simse like some file? or no it is after selecting item from file list green dot. a it's from C# interop dlls - done 01.09.26
+    TODO: don't calculate combined line until all files loaded - done 01.09.26
+	TODO: only active panel should have blue highlight done 01.09.26
+	TODO: jump back to full time line from TraceList current element - done 01.09.26
+	TODO: jump on full timeline - done 01.09.26
+	TODO: loading state is not updated - done 01.10.26
     TODO: file navigation history backward and forward - done 01.18.26
+	TODO: option dialog checkboxes replace with toggles - done 01.19.26
+	TODO: copy file name from files list - done 01.19.26
 
 01.03.26
     TODO: `-2147024894` add explanation
@@ -34,17 +44,16 @@
     TODO: when open folder and none of files match show message: Files loaded but do not match filter
     
 01.09.26
-	TODO: add checkbox to each filter to activate/deactivate this color filter
-	TODO: only active panel should have blue highlight
 	TODO: remove scroll on full timeline
-	TODO: where from 5 digits for ms are comming it should be 3. simse like some file? or no it is after selecting item from file list green dot. a it's from C# interop dlls
-	TODO: jump back to full time line from TraceList current element
-	TODO: don't calculate combined line until all files loaded - done
-
-	TODO: jump on full timeline
 	TODO: lines cursor should be default not pointer
 
 01.10.26
-	TODO: loading state is not updated
 	TODO: by moving into TraceList files trees rerenders
 	TODO: scroll to middle of TraceList if line is closed to the edge (if selected line is not in view otherwise do not scroll)
+
+01.19.26
+	TODO: https://www.google.com/search?q=0x800704C7&sourceid=chrome&ie=UTF-8 if selected text contains hr then search for it in new tab
+	TODO: scroll in not working if selected the same item (but should happen)
+	TODO: add lime, slate, gray, zinc, and stone
+	TODO: add documentation
+    TODO: in options dialog don't set initial focus. focus ring needs to be updated

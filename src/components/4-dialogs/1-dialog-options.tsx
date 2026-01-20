@@ -5,8 +5,9 @@ import { dialogOptionsOpenAtom } from '@/store/2-ui-atoms';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/shadcn/dialog';
 import { Input } from '@/components/ui/shadcn/input';
 import { Button } from '@/components/ui/shadcn/button';
-import { Toggle } from '@/components/ui/shadcn/toggle';
+import { Switch } from '@/components/ui/shadcn/switch';
 import { Label } from '@/components/ui/shadcn/label';
+import { classNames } from '@/utils';
 
 export function DialogOptions() {
     const [open, onOpenChange] = useAtom(dialogOptionsOpenAtom);
@@ -14,7 +15,7 @@ export function DialogOptions() {
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-[300px]!" aria-describedby={undefined}>
+            <DialogContent className="max-w-[360px]!" aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle className="text-sm">
                         Options
@@ -26,17 +27,17 @@ export function DialogOptions() {
 
                     <OptionCheckbox checked={useIconsForEntryExit} onCheckedChange={handleUseIconsChange} label="Use Icons for Entry/Exit lines" />
 
-                    <OptionCheckbox checked={showLineNumbers} onCheckedChange={handleShowLineNumbersChange} label="Show line numbers in the trace file" />
+                    <OptionCheckbox checked={showLineNumbers} onCheckedChange={handleShowLineNumbersChange} label="Show line indices in the trace file view" />
 
                     <div className="mt-2 font-semibold">All times options:</div>
 
                     <OptionCheckbox checked={allTimes.show} onCheckedChange={handleShowTimelineChange} label="Show all times column" />
 
+                    <OptionCheckbox checked={allTimes.onLeft} onCheckedChange={handleCombinedOnLeftChange} label="Show all times on the left of the file list" disabled={!allTimes.show} title={!allTimes.show ? 'This option is disabled because "Show all times column" is disabled' : undefined} />
+
                     <OptionCheckbox checked={allTimes.showBuildDoneNotice} onCheckedChange={handleShowTimelineNotificationChange} label="Show notification when all times is built" />
 
-                    <OptionCheckbox checked={allTimes.onLeft} onCheckedChange={handleCombinedOnLeftChange} label="Show on the left of the file list" />
-
-                    <div className="-mt-1 pl-7 flex items-center space-x-2">
+                    <div className="flex items-center justify-between space-x-2">
                         <Label className="text-xs font-normal text-balance">
                             All times precision
                         </Label>
@@ -60,10 +61,10 @@ export function DialogOptions() {
 
                     <Label className="text-xs font-normal flex flex-col items-start gap-1">
                         Select file pattern on start:
-                        <Input 
-                            className="h-6 text-xs p-1" 
-                            value={startupFilePattern} 
-                            onChange={handleStartupPatternChange} 
+                        <Input
+                            className="h-6 text-xs p-1"
+                            value={startupFilePattern}
+                            onChange={handleStartupPatternChange}
                             placeholder="e.g. *.dll.* or /regex/"
                         />
                         <span className="self-end text-muted-foreground text-[10px]">
@@ -78,6 +79,19 @@ export function DialogOptions() {
 
             </DialogContent>
         </Dialog>
+    );
+}
+
+function OptionCheckbox({ checked, onCheckedChange, label, disabled, title }: { checked: boolean, onCheckedChange: (checked: boolean) => void, label: React.ReactNode, disabled?: boolean; title?: string }) {
+    return (
+        <Label
+            className={classNames("text-xs font-normal flex items-center justify-between space-x-1", disabled && "opacity-50")}
+            data-disabled={disabled}
+            title={title}
+        >
+            {label}
+            <Switch className={classNames(disabled && "disabled:opacity-100")} checked={checked} onCheckedChange={onCheckedChange} disabled={disabled} />
+        </Label>
     );
 }
 
@@ -125,13 +139,4 @@ function handleShowTimelineNotificationChange(checked: boolean) {
 
 function handleStartupPatternChange(e: React.ChangeEvent<HTMLInputElement>) {
     appSettings.startupFilePattern = e.target.value;
-}
-
-function OptionCheckbox({ checked, onCheckedChange, label }: { checked: boolean, onCheckedChange: (checked: boolean) => void, label: React.ReactNode }) {
-    return (
-        <Label className="text-xs font-normal flex items-center space-x-1">
-            <Toggle variant="outline" className="size-5" pressed={checked} onPressedChange={onCheckedChange} />
-            {label}
-        </Label>
-    );
 }

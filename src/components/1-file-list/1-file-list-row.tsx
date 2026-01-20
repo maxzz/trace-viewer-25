@@ -92,17 +92,14 @@ export const FileListRow = memo(
                 </ContextMenuTrigger>
 
                 <ContextMenuContent>
-                    <ContextMenuItem onClick={() => {
-                        highlightActions.addRule(fileState.data.fileName, fileState.data.fileName);
-                        setEditHighlightsOpen(true);
-                    }}>
+                    <ContextMenuItem onClick={() => { highlightActions.addRule(fileState.data.fileName, fileState.data.fileName); setEditHighlightsOpen(true); }}>
                         Add Highlight Rule
                     </ContextMenuItem>
-                    <ContextMenuItem onClick={() => {
-                        // traceStore.selectFile(file.id);
-                        setFileHeaderOpen(fileState.id);
-                    }}>
+                    <ContextMenuItem onClick={() => { /*traceStore.selectFile(file.id);*/ setFileHeaderOpen(fileState.id); }}>
                         Show File Header
+                    </ContextMenuItem>
+                    <ContextMenuItem onClick={() => { navigator.clipboard.writeText(fileState.data.fileName); }}>
+                        Copy filename
                     </ContextMenuItem>
                     <ContextMenuSeparator />
                     <ContextMenuItem onClick={() => closeFile(fileState.id)}>
