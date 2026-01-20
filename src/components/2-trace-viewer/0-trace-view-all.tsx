@@ -47,7 +47,7 @@ export function TraceList() {
             }
             setHoveredTimestamp(null);
         },
-        [setHoveredTimestamp]);
+        []);
 
     const onIconClick = useCallback(
         (e: React.MouseEvent) => {
