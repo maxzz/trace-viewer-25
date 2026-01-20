@@ -68,16 +68,15 @@ async function loadFilesToStore(files: File[]) {
         filesStore.quickFileData[fileState.id] = fileState.data;
     }
 
-    // Select the first file if none is selected, or re-select to refresh the view
+    // Select the first file if none is selected, or force refresh if current file was just loaded
     const currentState = getCurrentFileState();
     if (itemsToLoad.length > 0) {
         if (!currentState) {
             // No file selected - select the first loaded file
             selectFile(itemsToLoad[0].fileState.id);
         } else if (itemsToLoad.some(item => item.fileState.id === currentState.id)) {
-            // Force UI refresh by re-setting the atom (Jotai needs different reference to notify)
-            setCurrentFileState(null);
-            setCurrentFileState(currentState);
+            // Force UI refresh by creating a new reference (data is loaded now)
+            setCurrentFileState(currentState, true);
         }
     }
 }
@@ -136,4 +135,10 @@ async function newTraceItemLoad(fileState: FileState, file: File): Promise<void>
 
     // Update the reactive atom to trigger UI re-render for this specific file
     setFileLoading(fileState.id, false);
+
+    // If this file is currently selected, force a refresh to show loaded data
+    const currentState = getCurrentFileState();
+    if (currentState?.id === fileState.id) {
+        setCurrentFileState(fileState, true);
+    }
 }
