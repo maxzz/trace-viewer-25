@@ -5,7 +5,7 @@ import { dialogOptionsOpenAtom } from '@/store/2-ui-atoms';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/shadcn/dialog';
 import { Input } from '@/components/ui/shadcn/input';
 import { Button } from '@/components/ui/shadcn/button';
-import { Checkbox } from '@/components/ui/shadcn/checkbox';
+import { Toggle } from '@/components/ui/shadcn/toggle';
 import { Label } from '@/components/ui/shadcn/label';
 
 export function DialogOptions() {
@@ -130,7 +130,7 @@ function handleStartupPatternChange(e: React.ChangeEvent<HTMLInputElement>) {
 function OptionCheckbox({ checked, onCheckedChange, label }: { checked: boolean, onCheckedChange: (checked: boolean) => void, label: React.ReactNode }) {
     return (
         <Label className="text-xs font-normal flex items-center space-x-1">
-            <Checkbox className="size-5" checked={checked} onCheckedChange={(c) => onCheckedChange(c === true)} />
+            <Toggle variant="outline" className="size-5" pressed={checked} onPressedChange={onCheckedChange} />
             {label}
         </Label>
     );
