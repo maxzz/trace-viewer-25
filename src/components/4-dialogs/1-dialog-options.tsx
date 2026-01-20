@@ -79,15 +79,15 @@ export function DialogOptions() {
 
                     <div className="mt-2 font-semibold">Startup options:</div>
 
-                    <Label className="text-xs font-normal flex flex-col gap-1">
-                        <span>Select file pattern on start:</span>
+                    <Label className="text-xs font-normal flex flex-col items-start gap-1">
+                        Select file pattern on start:
                         <Input 
                             className="h-6 text-xs p-1" 
                             value={startupFilePattern} 
                             onChange={handleStartupPatternChange} 
                             placeholder="e.g. *.dll.* or /regex/"
                         />
-                        <span className="text-muted-foreground text-[10px]">
+                        <span className="self-end text-muted-foreground text-[10px]">
                             Use * for wildcard or /pattern/ for regex
                         </span>
                     </Label>
