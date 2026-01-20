@@ -11,6 +11,8 @@ import { buildAlltimes } from "./8-all-times-listener";
 import { setFileLoading } from "./1-3-file-loading-atoms";
 import { recomputeHighlightMatches } from "../5-highlight-rules";
 import { allTimesStore } from "./3-all-times-store";
+import { selectFile } from "./0-files-actions";
+import { getCurrentFileState, setCurrentFileState } from "./0-files-current-state";
 
 export const isLoadingFilesAtom = atom(false);
 
@@ -64,6 +66,19 @@ async function loadFilesToStore(files: File[]) {
     // After all files are loaded, populate the quick file data
     for (const fileState of filesStore.states) {
         filesStore.quickFileData[fileState.id] = fileState.data;
+    }
+
+    // Select the first file if none is selected, or re-select to refresh the view
+    const currentState = getCurrentFileState();
+    if (itemsToLoad.length > 0) {
+        if (!currentState) {
+            // No file selected - select the first loaded file
+            selectFile(itemsToLoad[0].fileState.id);
+        } else if (itemsToLoad.some(item => item.fileState.id === currentState.id)) {
+            // Force UI refresh by re-setting the atom (Jotai needs different reference to notify)
+            setCurrentFileState(null);
+            setCurrentFileState(currentState);
+        }
     }
 }
 
