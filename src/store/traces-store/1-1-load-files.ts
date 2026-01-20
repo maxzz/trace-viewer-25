@@ -46,6 +46,9 @@ export async function asyncLoadAnyFiles(files: File[], droppedFolderName?: strin
 }
 
 async function loadFilesToStore(files: File[]) {
+    // Check if this is the first load (no files existed before)
+    const isFirstLoad = filesStore.states.length === 0;
+
     const itemsToLoad: { file: File, fileState: FileState; }[] = [];
 
     // Populate the store with new file states
@@ -69,11 +72,11 @@ async function loadFilesToStore(files: File[]) {
         filesStore.quickFileData[fileState.id] = fileState.data;
     }
 
-    // Select the first file if none is selected, or force refresh if current file was just loaded
+    // Handle file selection after loading
     const currentState = getCurrentFileState();
     if (itemsToLoad.length > 0) {
-        if (!currentState) {
-            // No file selected - find a file to select
+        // On first load, apply startup pattern to select a specific file
+        if (isFirstLoad) {
             const startupPattern = appSettings.startupFilePattern;
             let fileToSelect = itemsToLoad[0].fileState;
 
@@ -88,6 +91,9 @@ async function loadFilesToStore(files: File[]) {
             }
 
             selectFile(fileToSelect.id);
+        } else if (!currentState) {
+            // Not first load but no file selected - select first loaded file
+            selectFile(itemsToLoad[0].fileState.id);
         } else if (itemsToLoad.some(item => item.fileState.id === currentState.id)) {
             // Force UI refresh by creating a new reference (data is loaded now)
             setCurrentFileState(currentState, true);
