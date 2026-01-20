@@ -1,9 +1,10 @@
-import React, { useRef, useState, useEffect, useCallback } from "react";
+import React, { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import { useAtomValue, useAtom, atom, type PrimitiveAtom } from "jotai";
 import { useSnapshot } from "valtio";
 import { formatTimestamp } from "@/utils";
 import { appSettings } from "../../store/1-ui-settings";
 import { currentFileStateAtom } from "../../store/traces-store/0-files-current-state";
+import { getFileLoadingAtom } from "../../store/traces-store/1-3-file-loading-atoms";
 import { type TraceLine } from "../../trace-viewer-core/9-core-types";
 import { ITEM_HEIGHT } from "./9-trace-view-constants";
 import { allTimesStore } from "../../store/traces-store/3-all-times-store";
@@ -23,6 +24,12 @@ export function TraceList() {
     const currentLineIdxAtom = currentFileState?.currentLineIdxAtom ?? fallbackLineIndexAtom;
     const viewLines = fileData?.viewLines || [];
     const threadIds = fileData?.uniqueThreadIds || [];
+
+    // Subscribe to loading state to trigger re-render when file is loaded (since data is ref'd)
+    const isLoadingAtom = useMemo(() => 
+        selectedFileId ? getFileLoadingAtom(selectedFileId) : atom(false), 
+        [selectedFileId]);
+    useAtomValue(isLoadingAtom);
 
     const scrollRef = useRef<HTMLDivElement>(null);
     const [scrollTop, setScrollTop] = useState(0);
