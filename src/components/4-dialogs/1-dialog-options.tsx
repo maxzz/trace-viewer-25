@@ -24,32 +24,27 @@ export function DialogOptions() {
                 <div className="py-2 text-xs grid gap-2">
                     <div className="font-semibold">Trace viewer options:</div>
 
-                    <Label className="text-xs font-normal flex items-center space-x-1">
-                        <Checkbox className="size-5" checked={useIconsForEntryExit} onCheckedChange={handleUseIconsChange} />
+                    <OptionCheckbox checked={useIconsForEntryExit} onCheckedChange={handleUseIconsChange}>
                         Use Icons for Entry/Exit lines
-                    </Label>
+                    </OptionCheckbox>
 
-                    <Label className="text-xs font-normal flex items-center space-x-1">
-                        <Checkbox className="size-5" checked={showLineNumbers} onCheckedChange={handleShowLineNumbersChange} />
+                    <OptionCheckbox checked={showLineNumbers} onCheckedChange={handleShowLineNumbersChange}>
                         Show line numbers in the trace file
-                    </Label>
+                    </OptionCheckbox>
 
                     <div className="mt-2 font-semibold">All times options:</div>
 
-                    <Label className="text-xs font-normal flex items-center space-x-1">
-                        <Checkbox className="size-5" checked={allTimes.show} onCheckedChange={handleShowTimelineChange} />
+                    <OptionCheckbox checked={allTimes.show} onCheckedChange={handleShowTimelineChange}>
                         Show all times column
-                    </Label>
+                    </OptionCheckbox>
 
-                    <Label className="text-xs font-normal flex items-center space-x-1">
-                        <Checkbox className="size-5" checked={allTimes.showBuildDoneNotice} onCheckedChange={handleShowTimelineNotificationChange} />
+                    <OptionCheckbox checked={allTimes.showBuildDoneNotice} onCheckedChange={handleShowTimelineNotificationChange}>
                         Show notification when all times is built
-                    </Label>
+                    </OptionCheckbox>
 
-                    <Label className="text-xs font-normal flex items-center space-x-1">
-                        <Checkbox className="size-5" checked={allTimes.onLeft} onCheckedChange={handleCombinedOnLeftChange} />
+                    <OptionCheckbox checked={allTimes.onLeft} onCheckedChange={handleCombinedOnLeftChange}>
                         Show on the left of the file list
-                    </Label>
+                    </OptionCheckbox>
 
                     <div className="-mt-1 pl-7 flex items-center space-x-2">
                         <Label className="text-xs font-normal text-balance">
@@ -60,15 +55,13 @@ export function DialogOptions() {
 
                     <div className="mt-2 font-semibold">Footer options:</div>
 
-                    <Label className="text-xs font-normal flex items-center space-x-1">
-                        <Checkbox className="size-5" checked={showFooter} onCheckedChange={handleShowFooterChange} />
+                    <OptionCheckbox checked={showFooter} onCheckedChange={handleShowFooterChange}>
                         Show footer
-                    </Label>
+                    </OptionCheckbox>
 
-                    <Label className="text-xs font-normal flex items-center space-x-1">
-                        <Checkbox className="size-5" checked={extraInFooter} onCheckedChange={handleExtraInFooterChange} />
+                    <OptionCheckbox checked={extraInFooter} onCheckedChange={handleExtraInFooterChange}>
                         Show info from the file header in the footer
-                    </Label>
+                    </OptionCheckbox>
 
                     <div className="mt-2 font-semibold">History options:</div>
 
@@ -146,4 +139,13 @@ function handleShowTimelineNotificationChange(checked: boolean) {
 
 function handleStartupPatternChange(e: React.ChangeEvent<HTMLInputElement>) {
     appSettings.startupFilePattern = e.target.value;
+}
+
+function OptionCheckbox({ checked, onCheckedChange, children }: { checked: boolean, onCheckedChange: (checked: boolean) => void, children: React.ReactNode }) {
+    return (
+        <Label className="text-xs font-normal flex items-center space-x-1">
+            <Checkbox className="size-5" checked={checked} onCheckedChange={(c) => onCheckedChange(c === true)} />
+            {children}
+        </Label>
+    );
 }
