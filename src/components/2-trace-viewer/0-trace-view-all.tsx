@@ -15,7 +15,7 @@ import { SymbolArrowCircleLeft } from "../ui/icons/symbols/all-other/33-arrow-ci
 export function TraceList() {
     const currentFileState = useAtomValue(currentFileStateAtom);
     const { pendingScrollTimestamp, pendingScrollFileId } = useSnapshot(allTimesStore);
-    const { useIconsForEntryExit, showLineNumbers } = useSnapshot(appSettings);
+    const { useIconsForEntryExit, showLineNumbers, allTimes: { show: showOnAllTimes } } = useSnapshot(appSettings);
 
     // Derived from currentFileState
     const selectedFileId = currentFileState?.id ?? null;
@@ -120,7 +120,7 @@ export function TraceList() {
             ref={scrollRef}
             className="group/tracelist relative size-full outline-none overflow-auto"
             onScroll={onScroll}
-            onMouseMove={onMouseMove}
+            onMouseMove={showOnAllTimes ? onMouseMove : undefined}
             onMouseLeave={() => setHoveredTimestamp(null)}
             tabIndex={0}
         >
