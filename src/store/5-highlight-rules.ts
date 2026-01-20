@@ -29,7 +29,8 @@ export const highlightActions = {
     },
 
     reorderRules: (newOrder: HighlightRule[]) => {
-        appSettings.highlightRules = newOrder;
+        const idMap = new Map(appSettings.highlightRules.map(r => [r.id, r]));
+        appSettings.highlightRules = newOrder.map(r => idMap.get(r.id) || { ...r });
         // The order of rules matters for which color takes precedence if we implement "first match wins"
         // But for matchedHighlightIds, it's just a list. The UI logic handles precedence.
     },

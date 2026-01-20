@@ -32,7 +32,8 @@ export const filterActions = {
     },
 
     reorderFilters: (newOrder: FileFilter[]) => {
-        appSettings.fileFilters = newOrder;
+        const idMap = new Map(appSettings.fileFilters.map(f => [f.id, f]));
+        appSettings.fileFilters = newOrder.map(f => idMap.get(f.id) || { ...f });
     },
 
     selectFilter: (id: string | null) => {
