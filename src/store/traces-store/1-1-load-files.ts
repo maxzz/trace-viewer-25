@@ -7,6 +7,7 @@ import { asyncParseTraceFile } from "./1-2-parse-trace-file";
 import { emptyFileHeader } from "@/trace-viewer-core/9-core-types";
 import { recomputeFilterMatches } from "../4-file-filters";
 import { appSettings } from "../1-ui-settings";
+import { matchesFilePattern } from "../6-filtered-files";
 import { buildAlltimes } from "./8-all-times-listener";
 import { setFileLoading } from "./1-3-file-loading-atoms";
 import { recomputeHighlightMatches } from "../5-highlight-rules";
@@ -72,8 +73,21 @@ async function loadFilesToStore(files: File[]) {
     const currentState = getCurrentFileState();
     if (itemsToLoad.length > 0) {
         if (!currentState) {
-            // No file selected - select the first loaded file
-            selectFile(itemsToLoad[0].fileState.id);
+            // No file selected - find a file to select
+            const startupPattern = appSettings.startupFilePattern;
+            let fileToSelect = itemsToLoad[0].fileState;
+
+            // If startup pattern is set, find the first matching file
+            if (startupPattern) {
+                const matchingFile = itemsToLoad.find(item => 
+                    matchesFilePattern(item.fileState.data.fileName, startupPattern)
+                );
+                if (matchingFile) {
+                    fileToSelect = matchingFile.fileState;
+                }
+            }
+
+            selectFile(fileToSelect.id);
         } else if (itemsToLoad.some(item => item.fileState.id === currentState.id)) {
             // Force UI refresh by creating a new reference (data is loaded now)
             setCurrentFileState(currentState, true);

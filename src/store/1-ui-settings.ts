@@ -38,6 +38,9 @@ export interface AppSettings {
     // Navigation
     historyLimit: number;
 
+    // Startup
+    startupFilePattern: string; // Pattern to match file on startup (wildcard or regex like file filters)
+
     // All Times
     allTimes: {
         show: boolean;
@@ -59,6 +62,7 @@ const DEFAULT_SETTINGS: AppSettings = {
     highlightRules: [],
     highlightEnabled: true,
     historyLimit: 100,
+    startupFilePattern: '',
     allTimes: {
         show: false,
         onLeft: true,

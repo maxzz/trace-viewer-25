@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/shadcn/label';
 
 export function DialogOptions() {
     const [open, onOpenChange] = useAtom(dialogOptionsOpenAtom);
-    const { showFooter, useIconsForEntryExit, showLineNumbers, extraInFooter, allTimes, historyLimit } = useSnapshot(appSettings);
+    const { showFooter, useIconsForEntryExit, showLineNumbers, extraInFooter, allTimes, historyLimit, startupFilePattern } = useSnapshot(appSettings);
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -76,6 +76,21 @@ export function DialogOptions() {
                         Max history items
                         <Input className="w-12 h-6 text-xs p-1" value={historyLimit} onChange={handleHistoryLimitChange} min={1} max={100} type="number" />
                     </Label>
+
+                    <div className="mt-2 font-semibold">Startup options:</div>
+
+                    <Label className="text-xs font-normal flex flex-col gap-1">
+                        <span>Select file pattern on start:</span>
+                        <Input 
+                            className="h-6 text-xs p-1" 
+                            value={startupFilePattern} 
+                            onChange={handleStartupPatternChange} 
+                            placeholder="e.g. *.dll.* or /regex/"
+                        />
+                        <span className="text-muted-foreground text-[10px]">
+                            Use * for wildcard or /pattern/ for regex
+                        </span>
+                    </Label>
                 </div>
 
                 <DialogFooter className="justify-center!">
@@ -127,4 +142,8 @@ function handleTimelinePrecisionChange(e: React.ChangeEvent<HTMLInputElement>) {
 
 function handleShowTimelineNotificationChange(checked: boolean) {
     appSettings.allTimes.showBuildDoneNotice = checked;
+}
+
+function handleStartupPatternChange(e: React.ChangeEvent<HTMLInputElement>) {
+    appSettings.startupFilePattern = e.target.value;
 }

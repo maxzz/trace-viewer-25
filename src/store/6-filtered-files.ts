@@ -27,43 +27,50 @@ export const filesCountAtom = atom(
     }
 );
 
-function filterFiles(files: readonly FileState[], selectedFilterId: string | null, fileFilters: readonly FileFilter[]): readonly FileState[] {
-    const filter = !selectedFilterId ? null : fileFilters.find(f => f.id === selectedFilterId);
-    if (!filter) {
-        return files;
-    }
-
-    const pattern = filter.pattern;
+/**
+ * Check if a filename matches a pattern (supports wildcard * and regex /pattern/)
+ */
+export function matchesFilePattern(fileName: string, pattern: string): boolean {
+    if (!pattern) return false;
 
     // Check if pattern is regex (starts and ends with /)
     if (pattern.startsWith('/') && pattern.endsWith('/') && pattern.length > 1) {
         try {
             const regexPattern = pattern.slice(1, -1);
             const regex = new RegExp(regexPattern, 'i');
-            return files.filter((file) => regex.test(file.data.fileName));
+            return regex.test(fileName);
         } catch (e) {
-            // Invalid regex, return empty or fallback
             console.warn('Invalid regex pattern:', pattern, e);
-            return [];
+            return false;
         }
     }
 
-    // Non-regex pattern: use existing logic
+    // Non-regex pattern
     const patternLower = pattern.toLowerCase();
+    const fileNameLower = fileName.toLowerCase();
 
     // Convert glob to regex if contains *
     if (patternLower.includes('*')) {
         try {
             const regexStr = "^" + patternLower.split('*').map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('.*') + "$";
             const regex = new RegExp(regexStr, 'i');
-            return files.filter((file) => regex.test(file.data.fileName));
+            return regex.test(fileName);
         } catch (e) {
             // fallback to contains
-            return files.filter((file) => file.data.fileName.toLowerCase().includes(patternLower.replace(/\*/g, '')));
+            return fileNameLower.includes(patternLower.replace(/\*/g, ''));
         }
     }
 
-    return files.filter(file => file.data.fileName.toLowerCase().includes(patternLower));
+    return fileNameLower.includes(patternLower);
+}
+
+function filterFiles(files: readonly FileState[], selectedFilterId: string | null, fileFilters: readonly FileFilter[]): readonly FileState[] {
+    const filter = !selectedFilterId ? null : fileFilters.find(f => f.id === selectedFilterId);
+    if (!filter) {
+        return files;
+    }
+
+    return files.filter((file) => matchesFilePattern(file.data.fileName, filter.pattern));
 }
 
 // Effect atom to handle selection change when filter results change
