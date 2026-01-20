@@ -12,9 +12,6 @@ import { handlePendingTimestampScroll, scrollToSelection } from "./2-trace-view-
 import { handleKeyboardNavigation } from "./3-trace-view-keyboard";
 import { SymbolArrowCircleLeft } from "../ui/icons/symbols/all-other/33-arrow-circle-left";
 
-// Atom to track hovered timestamp info
-const hoveredTimestampAtom = atom<{ timestamp: string; top: number; } | null>(null);
-
 export function TraceList() {
     const currentFileState = useAtomValue(currentFileStateAtom);
     const { pendingScrollTimestamp, pendingScrollFileId } = useSnapshot(allTimesStore);
@@ -116,19 +113,7 @@ export function TraceList() {
         },
         []);
 
-    // Virtualization logic
-    const totalHeight = viewLines.length * ITEM_HEIGHT;
-    // Calculate buffer based on visible items (50% of visible, minimum 20)
-    // 01.08.2026: Increased buffer to avoid empty screen on fast scroll
-    const BUFFER = Math.max(50, Math.floor(containerHeight / ITEM_HEIGHT * 2));
-    const startIndex = Math.max(0, Math.floor(scrollTop / ITEM_HEIGHT) - BUFFER);
-    const endIndex = Math.min(viewLines.length, Math.floor((scrollTop + containerHeight) / ITEM_HEIGHT) + BUFFER);
-
-    const visibleLines = viewLines.slice(startIndex, endIndex);
-    const offsetY = startIndex * ITEM_HEIGHT;
-
-    // determine firstLineLength from the first line that has a timestamp
-    const firstLineLength = viewLines.find(l => !!l.timestamp)?.timestamp?.length ?? 12; // 12 is for 'HH:MM:SS.MSS' as oposite to higher precision 'HH:MM:SS.MSSSS'
+    const { totalHeight, visibleLines, offsetY, startIndex, firstLineLength } = calculateVirtualization(viewLines, containerHeight, scrollTop);
 
     return (
         <div
@@ -188,6 +173,7 @@ export function TraceList() {
     );
 }
 
+const hoveredTimestampAtom = atom<{ timestamp: string; top: number; } | null>(null); // Atom to track hovered timestamp info
 const fallbackLineIndexAtom = atom(-1);
 
 function TraceViewScrollController({ scrollRef, containerHeight, selectedFileId, currentLineIdxAtom }: {
@@ -205,6 +191,24 @@ function TraceViewScrollController({ scrollRef, containerHeight, selectedFileId,
         [currentLineIndex, containerHeight, selectedFileId]);
 
     return null;
+}
+
+function calculateVirtualization(viewLines: TraceLine[], containerHeight: number, scrollTop: number) {
+    // Virtualization logic
+    const totalHeight = viewLines.length * ITEM_HEIGHT;
+    // Calculate buffer based on visible items (50% of visible, minimum 20)
+    // 01.08.2026: Increased buffer to avoid empty screen on fast scroll
+    const BUFFER = Math.max(50, Math.floor(containerHeight / ITEM_HEIGHT * 2));
+    const startIndex = Math.max(0, Math.floor(scrollTop / ITEM_HEIGHT) - BUFFER);
+    const endIndex = Math.min(viewLines.length, Math.floor((scrollTop + containerHeight) / ITEM_HEIGHT) + BUFFER);
+
+    const visibleLines = viewLines.slice(startIndex, endIndex);
+    const offsetY = startIndex * ITEM_HEIGHT;
+
+    // determine firstLineLength from the first line that has a timestamp
+    const firstLineLength = viewLines.find(l => !!l.timestamp)?.timestamp?.length ?? 12; // 12 is for 'HH:MM:SS.MSS' as oposite to higher precision 'HH:MM:SS.MSSSS'
+
+    return { totalHeight, visibleLines, offsetY, startIndex, firstLineLength };
 }
 
 const iconContainerClasses = "\

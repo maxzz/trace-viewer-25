@@ -31,29 +31,31 @@ export const listenerToBuildAllTimesEffectAtom = atomEffect(
         const unsubFilesData = subscribe(filesStore.states, (ops) => {
             const selectedId = appSettings.selectedFilterId;
 
-            const relevantChange = ops.some((op) => {
-                const path = op[1];
-                if (path.length >= 2 && path[1] === 'matchedHighlightIds') {
-                    return false;
-                }
-
-                if (path.length >= 2 && path[1] === 'matchedFilterIds') {
-                    if (!selectedId) {
-                        return false; // Changes to filters don't affect "All files" view
+            const relevantChange = ops.some(
+                (op) => {
+                    const path = op[1];
+                    if (path.length >= 2 && path[1] === 'matchedHighlightIds') {
+                        return false;
                     }
-                    const newVal = (op[2] as string[]) || [];
-                    const oldVal = (op[3] as string[]) || [];
-                    
-                    // Defensive check
-                    if (!Array.isArray(newVal) || !Array.isArray(oldVal)) return true; 
 
-                    const hasNew = newVal.includes(selectedId);
-                    const hadOld = oldVal.includes(selectedId);
-                    return hasNew !== hadOld;
+                    if (path.length >= 2 && path[1] === 'matchedFilterIds') {
+                        if (!selectedId) {
+                            return false; // Changes to filters don't affect "All files" view
+                        }
+                        const newVal = (op[2] as string[]) || [];
+                        const oldVal = (op[3] as string[]) || [];
+
+                        // Defensive check
+                        if (!Array.isArray(newVal) || !Array.isArray(oldVal)) return true;
+
+                        const hasNew = newVal.includes(selectedId);
+                        const hadOld = oldVal.includes(selectedId);
+                        return hasNew !== hadOld;
+                    }
+
+                    return true;
                 }
-
-                return true;
-            });
+            );
 
             if (!relevantChange) {
                 return;
