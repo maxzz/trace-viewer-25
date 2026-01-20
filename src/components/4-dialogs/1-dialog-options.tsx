@@ -24,27 +24,17 @@ export function DialogOptions() {
                 <div className="py-2 text-xs grid gap-2">
                     <div className="font-semibold">Trace viewer options:</div>
 
-                    <OptionCheckbox checked={useIconsForEntryExit} onCheckedChange={handleUseIconsChange}>
-                        Use Icons for Entry/Exit lines
-                    </OptionCheckbox>
+                    <OptionCheckbox checked={useIconsForEntryExit} onCheckedChange={handleUseIconsChange} label="Use Icons for Entry/Exit lines" />
 
-                    <OptionCheckbox checked={showLineNumbers} onCheckedChange={handleShowLineNumbersChange}>
-                        Show line numbers in the trace file
-                    </OptionCheckbox>
+                    <OptionCheckbox checked={showLineNumbers} onCheckedChange={handleShowLineNumbersChange} label="Show line numbers in the trace file" />
 
                     <div className="mt-2 font-semibold">All times options:</div>
 
-                    <OptionCheckbox checked={allTimes.show} onCheckedChange={handleShowTimelineChange}>
-                        Show all times column
-                    </OptionCheckbox>
+                    <OptionCheckbox checked={allTimes.show} onCheckedChange={handleShowTimelineChange} label="Show all times column" />
 
-                    <OptionCheckbox checked={allTimes.showBuildDoneNotice} onCheckedChange={handleShowTimelineNotificationChange}>
-                        Show notification when all times is built
-                    </OptionCheckbox>
+                    <OptionCheckbox checked={allTimes.showBuildDoneNotice} onCheckedChange={handleShowTimelineNotificationChange} label="Show notification when all times is built" />
 
-                    <OptionCheckbox checked={allTimes.onLeft} onCheckedChange={handleCombinedOnLeftChange}>
-                        Show on the left of the file list
-                    </OptionCheckbox>
+                    <OptionCheckbox checked={allTimes.onLeft} onCheckedChange={handleCombinedOnLeftChange} label="Show on the left of the file list" />
 
                     <div className="-mt-1 pl-7 flex items-center space-x-2">
                         <Label className="text-xs font-normal text-balance">
@@ -55,13 +45,9 @@ export function DialogOptions() {
 
                     <div className="mt-2 font-semibold">Footer options:</div>
 
-                    <OptionCheckbox checked={showFooter} onCheckedChange={handleShowFooterChange}>
-                        Show footer
-                    </OptionCheckbox>
+                    <OptionCheckbox checked={showFooter} onCheckedChange={handleShowFooterChange} label="Show footer" />
 
-                    <OptionCheckbox checked={extraInFooter} onCheckedChange={handleExtraInFooterChange}>
-                        Show info from the file header in the footer
-                    </OptionCheckbox>
+                    <OptionCheckbox checked={extraInFooter} onCheckedChange={handleExtraInFooterChange} label="Show info from the file header in the footer" />
 
                     <div className="mt-2 font-semibold">History options:</div>
 
@@ -141,11 +127,11 @@ function handleStartupPatternChange(e: React.ChangeEvent<HTMLInputElement>) {
     appSettings.startupFilePattern = e.target.value;
 }
 
-function OptionCheckbox({ checked, onCheckedChange, children }: { checked: boolean, onCheckedChange: (checked: boolean) => void, children: React.ReactNode }) {
+function OptionCheckbox({ checked, onCheckedChange, label }: { checked: boolean, onCheckedChange: (checked: boolean) => void, label: React.ReactNode }) {
     return (
         <Label className="text-xs font-normal flex items-center space-x-1">
             <Checkbox className="size-5" checked={checked} onCheckedChange={(c) => onCheckedChange(c === true)} />
-            {children}
+            {label}
         </Label>
     );
 }
