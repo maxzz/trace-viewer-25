@@ -52,8 +52,10 @@
 	TODO: scroll to middle of TraceList if line is closed to the edge (if selected line is not in view otherwise do not scroll)
 
 01.19.26
-	TODO: https://www.google.com/search?q=0x800704C7&sourceid=chrome&ie=UTF-8 if selected text contains hr then search for it in new tab
-	TODO: scroll in not working if selected the same item (but should happen)
-	TODO: add lime, slate, gray, zinc, and stone
 	TODO: add documentation
     TODO: in options dialog don't set initial focus. focus ring needs to be updated
+    TODO: by clicking enter on input line options dialog should be closed (i.e. default button)
+
+	TODO: add lime, slate, gray, zinc, and stone
+	TODO: https://www.google.com/search?q=0x800704C7&sourceid=chrome&ie=UTF-8 if selected text contains hr then search for it in new tab
+	TODO: scroll in not working if selected the same item (but should happen)
