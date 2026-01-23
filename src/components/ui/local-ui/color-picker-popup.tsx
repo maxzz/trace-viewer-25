@@ -123,11 +123,20 @@ const COLOR_GRID_Classes: ReadonlyArray<HighlightRule> = [
     { name: "green-500",   /**/ label: "Green",  /**/ key: "y", bgClasses: "bg-green-500",   /**/ textClasses: "text-foreground/50" },
     { name: "emerald-500", /**/ label: "Emerald",  /**/ key: "u", bgClasses: "bg-emerald-500", /**/ textClasses: "text-foreground/50" },
     { name: "cyan-500",    /**/ label: "Cyan",   /**/ key: "i", bgClasses: "bg-cyan-500",    /**/ textClasses: "text-foreground/50" },
-    { name: "blue-500",    /**/ label: "Blue",   /**/ key: "o", bgClasses: "bg-blue-500",    /**/ textClasses: "text-foreground/50" },
+    { name: "lime-500",    /**/ label: "Lime",   /**/ key: "f", bgClasses: "bg-lime-500",    /**/ textClasses: "text-foreground/50" },
 
     // Row 3
     { name: "indigo-500",  /**/ label: "Indigo", /**/ key: "p", bgClasses: "bg-indigo-500",  /**/ textClasses: "text-foreground/50" },
     { name: "violet-500",  /**/ label: "Violet", /**/ key: "a", bgClasses: "bg-violet-500",  /**/ textClasses: "text-foreground/50" },
     { name: "purple-500",  /**/ label: "Purple", /**/ key: "s", bgClasses: "bg-purple-500",  /**/ textClasses: "text-foreground/50" },
     { name: "pink-500",    /**/ label: "Pink",   /**/ key: "d", bgClasses: "bg-pink-500",    /**/ textClasses: "text-foreground/50" },
+
+    // Row 4
+    { name: "blue-500",    /**/ label: "Blue",   /**/ key: "o", bgClasses: "bg-blue-500",    /**/ textClasses: "text-foreground/50" },
+    { name: "slate-500",   /**/ label: "Slate",    /**/ key: "g", bgClasses: "bg-slate-500",   /**/ textClasses: "text-foreground/50" },
+    { name: "gray-500",    /**/ label: "Gray",   /**/ key: "h", bgClasses: "bg-gray-500",    /**/ textClasses: "text-foreground/50" },
+    { name: "zinc-500",    /**/ label: "Zinc",     /**/ key: "j", bgClasses: "bg-zinc-500",    /**/ textClasses: "text-foreground/50" },
+
+    // Row 5
+    { name: "stone-500",   /**/ label: "Stone",    /**/ key: "k", bgClasses: "bg-stone-500",   /**/ textClasses: "text-foreground/50" },
 ];

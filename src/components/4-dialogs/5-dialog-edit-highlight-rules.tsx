@@ -160,11 +160,7 @@ function HighlightRow({ rule, onDelete, isNameInvalid, isPatternInvalid }: { rul
                 {/* Color */}
                 <div className="flex justify-center items-center">
                     <ColorPickerPopup color={rule.color} onChange={(color) => highlightActions.updateRule(rule.id, { color })}>
-                        <Button
-                            variant="outline"
-                            className="size-8 p-0 overflow-hidden"
-                            title={rule.color ? `Color: ${rule.color}` : "Select color"}
-                        >
+                        <Button className="size-8 p-0 overflow-hidden" variant="outline" title={rule.color ? `Color: ${rule.color}` : "Select color"}>
                             <div className={cn("size-full opacity-20", rule.color && `bg-${rule.color}`)} />
                         </Button>
                     </ColorPickerPopup>
