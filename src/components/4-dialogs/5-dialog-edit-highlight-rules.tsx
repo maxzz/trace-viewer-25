@@ -17,7 +17,7 @@ import { ColorPickerButton } from "../ui/local-ui/color-picker-popup";
 export function DialogEditHighlightRules() {
     const [open, setOpen] = useAtom(dialogEditHighlightsOpenAtom);
     const { highlightRules } = useSnapshot(appSettings, { sync: true });
-    const [invalidRuleIds, setInvalidRuleIds] = useState<{ name: Set<string>, pattern: Set<string>; }>({ name: new Set(), pattern: new Set() });
+    const [invalidRuleIds, setInvalidRuleIds] = useState<{ pattern: Set<string>; }>({ pattern: new Set() });
 
     function handleReorder(newOrder: HighlightRule[]) {
         highlightActions.reorderRules(newOrder);
@@ -25,7 +25,7 @@ export function DialogEditHighlightRules() {
 
     function handleOpenChange(newOpen: boolean) {
         if (newOpen) {
-            setInvalidRuleIds({ name: new Set(), pattern: new Set() });
+            setInvalidRuleIds({ pattern: new Set() });
             setOpen(true);
         } else {
             const { isValid, invalidRuleIds } = validateRules(highlightRules);
@@ -64,14 +64,13 @@ export function DialogEditHighlightRules() {
                                         key={rule.id}
                                         rule={rule as unknown as HighlightRule}
                                         onDelete={highlightActions.deleteRule}
-                                        isNameInvalid={invalidRuleIds.name.has(rule.id)}
                                         isPatternInvalid={invalidRuleIds.pattern.has(rule.id)}
                                     />
                                 )
                             )}
                         </Reorder.Group>
 
-                        <Button className="mt-1 mx-11 h-7" variant="outline" size="xs" onClick={() => highlightActions.addRule("", "")}>
+                        <Button className="mt-1 mx-11 h-7" variant="outline" size="xs" onClick={() => highlightActions.addRule("")}>
                             <Plus className="size-3.5" />
                             Add Highlight Rule
                         </Button>
@@ -106,10 +105,7 @@ const codeClasses = "px-1 bg-muted outline rounded";
 
 function Header() {
     return (
-        <div className="mt-4 pl-16 pr-5 grid grid-cols-[1fr_1fr_52px] gap-1 select-none">
-            <div className="text-xs font-semibold">
-                Name
-            </div>
+        <div className="mt-4 pl-16 pr-5 grid grid-cols-[1fr_52px] gap-1 select-none">
             <div className="text-xs font-semibold">
                 Pattern
             </div>
@@ -120,7 +116,7 @@ function Header() {
     );
 }
 
-function HighlightRow({ rule, onDelete, isNameInvalid, isPatternInvalid }: { rule: HighlightRule, onDelete: (id: string) => void, isNameInvalid?: boolean, isPatternInvalid?: boolean; }) {
+function HighlightRow({ rule, onDelete, isPatternInvalid }: { rule: HighlightRule, onDelete: (id: string) => void, isPatternInvalid?: boolean; }) {
     const dragControls = useDragControls();
 
     return (
@@ -141,15 +137,7 @@ function HighlightRow({ rule, onDelete, isNameInvalid, isPatternInvalid }: { rul
                 onCheckedChange={(checked) => highlightActions.updateRule(rule.id, { enabled: !!checked })}
             />
 
-            <div className="flex-1 grid grid-cols-[1fr_1fr_36px] gap-1">
-                {/* Name */}
-                <Input
-                    className={`h-8 ${isNameInvalid ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
-                    placeholder="Highlight Name"
-                    value={rule.patternName}
-                    onChange={(e) => highlightActions.updateRule(rule.id, { patternName: e.target.value })}
-                    {...turnOffAutoComplete}
-                />
+            <div className="flex-1 grid grid-cols-[1fr_36px] gap-1">
                 {/* Pattern */}
                 <InputPattern
                     ruleId={rule.id}
@@ -224,26 +212,22 @@ function InputPattern({ ruleId, pattern, isPatternInvalid }: { ruleId: string, p
     );
 }
 
-function validateRules(highlightRules: readonly HighlightRule[]): { isValid: boolean; invalidRuleIds: { name: Set<string>; pattern: Set<string> } } {
-    const invalidNames = new Set<string>();
+function validateRules(highlightRules: readonly HighlightRule[]): { isValid: boolean; invalidRuleIds: { pattern: Set<string> } } {
     const invalidPatterns = new Set<string>();
 
     highlightRules.forEach(
         (rule) => {
-            if (!rule.patternName || rule.patternName.trim() === '') {
-                invalidNames.add(rule.id);
-            }
             if (!rule.pattern || rule.pattern.trim() === '') {
                 invalidPatterns.add(rule.id);
             }
         }
     );
 
-    const invalidRuleIds = { name: invalidNames, pattern: invalidPatterns };
-    const isValid = invalidNames.size === 0 && invalidPatterns.size === 0;
+    const invalidRuleIds = { pattern: invalidPatterns };
+    const isValid = invalidPatterns.size === 0;
 
     if (!isValid) {
-        notice.error('Highlight name and pattern cannot be empty');
+        notice.error('Highlight pattern cannot be empty');
     }
 
     return { isValid, invalidRuleIds };

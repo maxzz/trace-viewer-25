@@ -13,7 +13,6 @@ export interface FileFilter {
 
 export interface HighlightRule {
     id: string;
-    patternName: string;
     pattern: string;
     color?: string; // Tailwind color name (e.g. "red-500")
     enabled?: boolean;
