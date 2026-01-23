@@ -92,21 +92,3 @@ export function FileFilterDropdown() {
         </div>
     );
 }
-
-export function ButtonHighlightToggle() {
-    const { highlightEnabled, highlightRules } = useSnapshot(appSettings);
-    const hasRules = highlightRules.length > 0;
-
-    return (
-        <Button 
-            className={`size-6 rounded` + (highlightEnabled ? " dark:bg-foreground/20" : "")}
-            variant="outline"
-            size="icon" 
-            onClick={highlightActions.toggleHighlight}
-            disabled={!hasRules}
-            title={highlightEnabled ? "Disable highlighting" : "Enable highlighting"}
-        >
-            <Highlighter className={`size-3.5 ${highlightEnabled ? "text-foreground dark:text-sky-300 fill-sky-200 dark:fill-sky-500 opacity-100" : "opacity-40"}`} />
-        </Button>
-    );
-}

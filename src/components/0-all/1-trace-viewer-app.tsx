@@ -5,13 +5,14 @@ import { appSettings } from "../../store/1-ui-settings";
 import { TopMenu } from "./2-top-menu";
 import { TraceMainView } from "./6-resizable-panels";
 import { TraceFooter } from "./7-footer";
-import { FileFilterDropdown, ButtonHighlightToggle } from "./3-btn-filters-select";
+import { FileFilterDropdown } from "./3-btn-filters-select";
 import { ButtonThemeToggle } from "./3-btn-theme-toggle";
 import { filesCountAtom } from "@/store/6-filtered-files";
 import { canGoBackAtom, canGoForwardAtom, historyActions } from "@/store/traces-store/0-files-history";
 import { Button } from "../ui/shadcn/button";
 import { IconBinocular, IconChevronLeft } from "../ui/icons";
 import { TimelineProgress } from "./4-loading-progress";
+import { ButtonHighlightToggle, ButtonHighlightToggle2 } from "./3-btn-highlight-toggle";
 
 export function TraceViewerApp() {
     useAtomValue(listenerToBuildAllTimesEffectAtom);
