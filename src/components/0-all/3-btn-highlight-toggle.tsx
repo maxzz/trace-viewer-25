@@ -11,26 +11,29 @@ export function ButtonHighlightToggle() {
     const setEditHighlightsOpen = useSetAtom(dialogEditHighlightsOpenAtom);
 
     return (
-        <div className="flex items-center rounded-md border border-border overflow-hidden h-6">
+        <div className="flex items-center rounded border border-border overflow-hidden h-6">
             <Button 
                 className="h-6 w-6 rounded-none border-0 border-r border-r-border rounded-l-md p-0" 
                 variant="ghost" 
                 onClick={() => setEditHighlightsOpen(true)}
                 title="Edit highlight rules"
             >
-                <Settings className="size-3.5" />
+                {/* <Settings className="size-3.5" /> */}
+                <Palette className="size-3.5 opacity-70" />
             </Button>
+
             <Button 
                 className="h-6 w-6 rounded-none rounded-r-md p-0" 
                 variant="ghost" 
                 onClick={highlightActions.toggleHighlight}
                 title={highlightEnabled ? "Disable highlighting" : "Enable highlighting"}
-            >11
-                {highlightEnabled
+            >
+                <Highlighter className={`size-3.5 ${highlightEnabled ? "text-foreground dark:text-sky-300 fill-sky-200 dark:fill-sky-500 opacity-100" : "opacity-40"}`} />
+                {/* {highlightEnabled
                     ? <Palette className="size-3.5 opacity-70" />
                     : <Palette className="size-3.5 opacity-30" />
-                }
-            </Button>1134
+                } */}
+            </Button>
         </div>
     );
 }
