@@ -1,8 +1,21 @@
 import { useState } from "react";
 import { cn } from "@/utils/index";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "../shadcn/dropdown-menu";
+import { Button } from "../shadcn/button";
+import { type HighlightRule as HighlightRuleType } from "@/store/1-ui-settings";
+import { highlightActions } from "@/store/5-highlight-rules";
 
-export function ColorPickerPopup({ color, onChange, children }: ColorPickerPopupProps) {
+export function ColorPickerButton({ rule }: { rule: HighlightRuleType }) {
+    return (
+        <ColorPickerPopup color={rule.color} onChange={(color) => highlightActions.updateRule(rule.id, { color })}>
+            <Button className="size-8 p-0 overflow-hidden" variant="outline" title={rule.color ? `Color: ${rule.color}` : "Select color"}>
+                <div className={cn("size-full opacity-20", rule.color && `bg-${rule.color}`)} />
+            </Button>
+        </ColorPickerPopup>
+    );
+}
+
+function ColorPickerPopup({ color, onChange, children }: ColorPickerPopupProps) {
     const [open, setOpen] = useState(false);
 
     return (
@@ -17,7 +30,6 @@ export function ColorPickerPopup({ color, onChange, children }: ColorPickerPopup
                         (c: HighlightRule, index: number) => (
                             <ColorSwatch
                                 key={c.key}
-                                colorName={c.name}
                                 bgClass={c.bgClasses}
                                 textClass={c.textClasses}
                                 label={c.label}
@@ -37,18 +49,7 @@ export function ColorPickerPopup({ color, onChange, children }: ColorPickerPopup
     );
 }
 
-interface ColorSwatchProps {
-    colorName?: string;
-    bgClass: string;
-    textClass: string;
-    label: string;
-    letter: string;
-    isSelected: boolean;
-    onClick: () => void;
-    index: number;
-}
-
-function ColorSwatch({ colorName, bgClass, textClass, label, letter, isSelected, onClick, index }: ColorSwatchProps) {
+function ColorSwatch({ bgClass, textClass, label, letter, isSelected, onClick, index }: ColorSwatchProps) {
     return (
         <button
             className={cn(swatchClasses, isSelected && "ring ring-primary ring-offset-2 ring-offset-background", index === 1 && "col-span-3")}
@@ -56,18 +57,19 @@ function ColorSwatch({ colorName, bgClass, textClass, label, letter, isSelected,
             title={label}
         >
             {/* Background */}
-            {colorName ? (
-                <div className={cn("size-full opacity-20 rounded-md", bgClass)} />
-            ) : (
-                <svg className="size-full fill-foreground/20 rounded-md">
-                    <defs>
-                        <pattern id="checkerboard-8x8" width="8" height="8" patternUnits="userSpaceOnUse">
-                            <path d="M0 0h4v4H0zm4 4h4v4H4z" />
-                        </pattern>
-                    </defs>
-                    <rect className="size-full" fill="url(#checkerboard-8x8)" />
-                </svg>
-            )}
+            {label !== "None"
+                ? (
+                    <div className={cn("size-full opacity-20 rounded-md", bgClass)} />
+                ) : (
+                    <svg className="size-full fill-foreground/20 rounded-md">
+                        <defs>
+                            <pattern id="checkerboard-8x8" width="8" height="8" patternUnits="userSpaceOnUse">
+                                <path d="M0 0h4v4H0zm4 4h4v4H4z" />
+                            </pattern>
+                        </defs>
+                        <rect className="size-full" fill="url(#checkerboard-8x8)" />
+                    </svg>
+                )}
 
             {/* Letter overlay */}
             <span className={cn("absolute inset-0 px-1.5 py-1 text-[10px] font-mono pointer-events-none flex items-end justify-end", textClass)}>
@@ -93,11 +95,28 @@ dark:shadow-foreground/20 \
 transition-all \
 flex items-center justify-center";
 
+interface ColorSwatchProps {
+    bgClass: string;
+    textClass: string;
+    label: string;
+    letter: string;
+    isSelected: boolean;
+    onClick: () => void;
+    index: number;
+}
+
 interface ColorPickerPopupProps {
     color?: string; // Tailwind color class (e.g. "red-500") or undefined/null for transparent
     onChange: (color: string | undefined) => void;
     children: React.ReactNode;
 }
+
+// DpFbView
+// DpAgentOtsPlugin
+// (DpAgent|DpHost2)
+// DpHost
+// Altus
+// mstsc
 
 type HighlightRule = {
     name: string | undefined;

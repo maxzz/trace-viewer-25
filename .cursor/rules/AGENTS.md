@@ -11,3 +11,6 @@
     - at the end place classes that has effect for children such as flex and grid
  - when import typescript types use { type Name } instead of type { Name }
  - in import statement place types at start of imported members i.e. { type Name, functionName, and so on... }
+ - Prefer to use typescript types instead of interfaces
+
+ 

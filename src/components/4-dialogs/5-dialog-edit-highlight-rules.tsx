@@ -12,8 +12,7 @@ import { dialogEditHighlightsOpenAtom } from "../../store/2-ui-atoms";
 import { highlightActions } from "../../store/5-highlight-rules";
 import { turnOffAutoComplete } from "@/utils/disable-hidden-children";
 import { notice } from "../ui/local-ui/7-toaster/7-toaster";
-import { ColorPickerPopup } from "../ui/local-ui/color-picker-popup";
-import { cn } from "@/utils/index";
+import { ColorPickerButton } from "../ui/local-ui/color-picker-popup";
 
 export function DialogEditHighlightRules() {
     const [open, setOpen] = useAtom(dialogEditHighlightsOpenAtom);
@@ -147,8 +146,8 @@ function HighlightRow({ rule, onDelete, isNameInvalid, isPatternInvalid }: { rul
                 <Input
                     className={`h-8 ${isNameInvalid ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
                     placeholder="Highlight Name"
-                    value={rule.name}
-                    onChange={(e) => highlightActions.updateRule(rule.id, { name: e.target.value })}
+                    value={rule.patternName}
+                    onChange={(e) => highlightActions.updateRule(rule.id, { patternName: e.target.value })}
                     {...turnOffAutoComplete}
                 />
                 {/* Pattern */}
@@ -159,11 +158,7 @@ function HighlightRow({ rule, onDelete, isNameInvalid, isPatternInvalid }: { rul
                 />
                 {/* Color */}
                 <div className="flex justify-center items-center">
-                    <ColorPickerPopup color={rule.color} onChange={(color) => highlightActions.updateRule(rule.id, { color })}>
-                        <Button className="size-8 p-0 overflow-hidden" variant="outline" title={rule.color ? `Color: ${rule.color}` : "Select color"}>
-                            <div className={cn("size-full opacity-20", rule.color && `bg-${rule.color}`)} />
-                        </Button>
-                    </ColorPickerPopup>
+                    <ColorPickerButton rule={rule} />
                 </div>
             </div>
 
@@ -235,7 +230,7 @@ function validateRules(highlightRules: readonly HighlightRule[]): { isValid: boo
 
     highlightRules.forEach(
         (rule) => {
-            if (!rule.name || rule.name.trim() === '') {
+            if (!rule.patternName || rule.patternName.trim() === '') {
                 invalidNames.add(rule.id);
             }
             if (!rule.pattern || rule.pattern.trim() === '') {
