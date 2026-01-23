@@ -12,7 +12,7 @@ import { canGoBackAtom, canGoForwardAtom, historyActions } from "@/store/traces-
 import { Button } from "../ui/shadcn/button";
 import { IconBinocular, IconChevronLeft } from "../ui/icons";
 import { TimelineProgress } from "./4-loading-progress";
-import { ButtonHighlightToggle, ButtonHighlightToggle2 } from "./3-btn-highlight-toggle";
+import { ButtonHighlightToggle } from "./3-btn-highlight-toggle";
 
 export function TraceViewerApp() {
     useAtomValue(listenerToBuildAllTimesEffectAtom);
