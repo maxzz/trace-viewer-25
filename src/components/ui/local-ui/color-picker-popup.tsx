@@ -51,7 +51,7 @@ interface ColorSwatchProps {
 function ColorSwatch({ colorName, bgClass, textClass, label, letter, isSelected, onClick, index }: ColorSwatchProps) {
     return (
         <button
-            className={cn(swatchClasses, isSelected && "ring ring-primary ring-offset-2 ring-offset-background", index === 0 && "col-span-full")}
+            className={cn(swatchClasses, isSelected && "ring ring-primary ring-offset-2 ring-offset-background", index === 1 && "col-span-3")}
             onClick={(e) => { e.currentTarget.blur(); setTimeout(() => onClick(), 50); }} // to avoid "Blocked aria-hidden on an element because its descendant retained focus."
             title={label}
         >
@@ -112,31 +112,31 @@ type HighlightRule = {
 const COLOR_GRID_Classes: ReadonlyArray<HighlightRule> = [
     // Row 0
     { name: undefined,     /**/ label: "None",     /**/ key: "q", bgClasses: "bg-transparent", /**/ textClasses: "text-foreground/50" },
+    { name: "blue-500",    /**/ label: "Blue",   /**/ key: "o", bgClasses: "bg-blue-500",    /**/ textClasses: "text-foreground/50" },
 
     // Row 1
-    { name: "red-500",     /**/ label: "Red",    /**/ key: "w", bgClasses: "bg-red-500",     /**/ textClasses: "text-foreground/50" },
-    { name: "orange-500",  /**/ label: "Orange", /**/ key: "e", bgClasses: "bg-orange-500",  /**/ textClasses: "text-foreground/50" },
-    { name: "amber-500",   /**/ label: "Amber",    /**/ key: "r", bgClasses: "bg-amber-500",   /**/ textClasses: "text-foreground/50" },
-    { name: "yellow-300",  /**/ label: "Yellow", /**/ key: "t", bgClasses: "bg-yellow-300",  /**/ textClasses: "text-foreground/50" },
-
-    // Row 2
     { name: "green-500",   /**/ label: "Green",  /**/ key: "y", bgClasses: "bg-green-500",   /**/ textClasses: "text-foreground/50" },
     { name: "emerald-500", /**/ label: "Emerald",  /**/ key: "u", bgClasses: "bg-emerald-500", /**/ textClasses: "text-foreground/50" },
     { name: "cyan-500",    /**/ label: "Cyan",   /**/ key: "i", bgClasses: "bg-cyan-500",    /**/ textClasses: "text-foreground/50" },
     { name: "lime-500",    /**/ label: "Lime",   /**/ key: "f", bgClasses: "bg-lime-500",    /**/ textClasses: "text-foreground/50" },
 
-    // Row 3
+    // Row 2
     { name: "indigo-500",  /**/ label: "Indigo", /**/ key: "p", bgClasses: "bg-indigo-500",  /**/ textClasses: "text-foreground/50" },
     { name: "violet-500",  /**/ label: "Violet", /**/ key: "a", bgClasses: "bg-violet-500",  /**/ textClasses: "text-foreground/50" },
     { name: "purple-500",  /**/ label: "Purple", /**/ key: "s", bgClasses: "bg-purple-500",  /**/ textClasses: "text-foreground/50" },
     { name: "pink-500",    /**/ label: "Pink",   /**/ key: "d", bgClasses: "bg-pink-500",    /**/ textClasses: "text-foreground/50" },
 
+    // Row 3
+    { name: "red-500",     /**/ label: "Red",    /**/ key: "w", bgClasses: "bg-red-500",     /**/ textClasses: "text-foreground/50" },
+    { name: "orange-500",  /**/ label: "Orange", /**/ key: "e", bgClasses: "bg-orange-500",  /**/ textClasses: "text-foreground/50" },
+    { name: "amber-500",   /**/ label: "Amber",    /**/ key: "r", bgClasses: "bg-amber-500",   /**/ textClasses: "text-foreground/50" },
+    { name: "yellow-300",  /**/ label: "Yellow", /**/ key: "t", bgClasses: "bg-yellow-300",  /**/ textClasses: "text-foreground/50" },
+
     // Row 4
-    { name: "blue-500",    /**/ label: "Blue",   /**/ key: "o", bgClasses: "bg-blue-500",    /**/ textClasses: "text-foreground/50" },
-    { name: "slate-500",   /**/ label: "Slate",    /**/ key: "g", bgClasses: "bg-slate-500",   /**/ textClasses: "text-foreground/50" },
+    { name: "slate-500",   /**/ label: "Slate",    /**/ key: "g", bgClasses: "bg-slate-700",   /**/ textClasses: "text-foreground/50" },
     { name: "gray-500",    /**/ label: "Gray",   /**/ key: "h", bgClasses: "bg-gray-500",    /**/ textClasses: "text-foreground/50" },
-    { name: "zinc-500",    /**/ label: "Zinc",     /**/ key: "j", bgClasses: "bg-zinc-500",    /**/ textClasses: "text-foreground/50" },
+    { name: "zinc-500",    /**/ label: "Zinc",     /**/ key: "j", bgClasses: "bg-zinc-400",    /**/ textClasses: "text-foreground/50" },
+    { name: "stone-200",   /**/ label: "Stone",    /**/ key: "k", bgClasses: "bg-stone-200",   /**/ textClasses: "text-foreground/50" },
 
     // Row 5
-    { name: "stone-500",   /**/ label: "Stone",    /**/ key: "k", bgClasses: "bg-stone-500",   /**/ textClasses: "text-foreground/50" },
 ];
