@@ -1,10 +1,10 @@
-import { Button } from "../ui/shadcn/button";
-import { useSnapshot } from "valtio";
 import { useSetAtom } from "jotai";
-import { appSettings } from "../../store/1-ui-settings";
-import { highlightActions } from "../../store/5-highlight-rules";
-import { dialogEditHighlightsOpenAtom } from "../../store/2-ui-atoms";
+import { useSnapshot } from "valtio";
+import { Button } from "../ui/shadcn/button";
 import { Highlighter, Palette, Settings } from "lucide-react";
+import { appSettings } from "../../store/1-ui-settings";
+import { dialogEditHighlightsOpenAtom } from "../../store/2-ui-atoms";
+import { highlightActions } from "../../store/5-highlight-rules";
 
 export function ButtonHighlightToggle() {
     const { highlightEnabled } = useSnapshot(appSettings);
@@ -13,7 +13,7 @@ export function ButtonHighlightToggle() {
     return (
         <div className="flex items-center rounded border border-border overflow-hidden h-6">
             <Button 
-                className="h-6 w-6 rounded-none border-0 border-r border-r-border rounded-l-md p-0" 
+                className="p-0 size-6 rounded-none border-r border-r-border" 
                 variant="ghost" 
                 onClick={() => setEditHighlightsOpen(true)}
                 title="Edit highlight rules"
@@ -23,7 +23,7 @@ export function ButtonHighlightToggle() {
             </Button>
 
             <Button 
-                className="h-6 w-6 rounded-none rounded-r-md p-0" 
+                className="p-0 size-6 rounded-none" 
                 variant="ghost" 
                 onClick={highlightActions.toggleHighlight}
                 title={highlightEnabled ? "Disable highlighting" : "Enable highlighting"}
