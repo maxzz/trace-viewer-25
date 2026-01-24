@@ -141,7 +141,7 @@ function HighlightRow({ rule, onDelete, isPatternInvalid }: { rule: HighlightRul
                 {/* Pattern */}
                 <InputPattern
                     ruleId={rule.id}
-                    pattern={rule.rulePattern}
+                    pattern={rule.rulePattern || ''}
                     isPatternInvalid={isPatternInvalid ?? false}
                 />
                 {/* Color */}

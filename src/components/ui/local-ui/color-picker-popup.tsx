@@ -6,10 +6,11 @@ import { type HighlightRule } from "@/store/1-ui-settings";
 import { highlightActions } from "@/store/5-highlight-rules";
 
 export function ColorPickerButton({ rule }: { rule: HighlightRule; }) {
-    const { overlayClasses } = rule;
-    const title = getColorLabel(overlayClasses);
+    const { overlayKey } = rule;
+    const title = getColorLabel(overlayKey);
+    const overlayClasses = getOverlayKeyClasses(overlayKey);
     return (
-        <ColorPickerPopup twColor={overlayClasses} onChange={(twColor) => highlightActions.updateRule(rule.id, { overlayClasses: twColor })}>
+        <ColorPickerPopup rule={rule} overlayClasses={overlayClasses}>
             <Button className="p-0 size-8 overflow-hidden" variant="outline" title={title}>
                 <div className={cn("size-full opacity-20", overlayClasses)} />
             </Button>
@@ -17,8 +18,9 @@ export function ColorPickerButton({ rule }: { rule: HighlightRule; }) {
     );
 }
 
-function ColorPickerPopup({ twColor, onChange, children }: { twColor?: string; onChange: (twColor: string) => void; children: ReactNode; }) {
+function ColorPickerPopup({ rule, overlayClasses, children }: { rule: HighlightRule; overlayClasses: string; children: ReactNode; }) {
     const [open, setOpen] = useState(false);
+    const { overlayKey } = rule;
 
     return (
         <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -32,13 +34,13 @@ function ColorPickerPopup({ twColor, onChange, children }: { twColor?: string; o
                         (c: HighlightRuleStatic, index: number) => (
                             <ColorSwatch
                                 key={c.kbd}
-                                bgClass={`bg-${c.twColor}`} 
-                                label={c.label}
+                                overlayClasses={getOverlayKeyClasses(c.overlayKey)}
+                                colorLabel={getColorLabel(c.overlayKey)}
                                 letter={c.kbd}
-                                isSelected={twColor === c.twColor}
+                                isSelected={overlayKey === c.overlayKey}
                                 index={index}
                                 onClick={() => {
-                                    onChange(c.twColor);
+                                    highlightActions.updateRule(rule.id, { overlayKey: c.overlayKey });
                                     setOpen(false);
                                 }}
                             />
@@ -50,9 +52,9 @@ function ColorPickerPopup({ twColor, onChange, children }: { twColor?: string; o
     );
 }
 
-function ColorSwatch({ bgClass, label, letter, isSelected, onClick, index }: {
-    bgClass: string;
-    label: string;
+function ColorSwatch({ colorLabel, overlayClasses, letter, isSelected, onClick, index }: {
+    colorLabel: string;
+    overlayClasses: string;
     letter: string;
     isSelected: boolean;
     onClick: () => void;
@@ -62,12 +64,12 @@ function ColorSwatch({ bgClass, label, letter, isSelected, onClick, index }: {
         <button
             className={cn(swatchClasses, isSelected && "ring ring-primary ring-offset-2 ring-offset-background", index === 1 && "col-span-3")}
             onClick={(e) => { e.currentTarget.blur(); setTimeout(() => onClick(), 50); }} // to avoid "Blocked aria-hidden on an element because its descendant retained focus."
-            title={label}
+            title={colorLabel}
         >
             {/* Background */}
-            {label !== "key-None"
+            {colorLabel !== "key-none"
                 ? (
-                    <div className={cn("size-full opacity-20 rounded-md", bgClass)} />
+                    <div className={cn("size-full opacity-20 rounded-md", overlayClasses)} />
                 ) : (
                     <svg className="size-full fill-foreground/20 rounded-md">
                         <defs>
@@ -87,39 +89,67 @@ function ColorSwatch({ bgClass, label, letter, isSelected, onClick, index }: {
     );
 }
 
+const bgClasses = {
+    none:        /**/ 'bg-transparent',
+    blue:        /**/ 'bg-blue-500',
+    green:       /**/ 'bg-green-500',
+    emerald:     /**/ 'bg-emerald-500',
+    cyan:        /**/ 'bg-cyan-500',
+    lime:        /**/ 'bg-lime-500',
+
+    indigo:      /**/ 'bg-indigo-500',
+    violet:      /**/ 'bg-violet-500',
+    purple:      /**/ 'bg-purple-500',
+    pink:        /**/ 'bg-pink-500',
+
+    red:         /**/ 'bg-red-500',
+    orange:      /**/ 'bg-orange-500',
+    amber:       /**/ 'bg-amber-500',
+    yellow:      /**/ 'bg-yellow-300',
+
+    slate:       /**/ 'bg-slate-700',
+    gray:        /**/ 'bg-gray-500',
+    zinc:        /**/ 'bg-zinc-400',
+    stone:       /**/ 'bg-stone-200',
+};
+
 const COLOR_GRID_Classes: HighlightRuleStatic[] = [
-    { label: "key-None",      /**/ twColor: 'bg-transparent', /**/ kbd: "q", },
-    { label: "key-Blue",      /**/ twColor: "bg-blue-500",    /**/ kbd: "o", },
+    { overlayKey: "key-none",      /**/ overlay: bgClasses.none,    /**/ kbd: "q", },
+    { overlayKey: "key-blue",      /**/ overlay: bgClasses.blue,    /**/ kbd: "o", },
 
-    { label: "key-Green",     /**/ twColor: "bg-green-500",   /**/ kbd: "y", },
-    { label: "key-Emerald",   /**/ twColor: "bg-emerald-500", /**/ kbd: "u", },
-    { label: "key-Cyan",      /**/ twColor: "bg-cyan-500",    /**/ kbd: "i", },
-    { label: "key-Lime",      /**/ twColor: "bg-lime-500",    /**/ kbd: "f", },
+    { overlayKey: "key-green",     /**/ overlay: bgClasses.green,   /**/ kbd: "y", },
+    { overlayKey: "key-emerald",   /**/ overlay: bgClasses.emerald, /**/ kbd: "u", },
+    { overlayKey: "key-cyan",      /**/ overlay: bgClasses.cyan,    /**/ kbd: "i", },
+    { overlayKey: "key-lime",      /**/ overlay: bgClasses.lime,    /**/ kbd: "f", },
 
-    { label: "key-Indigo",    /**/ twColor: "bg-indigo-500",  /**/ kbd: "p", },
-    { label: "key-Violet",    /**/ twColor: "bg-violet-500",  /**/ kbd: "a", },
-    { label: "key-Purple",    /**/ twColor: "bg-purple-500",  /**/ kbd: "s", },
-    { label: "key-Pink",      /**/ twColor: "bg-pink-500",    /**/ kbd: "d", },
+    { overlayKey: "key-indigo",    /**/ overlay: bgClasses.indigo,  /**/ kbd: "p", },
+    { overlayKey: "key-violet",    /**/ overlay: bgClasses.violet,  /**/ kbd: "a", },
+    { overlayKey: "key-purple",    /**/ overlay: bgClasses.purple,  /**/ kbd: "s", },
+    { overlayKey: "key-pink",      /**/ overlay: bgClasses.pink,    /**/ kbd: "d", },
 
-    { label: "key-Red",       /**/ twColor: "bg-red-500",     /**/ kbd: "w", },
-    { label: "key-Orange",    /**/ twColor: "bg-orange-500",  /**/ kbd: "e", },
-    { label: "key-Amber",     /**/ twColor: "bg-amber-500",   /**/ kbd: "r", },
-    { label: "key-Yellow",    /**/ twColor: "bg-yellow-300",  /**/ kbd: "t", },
+    { overlayKey: "key-red",       /**/ overlay: bgClasses.red,     /**/ kbd: "w", },
+    { overlayKey: "key-orange",    /**/ overlay: bgClasses.orange,  /**/ kbd: "e", },
+    { overlayKey: "key-amber",     /**/ overlay: bgClasses.amber,   /**/ kbd: "r", },
+    { overlayKey: "key-yellow",    /**/ overlay: bgClasses.yellow,  /**/ kbd: "t", },
 
-    { label: "key-Slate",     /**/ twColor: "bg-slate-700",   /**/ kbd: "g", },
-    { label: "key-Gray",      /**/ twColor: "bg-gray-500",    /**/ kbd: "h", },
-    { label: "key-Zinc",      /**/ twColor: "bg-zinc-400",    /**/ kbd: "j", },
-    { label: "key-Stone",     /**/ twColor: "bg-stone-200",   /**/ kbd: "k", },
+    { overlayKey: "key-slate",     /**/ overlay: bgClasses.slate,   /**/ kbd: "g", },
+    { overlayKey: "key-gray",      /**/ overlay: bgClasses.gray,    /**/ kbd: "h", },
+    { overlayKey: "key-zinc",      /**/ overlay: bgClasses.zinc,    /**/ kbd: "j", },
+    { overlayKey: "key-stone",     /**/ overlay: bgClasses.stone,   /**/ kbd: "k", },
 ] as const;
 
 type HighlightRuleStatic = {
-    twColor: string;
-    label: string;
+    overlayKey: string;
+    overlay: string;
     kbd: string;
 };
 
-function getColorLabel(label: string): string {
-    return label.replace("key-", "");
+function getColorLabel(overlayKey: string | undefined): string {
+    return overlayKey?.replace("key-", "") || "";
+}
+
+export function getOverlayKeyClasses(overlayKey: string): string {
+    return COLOR_GRID_Classes.find(c => c.overlayKey === overlayKey)?.overlay || bgClasses.none;
 }
 
 const swatchClasses = "\

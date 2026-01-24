@@ -4,7 +4,7 @@ import { selectAtom } from "jotai/utils";
 import { useSnapshot, type Snapshot } from "valtio";
 import { cn } from "@/utils/index";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger, } from "../ui/shadcn/context-menu";
-import { appSettings } from "@/store/1-ui-settings";
+import { appSettings, type HighlightRule } from "@/store/1-ui-settings";
 import { AlertCircle, FileText } from "lucide-react";
 import { SymbolArrowCircleLeft } from "../ui/icons/symbols/all-other/33-arrow-circle-left";
 import { SymbolSpinner } from "../ui/icons/symbols";
@@ -14,6 +14,7 @@ import { allTimesStore } from "@/store/traces-store/3-all-times-store";
 import { dialogFileHeaderOpenAtom, dialogEditHighlightsOpenAtom } from "@/store/2-ui-atoms";
 import { getFileLoadingAtom } from "@/store/traces-store/1-3-file-loading-atoms";
 import { highlightActions } from "@/store/5-highlight-rules";
+import { getOverlayKeyClasses } from "../ui/local-ui/color-picker-popup";
 
 export const FileListRow = memo(
     function FileListRow({ fileState, currentFileStateAtom }: { fileState: Snapshot<FileState>; currentFileStateAtom: Atom<FileState | null>; }) {
@@ -30,7 +31,7 @@ export const FileListRow = memo(
         const setFileHeaderOpen = useSetAtom(dialogFileHeaderOpenAtom);
         const setEditHighlightsOpen = useSetAtom(dialogEditHighlightsOpenAtom);
 
-        const highlightRuleColor = getHighlightColor(highlightEnabled, highlightRules, fileState.matchedHighlightIds);
+        const overlayClasses = getOverlayClasses(highlightEnabled, highlightRules, fileState.matchedHighlightIds);
 
         const isMarked = allTimesSelectedTimestamp
             ? allTimes.find((t) => t.timestamp === allTimesSelectedTimestamp)?.fileIds.includes(fileState.id)
@@ -42,8 +43,8 @@ export const FileListRow = memo(
                     <div className={cn(getRowClasses(isSelected, hasError))} onClick={() => selectFile(fileState.id)}>
 
                         {/* Highlight rule background overlay */}
-                        {!isSelected && highlightRuleColor && (
-                            <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundColor: `var(--color-${highlightRuleColor})` }} />
+                        {!isSelected && overlayClasses && (
+                            <div className={cn("absolute inset-0 opacity-20 pointer-events-none", overlayClasses)} />
                         )}
 
                         {/* File icon */}
@@ -158,7 +159,7 @@ rounded-full",
 
 };
 
-function getHighlightColor(highlightEnabled: boolean, highlightRules: readonly { id: string; color?: string; enabled?: boolean; }[], matchedHighlightIds: readonly string[] | undefined): string | undefined {
+function getOverlayClasses(highlightEnabled: boolean, highlightRules: readonly HighlightRule[], matchedHighlightIds: readonly string[] | undefined): string | undefined {
     if (!highlightEnabled || !matchedHighlightIds || matchedHighlightIds.length === 0) {
         return undefined;
     }
@@ -166,5 +167,5 @@ function getHighlightColor(highlightEnabled: boolean, highlightRules: readonly {
     // Find the first rule in appSettings that matches one of the file's matched IDs.
     // We iterate through highlightRules to preserve order priority
     const rule = highlightRules.find(r => matchedHighlightIds.includes(r.id));
-    return (rule && rule.enabled !== false) ? rule.color : undefined;
+    return rule?.ruleEnabled ? getOverlayKeyClasses(rule.overlayKey) : undefined;
 }

@@ -4,8 +4,8 @@ import { isFileNameMatch } from '@/utils/filter-match';
 
 export const highlightActions = {
     addRule: (rulePattern: string) => {
-        const id = Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
-        appSettings.highlightRules.push({ id, rulePattern, overlayClasses: 'bg-transparent', ruleEnabled: true });
+        const id = generateRuleId();
+        appSettings.highlightRules.push({ id, rulePattern, overlayKey: 'bg-transparent', ruleEnabled: true });
         recomputeHighlightMatches();
     },
 
@@ -62,4 +62,8 @@ export function recomputeHighlightMatches() {
             }
         }
     );
+}
+
+function generateRuleId(): string {
+    return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
 }

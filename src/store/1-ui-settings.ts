@@ -12,9 +12,9 @@ export interface FileFilter {
 }
 
 export interface HighlightRule {
-    id: string;
+    id: string;                 // Unique identifier for the rule
     rulePattern: string;        // Pattern to match file (wildcard or regex like file filters)
-    overlayClasses: string;     // Tailwind overlay classes (e.g. "bg-red-500 opacity-20")
+    overlayKey: string;         // This key from COLOR_GRID_Classes to get  the Tailwind overlay classes (e.g. "bg-red-500 opacity-20")
     ruleEnabled: boolean;       // Whether the rule is enabled
 }
 
