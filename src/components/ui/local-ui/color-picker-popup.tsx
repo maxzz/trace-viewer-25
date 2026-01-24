@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import { cn } from "@/utils/index";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "../shadcn/dropdown-menu";
 import { Button } from "../shadcn/button";
-import { type HighlightRule as HighlightRuleType } from "@/store/1-ui-settings";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "../shadcn/dropdown-menu";
+import { type HighlightRule } from "@/store/1-ui-settings";
 import { highlightActions } from "@/store/5-highlight-rules";
 
-export function ColorPickerButton({ rule }: { rule: HighlightRuleType }) {
+export function ColorPickerButton({ rule }: { rule: HighlightRule; }) {
     return (
         <ColorPickerPopup twColor={rule.twColor} onChange={(twColor) => highlightActions.updateRule(rule.id, { twColor })}>
             <Button className="size-8 p-0 overflow-hidden" variant="outline" title={rule.twColor ? `Color: ${rule.twColor}` : "Select color"}>
@@ -15,7 +15,7 @@ export function ColorPickerButton({ rule }: { rule: HighlightRuleType }) {
     );
 }
 
-function ColorPickerPopup({ twColor, onChange, children }: ColorPickerPopupProps) {
+function ColorPickerPopup({ twColor, onChange, children }: { twColor?: string; onChange: (twColor: string) => void; children: ReactNode; }) {
     const [open, setOpen] = useState(false);
 
     return (
@@ -27,7 +27,7 @@ function ColorPickerPopup({ twColor, onChange, children }: ColorPickerPopupProps
             <DropdownMenuContent className="w-auto p-2" align="start">
                 <div className="grid grid-cols-4 gap-2">
                     {COLOR_GRID_Classes.map(
-                        (c: HighlightRule, index: number) => (
+                        (c: HighlightRuleStatic, index: number) => (
                             <ColorSwatch
                                 key={c.key}
                                 bgClass={c.bgClasses}
@@ -105,12 +105,6 @@ interface ColorSwatchProps {
     index: number;
 }
 
-interface ColorPickerPopupProps {
-    twColor?: string; // Tailwind color class (e.g. "red-500") or undefined/null for transparent
-    onChange: (twColor: string | undefined) => void;
-    children: React.ReactNode;
-}
-
 // DpFbView
 // DpAgentOtsPlugin
 // (DpAgent|DpHost2)
@@ -118,8 +112,8 @@ interface ColorPickerPopupProps {
 // Altus
 // mstsc
 
-type HighlightRule = {
-    name: string | undefined;
+type HighlightRuleStatic = {
+    name: string;
     label: string;
     key: string;
     bgClasses: string;
@@ -128,9 +122,9 @@ type HighlightRule = {
 
 // We store the color name (e.g. "red-500") as the value.
 // We also store the full class name for the background to ensure Tailwind generates it.
-const COLOR_GRID_Classes: ReadonlyArray<HighlightRule> = [
+const COLOR_GRID_Classes: ReadonlyArray<HighlightRuleStatic> = [
     // Row 0
-    { name: undefined,     /**/ label: "None",     /**/ key: "q", bgClasses: "bg-transparent", /**/ textClasses: "text-foreground/50" },
+    { name: 'transparent', /**/ label: "None",     /**/ key: "q", bgClasses: "bg-transparent", /**/ textClasses: "text-foreground/50" },
     { name: "blue-500",    /**/ label: "Blue",   /**/ key: "o", bgClasses: "bg-blue-500",    /**/ textClasses: "text-foreground/50" },
 
     // Row 1
