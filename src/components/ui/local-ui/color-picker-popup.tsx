@@ -7,7 +7,7 @@ import { highlightActions } from "@/store/5-highlight-rules";
 
 export function ColorPickerButton({ rule }: { rule: HighlightRuleType }) {
     return (
-        <ColorPickerPopup color={rule.twColor} onChange={(color) => highlightActions.updateRule(rule.id, { twColor: color })}>
+        <ColorPickerPopup twColor={rule.twColor} onChange={(twColor) => highlightActions.updateRule(rule.id, { twColor })}>
             <Button className="size-8 p-0 overflow-hidden" variant="outline" title={rule.twColor ? `Color: ${rule.twColor}` : "Select color"}>
                 <div className={cn("size-full opacity-20", rule.twColor && `bg-${rule.twColor}`)} />
             </Button>
@@ -15,7 +15,7 @@ export function ColorPickerButton({ rule }: { rule: HighlightRuleType }) {
     );
 }
 
-function ColorPickerPopup({ color, onChange, children }: ColorPickerPopupProps) {
+function ColorPickerPopup({ twColor, onChange, children }: ColorPickerPopupProps) {
     const [open, setOpen] = useState(false);
 
     return (
@@ -34,7 +34,7 @@ function ColorPickerPopup({ color, onChange, children }: ColorPickerPopupProps) 
                                 textClass={c.textClasses}
                                 label={c.label}
                                 letter={c.key}
-                                isSelected={color === c.name}
+                                isSelected={twColor === c.name}
                                 index={index}
                                 onClick={() => {
                                     onChange(c.name);
@@ -106,8 +106,8 @@ interface ColorSwatchProps {
 }
 
 interface ColorPickerPopupProps {
-    color?: string; // Tailwind color class (e.g. "red-500") or undefined/null for transparent
-    onChange: (color: string | undefined) => void;
+    twColor?: string; // Tailwind color class (e.g. "red-500") or undefined/null for transparent
+    onChange: (twColor: string | undefined) => void;
     children: React.ReactNode;
 }
 
