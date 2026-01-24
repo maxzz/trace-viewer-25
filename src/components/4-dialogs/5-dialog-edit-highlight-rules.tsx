@@ -133,15 +133,15 @@ function HighlightRow({ rule, onDelete, isPatternInvalid }: { rule: HighlightRul
 
             <Checkbox
                 className="mr-2"
-                checked={rule.enabled !== false}
-                onCheckedChange={(checked) => highlightActions.updateRule(rule.id, { enabled: !!checked })}
+                checked={rule.ruleEnabled !== false}
+                onCheckedChange={(checked) => highlightActions.updateRule(rule.id, { ruleEnabled: !!checked })}
             />
 
             <div className="flex-1 grid grid-cols-[1fr_36px] gap-1">
                 {/* Pattern */}
                 <InputPattern
                     ruleId={rule.id}
-                    pattern={rule.pattern}
+                    pattern={rule.rulePattern}
                     isPatternInvalid={isPatternInvalid ?? false}
                 />
                 {/* Color */}
@@ -172,17 +172,17 @@ function InputPattern({ ruleId, pattern, isPatternInvalid }: { ruleId: string, p
     function handlePatternChange(value: string) {
         setLocalValue(value);
         if (isRegex) {
-            onUpdate(ruleId, { pattern: `/${value}/` });
+            onUpdate(ruleId, { rulePattern: `/${value}/` });
         } else {
-            onUpdate(ruleId, { pattern: value });
+            onUpdate(ruleId, { rulePattern: value });
         }
     }
 
     function handleToggleRegex() {
         if (isRegex) {
-            onUpdate(ruleId, { pattern: patternWithoutSlashes });
+            onUpdate(ruleId, { rulePattern: patternWithoutSlashes });
         } else {
-            onUpdate(ruleId, { pattern: `/${pattern}/` });
+            onUpdate(ruleId, { rulePattern: `/${pattern}/` });
         }
     }
 
@@ -217,7 +217,7 @@ function validateRules(highlightRules: readonly HighlightRule[]): { isValid: boo
 
     highlightRules.forEach(
         (rule) => {
-            if (!rule.pattern || rule.pattern.trim() === '') {
+            if (!rule.rulePattern?.trim()) {
                 invalidPatterns.add(rule.id);
             }
         }

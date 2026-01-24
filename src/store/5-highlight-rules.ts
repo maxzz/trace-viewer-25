@@ -3,9 +3,9 @@ import { type FileState, filesStore } from './traces-store/9-types-files-store';
 import { isFileNameMatch } from '@/utils/filter-match';
 
 export const highlightActions = {
-    addRule: (pattern: string, twColor?: string) => {
+    addRule: (rulePattern: string) => {
         const id = Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
-        appSettings.highlightRules.push({ id, pattern, twColor, enabled: true });
+        appSettings.highlightRules.push({ id, rulePattern, overlayClasses: 'bg-transparent', ruleEnabled: true });
         recomputeHighlightMatches();
     },
 
@@ -22,7 +22,7 @@ export const highlightActions = {
         if (rule) {
             Object.assign(rule, updates);
             // Recompute if pattern changed
-            if (updates.pattern !== undefined || updates.enabled !== undefined) {
+            if (updates.rulePattern || updates.ruleEnabled) {
                 recomputeHighlightMatches();
             }
         }
@@ -40,21 +40,17 @@ export const highlightActions = {
     }
 };
 
-// Use this for HIGHLIGHTING (Coloring files)
 export function recomputeHighlightMatches() {
     const rules = appSettings.highlightRules;
     const fileStates = filesStore.states;
-
-    if (fileStates.length === 0) return;
-
+    
     fileStates.forEach(
         (fileState: FileState) => {
             const matchedIds: string[] = [];
             
             rules.forEach(
                 (rule: HighlightRule) => {
-                    if (rule.enabled === false) return; // Skip disabled rules
-                    if (isFileNameMatch(fileState.data.fileName, rule.pattern)) {
+                    if (rule.ruleEnabled && isFileNameMatch(fileState.data.fileName, rule.rulePattern)) {
                         matchedIds.push(rule.id);
                     }
                 }

@@ -6,10 +6,12 @@ import { type HighlightRule } from "@/store/1-ui-settings";
 import { highlightActions } from "@/store/5-highlight-rules";
 
 export function ColorPickerButton({ rule }: { rule: HighlightRule; }) {
+    const { overlayClasses } = rule;
+    const title = getColorLabel(overlayClasses);
     return (
-        <ColorPickerPopup twColor={rule.twColor} onChange={(twColor) => highlightActions.updateRule(rule.id, { twColor })}>
-            <Button className="size-8 p-0 overflow-hidden" variant="outline" title={rule.twColor ? `Color: ${rule.twColor}` : "Select color"}>
-                <div className={cn("size-full opacity-20", rule.twColor && `bg-${rule.twColor}`)} />
+        <ColorPickerPopup twColor={overlayClasses} onChange={(twColor) => highlightActions.updateRule(rule.id, { overlayClasses: twColor })}>
+            <Button className="p-0 size-8 overflow-hidden" variant="outline" title={title}>
+                <div className={cn("size-full opacity-20", overlayClasses)} />
             </Button>
         </ColorPickerPopup>
     );
@@ -30,14 +32,13 @@ function ColorPickerPopup({ twColor, onChange, children }: { twColor?: string; o
                         (c: HighlightRuleStatic, index: number) => (
                             <ColorSwatch
                                 key={c.kbd}
-                                bgClass={`bg-${c.name}`}
-                                textClass={`text-foreground/50`}
+                                bgClass={`bg-${c.twColor}`} 
                                 label={c.label}
                                 letter={c.kbd}
-                                isSelected={twColor === c.name}
+                                isSelected={twColor === c.twColor}
                                 index={index}
                                 onClick={() => {
-                                    onChange(c.name);
+                                    onChange(c.twColor);
                                     setOpen(false);
                                 }}
                             />
@@ -49,7 +50,14 @@ function ColorPickerPopup({ twColor, onChange, children }: { twColor?: string; o
     );
 }
 
-function ColorSwatch({ bgClass, textClass, label, letter, isSelected, onClick, index }: ColorSwatchProps) {
+function ColorSwatch({ bgClass, label, letter, isSelected, onClick, index }: {
+    bgClass: string;
+    label: string;
+    letter: string;
+    isSelected: boolean;
+    onClick: () => void;
+    index: number;
+}) {
     return (
         <button
             className={cn(swatchClasses, isSelected && "ring ring-primary ring-offset-2 ring-offset-background", index === 1 && "col-span-3")}
@@ -57,7 +65,7 @@ function ColorSwatch({ bgClass, textClass, label, letter, isSelected, onClick, i
             title={label}
         >
             {/* Background */}
-            {label !== "None"
+            {label !== "key-None"
                 ? (
                     <div className={cn("size-full opacity-20 rounded-md", bgClass)} />
                 ) : (
@@ -72,11 +80,46 @@ function ColorSwatch({ bgClass, textClass, label, letter, isSelected, onClick, i
                 )}
 
             {/* Letter overlay */}
-            <span className={cn("absolute inset-0 px-1.5 py-1 text-[10px] font-mono pointer-events-none flex items-end justify-end", textClass)}>
+            <span className={cn("absolute inset-0 px-1.5 py-1 text-[10px] font-mono text-foreground/50 pointer-events-none flex items-end justify-end")}>
                 {letter}
             </span>
         </button>
     );
+}
+
+const COLOR_GRID_Classes: HighlightRuleStatic[] = [
+    { label: "key-None",      /**/ twColor: 'bg-transparent', /**/ kbd: "q", },
+    { label: "key-Blue",      /**/ twColor: "bg-blue-500",    /**/ kbd: "o", },
+
+    { label: "key-Green",     /**/ twColor: "bg-green-500",   /**/ kbd: "y", },
+    { label: "key-Emerald",   /**/ twColor: "bg-emerald-500", /**/ kbd: "u", },
+    { label: "key-Cyan",      /**/ twColor: "bg-cyan-500",    /**/ kbd: "i", },
+    { label: "key-Lime",      /**/ twColor: "bg-lime-500",    /**/ kbd: "f", },
+
+    { label: "key-Indigo",    /**/ twColor: "bg-indigo-500",  /**/ kbd: "p", },
+    { label: "key-Violet",    /**/ twColor: "bg-violet-500",  /**/ kbd: "a", },
+    { label: "key-Purple",    /**/ twColor: "bg-purple-500",  /**/ kbd: "s", },
+    { label: "key-Pink",      /**/ twColor: "bg-pink-500",    /**/ kbd: "d", },
+
+    { label: "key-Red",       /**/ twColor: "bg-red-500",     /**/ kbd: "w", },
+    { label: "key-Orange",    /**/ twColor: "bg-orange-500",  /**/ kbd: "e", },
+    { label: "key-Amber",     /**/ twColor: "bg-amber-500",   /**/ kbd: "r", },
+    { label: "key-Yellow",    /**/ twColor: "bg-yellow-300",  /**/ kbd: "t", },
+
+    { label: "key-Slate",     /**/ twColor: "bg-slate-700",   /**/ kbd: "g", },
+    { label: "key-Gray",      /**/ twColor: "bg-gray-500",    /**/ kbd: "h", },
+    { label: "key-Zinc",      /**/ twColor: "bg-zinc-400",    /**/ kbd: "j", },
+    { label: "key-Stone",     /**/ twColor: "bg-stone-200",   /**/ kbd: "k", },
+] as const;
+
+type HighlightRuleStatic = {
+    twColor: string;
+    label: string;
+    kbd: string;
+};
+
+function getColorLabel(label: string): string {
+    return label.replace("key-", "");
 }
 
 const swatchClasses = "\
@@ -95,59 +138,9 @@ dark:shadow-foreground/20 \
 transition-all \
 flex items-center justify-center";
 
-interface ColorSwatchProps {
-    bgClass: string;
-    textClass: string;
-    label: string;
-    letter: string;
-    isSelected: boolean;
-    onClick: () => void;
-    index: number;
-}
-
 // DpFbView
 // DpAgentOtsPlugin
 // (DpAgent|DpHost2)
 // DpHost
 // Altus
 // mstsc
-
-type HighlightRuleStatic = {
-    name: string;
-    label: string;
-    kbd: string;
-};
-
-// We store the color name (e.g. "red-500") as the value.
-// We also store the full class name for the background to ensure Tailwind generates it.
-const COLOR_GRID_Classes: ReadonlyArray<HighlightRuleStatic> = [
-    // Row 0
-    { name: 'transparent', /**/ label: "None",     /**/ kbd: "q", },
-    { name: "blue-500",    /**/ label: "Blue",   /**/ kbd: "o", },
-
-    // Row 1
-    { name: "green-500",   /**/ label: "Green",  /**/ kbd: "y", },
-    { name: "emerald-500", /**/ label: "Emerald",  /**/ kbd: "u", },
-    { name: "cyan-500",    /**/ label: "Cyan",   /**/ kbd: "i", },
-    { name: "lime-500",    /**/ label: "Lime",   /**/ kbd: "f", },
-
-    // Row 2
-    { name: "indigo-500",  /**/ label: "Indigo", /**/ kbd: "p", },
-    { name: "violet-500",  /**/ label: "Violet", /**/ kbd: "a", },
-    { name: "purple-500",  /**/ label: "Purple", /**/ kbd: "s", },
-    { name: "pink-500",    /**/ label: "Pink",   /**/ kbd: "d", },
-
-    // Row 3
-    { name: "red-500",     /**/ label: "Red",    /**/ kbd: "w", },
-    { name: "orange-500",  /**/ label: "Orange", /**/ kbd: "e", },
-    { name: "amber-500",   /**/ label: "Amber",    /**/ kbd: "r", },
-    { name: "yellow-300",  /**/ label: "Yellow", /**/ kbd: "t", },
-
-    // Row 4
-    { name: "slate-700",   /**/ label: "Slate",    /**/ kbd: "g", },
-    { name: "gray-500",    /**/ label: "Gray",   /**/ kbd: "h", },
-    { name: "zinc-400",    /**/ label: "Zinc",     /**/ kbd: "j", },
-    { name: "stone-200",   /**/ label: "Stone",    /**/ kbd: "k", },
-
-    // Row 5
-];
