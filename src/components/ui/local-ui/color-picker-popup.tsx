@@ -29,11 +29,11 @@ function ColorPickerPopup({ twColor, onChange, children }: { twColor?: string; o
                     {COLOR_GRID_Classes.map(
                         (c: HighlightRuleStatic, index: number) => (
                             <ColorSwatch
-                                key={c.key}
-                                bgClass={c.bgClasses}
-                                textClass={c.textClasses}
+                                key={c.kbd}
+                                bgClass={`bg-${c.name}`}
+                                textClass={`text-foreground/50`}
                                 label={c.label}
-                                letter={c.key}
+                                letter={c.kbd}
                                 isSelected={twColor === c.name}
                                 index={index}
                                 onClick={() => {
@@ -115,41 +115,39 @@ interface ColorSwatchProps {
 type HighlightRuleStatic = {
     name: string;
     label: string;
-    key: string;
-    bgClasses: string;
-    textClasses: string;
+    kbd: string;
 };
 
 // We store the color name (e.g. "red-500") as the value.
 // We also store the full class name for the background to ensure Tailwind generates it.
 const COLOR_GRID_Classes: ReadonlyArray<HighlightRuleStatic> = [
     // Row 0
-    { name: 'transparent', /**/ label: "None",     /**/ key: "q", bgClasses: "bg-transparent", /**/ textClasses: "text-foreground/50" },
-    { name: "blue-500",    /**/ label: "Blue",   /**/ key: "o", bgClasses: "bg-blue-500",    /**/ textClasses: "text-foreground/50" },
+    { name: 'transparent', /**/ label: "None",     /**/ kbd: "q", },
+    { name: "blue-500",    /**/ label: "Blue",   /**/ kbd: "o", },
 
     // Row 1
-    { name: "green-500",   /**/ label: "Green",  /**/ key: "y", bgClasses: "bg-green-500",   /**/ textClasses: "text-foreground/50" },
-    { name: "emerald-500", /**/ label: "Emerald",  /**/ key: "u", bgClasses: "bg-emerald-500", /**/ textClasses: "text-foreground/50" },
-    { name: "cyan-500",    /**/ label: "Cyan",   /**/ key: "i", bgClasses: "bg-cyan-500",    /**/ textClasses: "text-foreground/50" },
-    { name: "lime-500",    /**/ label: "Lime",   /**/ key: "f", bgClasses: "bg-lime-500",    /**/ textClasses: "text-foreground/50" },
+    { name: "green-500",   /**/ label: "Green",  /**/ kbd: "y", },
+    { name: "emerald-500", /**/ label: "Emerald",  /**/ kbd: "u", },
+    { name: "cyan-500",    /**/ label: "Cyan",   /**/ kbd: "i", },
+    { name: "lime-500",    /**/ label: "Lime",   /**/ kbd: "f", },
 
     // Row 2
-    { name: "indigo-500",  /**/ label: "Indigo", /**/ key: "p", bgClasses: "bg-indigo-500",  /**/ textClasses: "text-foreground/50" },
-    { name: "violet-500",  /**/ label: "Violet", /**/ key: "a", bgClasses: "bg-violet-500",  /**/ textClasses: "text-foreground/50" },
-    { name: "purple-500",  /**/ label: "Purple", /**/ key: "s", bgClasses: "bg-purple-500",  /**/ textClasses: "text-foreground/50" },
-    { name: "pink-500",    /**/ label: "Pink",   /**/ key: "d", bgClasses: "bg-pink-500",    /**/ textClasses: "text-foreground/50" },
+    { name: "indigo-500",  /**/ label: "Indigo", /**/ kbd: "p", },
+    { name: "violet-500",  /**/ label: "Violet", /**/ kbd: "a", },
+    { name: "purple-500",  /**/ label: "Purple", /**/ kbd: "s", },
+    { name: "pink-500",    /**/ label: "Pink",   /**/ kbd: "d", },
 
     // Row 3
-    { name: "red-500",     /**/ label: "Red",    /**/ key: "w", bgClasses: "bg-red-500",     /**/ textClasses: "text-foreground/50" },
-    { name: "orange-500",  /**/ label: "Orange", /**/ key: "e", bgClasses: "bg-orange-500",  /**/ textClasses: "text-foreground/50" },
-    { name: "amber-500",   /**/ label: "Amber",    /**/ key: "r", bgClasses: "bg-amber-500",   /**/ textClasses: "text-foreground/50" },
-    { name: "yellow-300",  /**/ label: "Yellow", /**/ key: "t", bgClasses: "bg-yellow-300",  /**/ textClasses: "text-foreground/50" },
+    { name: "red-500",     /**/ label: "Red",    /**/ kbd: "w", },
+    { name: "orange-500",  /**/ label: "Orange", /**/ kbd: "e", },
+    { name: "amber-500",   /**/ label: "Amber",    /**/ kbd: "r", },
+    { name: "yellow-300",  /**/ label: "Yellow", /**/ kbd: "t", },
 
     // Row 4
-    { name: "slate-500",   /**/ label: "Slate",    /**/ key: "g", bgClasses: "bg-slate-700",   /**/ textClasses: "text-foreground/50" },
-    { name: "gray-500",    /**/ label: "Gray",   /**/ key: "h", bgClasses: "bg-gray-500",    /**/ textClasses: "text-foreground/50" },
-    { name: "zinc-500",    /**/ label: "Zinc",     /**/ key: "j", bgClasses: "bg-zinc-400",    /**/ textClasses: "text-foreground/50" },
-    { name: "stone-200",   /**/ label: "Stone",    /**/ key: "k", bgClasses: "bg-stone-200",   /**/ textClasses: "text-foreground/50" },
+    { name: "slate-700",   /**/ label: "Slate",    /**/ kbd: "g", },
+    { name: "gray-500",    /**/ label: "Gray",   /**/ kbd: "h", },
+    { name: "zinc-400",    /**/ label: "Zinc",     /**/ kbd: "j", },
+    { name: "stone-200",   /**/ label: "Stone",    /**/ kbd: "k", },
 
     // Row 5
 ];
