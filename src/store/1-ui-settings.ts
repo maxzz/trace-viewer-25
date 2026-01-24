@@ -13,9 +13,9 @@ export interface FileFilter {
 
 export interface HighlightRule {
     id: string;
-    pattern: string;
-    color?: string; // Tailwind color name (e.g. "red-500")
-    enabled?: boolean;
+    pattern: string;        // Pattern to match file (wildcard or regex like file filters)
+    twColor?: string;       // Tailwind color name (e.g. "red-500")
+    enabled?: boolean;      // Whether the rule is enabled
 }
 
 export interface AppSettings {
@@ -23,7 +23,7 @@ export interface AppSettings {
     useIconsForEntryExit: boolean;
     showLineNumbers: boolean;
     theme: ThemeMode;
-    panelSizes?: number[]; // ResizablePanelGroup panel sizes (percentages)
+    panelSizes?: number[];  // ResizablePanelGroup panel sizes (percentages)
     extraInFooter: boolean; // Show header info (Computer, OS, Compiled) in footer
     
     // File Filters (Hiding files)

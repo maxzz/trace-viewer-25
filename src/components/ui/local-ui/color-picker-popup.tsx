@@ -7,9 +7,9 @@ import { highlightActions } from "@/store/5-highlight-rules";
 
 export function ColorPickerButton({ rule }: { rule: HighlightRuleType }) {
     return (
-        <ColorPickerPopup color={rule.color} onChange={(color) => highlightActions.updateRule(rule.id, { color })}>
-            <Button className="size-8 p-0 overflow-hidden" variant="outline" title={rule.color ? `Color: ${rule.color}` : "Select color"}>
-                <div className={cn("size-full opacity-20", rule.color && `bg-${rule.color}`)} />
+        <ColorPickerPopup color={rule.twColor} onChange={(color) => highlightActions.updateRule(rule.id, { twColor: color })}>
+            <Button className="size-8 p-0 overflow-hidden" variant="outline" title={rule.twColor ? `Color: ${rule.twColor}` : "Select color"}>
+                <div className={cn("size-full opacity-20", rule.twColor && `bg-${rule.twColor}`)} />
             </Button>
         </ColorPickerPopup>
     );

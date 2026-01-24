@@ -5,7 +5,7 @@ import { isFileNameMatch } from '@/utils/filter-match';
 export const highlightActions = {
     addRule: (pattern: string, color?: string) => {
         const id = Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
-        appSettings.highlightRules.push({ id, pattern, color, enabled: true });
+        appSettings.highlightRules.push({ id, pattern, twColor: color, enabled: true });
         recomputeHighlightMatches();
     },
 
