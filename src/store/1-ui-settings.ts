@@ -1,9 +1,9 @@
 import { proxy, subscribe } from 'valtio';
 import { type ThemeMode, themeApplyMode } from '../utils/theme-apply';
 
-const STORE_KEY = "viewer-25";
-const STORE_VER = "v1.0";
-const STORAGE_ID = `${STORE_KEY}::${STORE_VER}`;
+const STORE_KEY = "trace-viewer-25";
+const STORE_VER = "v1.1"; // updated HighlightRule format
+const STORAGE_ID = `${STORE_KEY}__${STORE_VER}`;
 
 export interface FileFilter {
     id: string;

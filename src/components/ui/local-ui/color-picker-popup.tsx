@@ -170,7 +170,7 @@ flex items-center justify-center";
 
 // DpFbView
 // DpAgentOtsPlugin
-// (DpAgent|DpHost2)
+// (DpAgent.exe|DpHost2)
 // DpHost
 // Altus
 // mstsc

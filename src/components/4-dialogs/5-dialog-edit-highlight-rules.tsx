@@ -105,7 +105,7 @@ const codeClasses = "px-1 bg-muted outline rounded";
 
 function Header() {
     return (
-        <div className="mt-4 pl-16 pr-5 grid grid-cols-[1fr_52px] gap-1 select-none">
+        <div className="mt-4 pl-12 pr-5 grid grid-cols-[1fr_52px] gap-1 select-none">
             <div className="text-xs font-semibold">
                 Pattern
             </div>
@@ -133,7 +133,7 @@ function HighlightRow({ rule, onDelete, isPatternInvalid }: { rule: HighlightRul
 
             <Checkbox
                 className="mr-2"
-                checked={rule.ruleEnabled !== false}
+                checked={rule.ruleEnabled}
                 onCheckedChange={(checked) => highlightActions.updateRule(rule.id, { ruleEnabled: !!checked })}
             />
 
