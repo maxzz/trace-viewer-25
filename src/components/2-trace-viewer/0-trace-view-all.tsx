@@ -212,7 +212,7 @@ function calculateVirtualization(viewLines: TraceLine[], containerHeight: number
 }
 
 const iconContainerClasses = "\
-absolute left-[5px] size-4 z-20 \
+absolute left-1.25 size-4 z-20 \
 hover:scale-125 \
 \
 rounded-full \

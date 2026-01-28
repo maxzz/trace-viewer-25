@@ -1,4 +1,4 @@
-"use client"; // 01.07.26
+"use client"; // 01.27.26
 import * as React from "react";
 import { cn } from "@/utils/index";
 import { GripVerticalIcon } from "lucide-react";
@@ -21,7 +21,7 @@ export function ResizablePanel({ ...props }: React.ComponentProps<typeof Panel>)
 
 export function ResizableHandle({ withHandle, className, ...props }: React.ComponentProps<typeof Separator> & { withHandle?: boolean; }) {
     return (
-        <Separator data-slot="resizable-handle" className={cn(resizableLineClasses, className)}            {...props}>
+        <Separator data-slot="resizable-handle" className={cn(resizableLineClasses, className)} {...props}>
             {withHandle && (
                 <div className={resizableHandleClasses}>
                     <GripVerticalIcon className="size-2.5" />
@@ -37,12 +37,11 @@ const resizableLineClasses = "\
 group \
 relative \
 w-0.5 \
-bg-foreground/20 \
-dark:bg-foreground/20 \
+bg-foreground/20 dark:bg-foreground/20 \
 focus-visible:ring-ring \
+outline-none \
 \
 hover:bg-sky-500 \
-focus:bg-sky-500 \
 transition-all \
 \
 after:absolute \
