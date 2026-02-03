@@ -33,7 +33,7 @@
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "fflate": "^0.8.2",
-        "jotai": "^2.16.2",
+        "jotai": "^2.17.0",
         "jotai-effect": "^2.2.3",
         "jotai-valtio": "^0.6.0",
         "lucide-react": "^0.563.0",
