@@ -36,7 +36,7 @@
         "jotai": "^2.16.2",
         "jotai-effect": "^2.2.3",
         "jotai-valtio": "^0.6.0",
-        "lucide-react": "^0.562.0",
+        "lucide-react": "^0.563.0",
         "motion": "^12.27.5",
         "next-themes": "^0.4.6",
         "react": "^19.2.3",
