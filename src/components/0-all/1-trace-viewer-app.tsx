@@ -1,4 +1,4 @@
-import { useAtomValue, useAtom, atom } from "jotai";
+import { useAtomValue, useSetAtom, atom } from "jotai";
 import { useSnapshot } from "valtio";
 import { listenerToBuildAllTimesEffectAtom } from "@/store/traces-store/8-all-times-listener";
 import { appSettings } from "../../store/1-ui-settings";
@@ -17,6 +17,7 @@ import { ButtonHighlightToggle } from "./3-btn-highlight-toggle";
 import { Switch } from "../ui/shadcn/switch";
 import { Label } from "../ui/shadcn/label";
 import { classNames } from "@/utils";
+import { setCurrentFileShowOnlySelectedThreadAtom } from "@/store/traces-store/2-thread-filter-cache";
 
 export function TraceViewerApp() {
     useAtomValue(listenerToBuildAllTimesEffectAtom);
@@ -66,7 +67,8 @@ const fallbackLineIndexAtom = atom(-1);
 
 function ThreadOnlyToggle() {
     const currentFileState = useAtomValue(currentFileStateAtom);
-    const [showOnlySelectedThread, setShowOnlySelectedThread] = useAtom(currentFileState?.showOnlySelectedThreadAtom ?? fallbackShowOnlySelectedThreadAtom);
+    const showOnlySelectedThread = useAtomValue(currentFileState?.showOnlySelectedThreadAtom ?? fallbackShowOnlySelectedThreadAtom);
+    const setShowOnlySelectedThread = useSetAtom(setCurrentFileShowOnlySelectedThreadAtom);
     const currentLineIndex = useAtomValue(currentFileState?.currentLineIdxAtom ?? fallbackLineIndexAtom);
 
     const disabled = !currentFileState || currentLineIndex < 0;

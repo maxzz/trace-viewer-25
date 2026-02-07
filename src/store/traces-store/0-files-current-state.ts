@@ -1,5 +1,6 @@
 import { atom, getDefaultStore } from "jotai";
 import { filesStore, type FileState } from "./9-types-files-store";
+import { syncCurrentFileThreadLinesCacheAtom } from "./2-thread-filter-cache";
 
 export const currentFileStateAtom = atom<FileState | null>(null);
 
@@ -17,11 +18,14 @@ export function setCurrentFileState(fileState: FileState | null, forceUpdate = f
     } else {
         store.set(currentFileStateAtom, fileState);
     }
+    store.set(syncCurrentFileThreadLinesCacheAtom, "sync");
 }
 
 export function setCurrentLineIndex(lineIndex: number): void {
     const state = getDefaultStore().get(currentFileStateAtom);
     if (state) {
-        getDefaultStore().set(state.currentLineIdxAtom, lineIndex);
+        const store = getDefaultStore();
+        store.set(state.currentLineIdxAtom, lineIndex);
+        store.set(syncCurrentFileThreadLinesCacheAtom, "sync");
     }
 }
