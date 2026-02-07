@@ -12,7 +12,7 @@ export const TraceRowMemo = React.memo(TraceRow);
 
 type TraceRowParams = {
     line: TraceLine;
-    globalIndex: number;
+    baseIndex: number;
     currentLineIdxAtom: PrimitiveAtom<number>;
     useIconsForEntryExit: boolean;
     showLineNumbers: boolean;
@@ -20,13 +20,13 @@ type TraceRowParams = {
     firstLineLength: number;
 };
 
-function TraceRow({ line, globalIndex, currentLineIdxAtom, useIconsForEntryExit, showLineNumbers, uniqueThreadIds, firstLineLength }: TraceRowParams) {
-    const isSelectedAtom = useMemo(() => selectAtom(currentLineIdxAtom, (s) => s === globalIndex), [currentLineIdxAtom, globalIndex]);
+function TraceRow({ line, baseIndex, currentLineIdxAtom, useIconsForEntryExit, showLineNumbers, uniqueThreadIds, firstLineLength }: TraceRowParams) {
+    const isSelectedAtom = useMemo(() => selectAtom(currentLineIdxAtom, (s) => s === baseIndex), [currentLineIdxAtom, baseIndex]);
     const isSelected = useAtomValue(isSelectedAtom);
     const showThreadBackground = uniqueThreadIds.length > 0 && uniqueThreadIds[0] !== line.threadId;
 
     return (
-        <div className={getRowClasses(line, isSelected)} style={{ height: ITEM_HEIGHT }} onClick={() => setCurrentLineIndex(globalIndex)}>
+        <div className={getRowClasses(line, isSelected)} style={{ height: ITEM_HEIGHT }} onClick={() => setCurrentLineIndex(baseIndex)}>
             {/* Time Column */}
             <div className={classNames(columnTimeClasses, firstLineLength === 12 ? "w-18" : "w-20", line.code === LineCode.Day && "pl-0 justify-center")} title={line.timestamp} data-timestamp={line.timestamp}>
                 {line.code === LineCode.Day

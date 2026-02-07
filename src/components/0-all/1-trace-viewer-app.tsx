@@ -1,4 +1,4 @@
-import { useAtomValue } from "jotai";
+import { useAtomValue, useAtom, atom } from "jotai";
 import { useSnapshot } from "valtio";
 import { listenerToBuildAllTimesEffectAtom } from "@/store/traces-store/8-all-times-listener";
 import { appSettings } from "../../store/1-ui-settings";
@@ -9,10 +9,14 @@ import { FileFilterDropdown } from "./3-btn-filters-select";
 import { ButtonThemeToggle } from "./3-btn-theme-toggle";
 import { filesCountAtom } from "@/store/6-filtered-files";
 import { canGoBackAtom, canGoForwardAtom, historyActions } from "@/store/traces-store/0-files-history";
+import { currentFileStateAtom } from "@/store/traces-store/0-files-current-state";
 import { Button } from "../ui/shadcn/button";
 import { IconBinocular, IconChevronLeft } from "../ui/icons";
 import { TimelineProgress } from "./4-loading-progress";
 import { ButtonHighlightToggle } from "./3-btn-highlight-toggle";
+import { Switch } from "../ui/shadcn/switch";
+import { Label } from "../ui/shadcn/label";
+import { classNames } from "@/utils";
 
 export function TraceViewerApp() {
     useAtomValue(listenerToBuildAllTimesEffectAtom);
@@ -50,9 +54,37 @@ function TopMenuToolbar() {
             <div className="px-2 flex items-center gap-2">
                 <ButtonHighlightToggle />
                 <FileFilterDropdown />
+                <ThreadOnlyToggle />
                 <ButtonThemeToggle />
             </div>
         </div>
+    );
+}
+
+const fallbackShowOnlySelectedThreadAtom = atom(false);
+const fallbackLineIndexAtom = atom(-1);
+
+function ThreadOnlyToggle() {
+    const currentFileState = useAtomValue(currentFileStateAtom);
+    const [showOnlySelectedThread, setShowOnlySelectedThread] = useAtom(currentFileState?.showOnlySelectedThreadAtom ?? fallbackShowOnlySelectedThreadAtom);
+    const currentLineIndex = useAtomValue(currentFileState?.currentLineIdxAtom ?? fallbackLineIndexAtom);
+
+    const disabled = !currentFileState || currentLineIndex < 0;
+
+    return (
+        <Label
+            className={classNames("h-6 px-2 rounded border border-border select-none", disabled && "opacity-50")}
+            data-disabled={disabled}
+            title={disabled ? "Select a line to enable thread-only view" : "Show only lines from the selected thread"}
+        >
+            Thread
+            <Switch
+                className={classNames(disabled && "disabled:opacity-100")}
+                checked={showOnlySelectedThread}
+                onCheckedChange={setShowOnlySelectedThread}
+                disabled={disabled}
+            />
+        </Label>
     );
 }
 

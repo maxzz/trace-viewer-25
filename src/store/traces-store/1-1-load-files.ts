@@ -130,6 +130,7 @@ function newTraceItemCreate(file: File): FileState {
             id,
             data, // Placeholder, will update after adding to store
             currentLineIdxAtom: atom(-1),
+            showOnlySelectedThreadAtom: atom(false),
             matchedFilterIds: [],
             matchedHighlightIds: []
         };
