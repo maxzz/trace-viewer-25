@@ -25,7 +25,15 @@ export function scrollToSelection(currentLineIndex: number, scrollRef: React.Ref
     // Since that effect updates currentLineIndex, this effect will trigger naturally.
 }
 
-export function handlePendingTimestampScroll(pendingScrollTimestamp: string | null, pendingScrollFileId: string | null | undefined, viewLines: readonly TraceLine[], scrollRef: React.RefObject<HTMLDivElement | null>, containerHeight: number, currentFileId: string | null) {
+export function handlePendingTimestampScroll(
+    pendingScrollTimestamp: string | null,
+    pendingScrollFileId: string | null | undefined,
+    viewLines: readonly TraceLine[],
+    scrollRef: React.RefObject<HTMLDivElement | null>,
+    containerHeight: number,
+    currentFileId: string | null,
+    baseIndexToDisplayIndex?: readonly number[]
+) {
     if (!pendingScrollTimestamp || viewLines.length === 0) return;
 
     // If pending scroll is for a specific file, ensure we are on that file
@@ -126,7 +134,15 @@ export function handlePendingTimestampScroll(pendingScrollTimestamp: string | nu
 
         // To fix: we can trigger a scroll imperatively here.
         if (scrollRef.current) {
-            const targetTop = bestIndex * ITEM_HEIGHT;
+            const displayIndex = baseIndexToDisplayIndex ? (baseIndexToDisplayIndex[bestIndex] ?? -1) : bestIndex;
+            if (displayIndex < 0) {
+                // line is currently filtered out, let selection change stand and skip scroll
+                allTimesStore.pendingScrollTimestamp = null;
+                allTimesStore.pendingScrollFileId = null;
+                return;
+            }
+
+            const targetTop = displayIndex * ITEM_HEIGHT;
             const targetBottom = targetTop + ITEM_HEIGHT;
             const viewTop = scrollRef.current.scrollTop;
             const viewBottom = viewTop + containerHeight; // containerHeight is from state, might be stale? No, it's updated on resize.

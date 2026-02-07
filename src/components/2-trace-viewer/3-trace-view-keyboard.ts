@@ -17,45 +17,93 @@ export function handleKeyboardNavigation(e: KeyboardEvent, scrollRef: React.RefO
     }
 
     const currentFileState = getCurrentFileState();
-    const totalLines = currentFileState?.data.viewLines.length ?? 0;
-    if (totalLines === 0) return;
+    const viewLinesCount = currentFileState?.data.viewLines.length ?? 0;
+    if (viewLinesCount === 0) return;
 
     const currentIndex = currentFileState ? getDefaultStore().get(currentFileState.currentLineIdxAtom) : -1;
+    const showOnlySelectedThread = currentFileState ? getDefaultStore().get(currentFileState.showOnlySelectedThreadAtom) : false;
+    const filteredBaseIndices = (showOnlySelectedThread && currentFileState)
+        ? (getDefaultStore().get(currentFileState.threadLineBaseIndicesAtom) ?? undefined)
+        : undefined;
+
+    const navigationLinesCount = filteredBaseIndices?.length ?? viewLinesCount;
+    if (navigationLinesCount === 0) return;
+
     const linesPerPage = Math.floor(containerHeight / ITEM_HEIGHT);
     
     // Calculate current visible range based on scrollTop
     const firstVisibleIndex = Math.floor(scrollTop / ITEM_HEIGHT);
-    const lastVisibleIndex = Math.min(totalLines - 1, firstVisibleIndex + linesPerPage - 1);
+    const lastVisibleIndex = Math.min(navigationLinesCount - 1, firstVisibleIndex + linesPerPage - 1);
 
     let newIndex = currentIndex;
 
+    const currentPos = filteredBaseIndices ? filteredBaseIndices.indexOf(currentIndex) : -1;
+
     switch (e.key) {
         case 'ArrowUp':
-            newIndex = Math.max(0, currentIndex - 1);
+            if (filteredBaseIndices) {
+                const nextPos = Math.max(0, (currentPos === -1 ? 0 : currentPos - 1));
+                newIndex = filteredBaseIndices[nextPos] ?? currentIndex;
+            } else {
+                newIndex = Math.max(0, currentIndex - 1);
+            }
             break;
         case 'ArrowDown':
-            newIndex = currentIndex === -1 ? 0 : Math.min(totalLines - 1, currentIndex + 1);
+            if (filteredBaseIndices) {
+                const nextPos = Math.min(navigationLinesCount - 1, (currentPos === -1 ? 0 : currentPos + 1));
+                newIndex = filteredBaseIndices[nextPos] ?? currentIndex;
+            } else {
+                newIndex = currentIndex === -1 ? 0 : Math.min(navigationLinesCount - 1, currentIndex + 1);
+            }
             break;
         case 'PageUp':
             if (e.altKey) {
-                newIndex = firstVisibleIndex;
+                if (filteredBaseIndices) {
+                    newIndex = filteredBaseIndices[firstVisibleIndex] ?? currentIndex;
+                } else {
+                    newIndex = firstVisibleIndex;
+                }
             } else {
-                newIndex = Math.max(0, currentIndex - linesPerPage);
+                if (filteredBaseIndices) {
+                    const start = currentPos === -1 ? 0 : currentPos;
+                    const nextPos = Math.max(0, start - linesPerPage);
+                    newIndex = filteredBaseIndices[nextPos] ?? currentIndex;
+                } else {
+                    newIndex = Math.max(0, currentIndex - linesPerPage);
+                }
             }
             break;
         case 'PageDown':
             if (e.altKey) {
-                newIndex = lastVisibleIndex;
+                if (filteredBaseIndices) {
+                    newIndex = filteredBaseIndices[lastVisibleIndex] ?? currentIndex;
+                } else {
+                    newIndex = lastVisibleIndex;
+                }
             } else {
-                const start = currentIndex === -1 ? 0 : currentIndex;
-                newIndex = Math.min(totalLines - 1, start + linesPerPage);
+                if (filteredBaseIndices) {
+                    const start = currentPos === -1 ? 0 : currentPos;
+                    const nextPos = Math.min(navigationLinesCount - 1, start + linesPerPage);
+                    newIndex = filteredBaseIndices[nextPos] ?? currentIndex;
+                } else {
+                    const start = currentIndex === -1 ? 0 : currentIndex;
+                    newIndex = Math.min(navigationLinesCount - 1, start + linesPerPage);
+                }
             }
             break;
         case 'Home':
-            newIndex = 0;
+            if (filteredBaseIndices) {
+                newIndex = filteredBaseIndices[0] ?? currentIndex;
+            } else {
+                newIndex = 0;
+            }
             break;
         case 'End':
-            newIndex = totalLines - 1;
+            if (filteredBaseIndices) {
+                newIndex = filteredBaseIndices[navigationLinesCount - 1] ?? currentIndex;
+            } else {
+                newIndex = navigationLinesCount - 1;
+            }
             break;
         default:
             return;
