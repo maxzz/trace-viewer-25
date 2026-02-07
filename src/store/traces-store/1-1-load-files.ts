@@ -4,7 +4,7 @@ import { extractTracesFromZipInWorker, isTrc3File, isZipFile } from "@/workers-c
 import { setAppTitle } from "@/store/3-ui-app-title";
 import { filesStore, type FileData, type FileState } from "./9-types-files-store";
 import { asyncParseTraceFile } from "./1-2-parse-trace-file";
-import { emptyFileHeader } from "@/trace-viewer-core/9-core-types";
+import { emptyFileHeader, type TraceLine } from "@/trace-viewer-core/9-core-types";
 import { recomputeFilterMatches } from "../4-file-filters";
 import { appSettings } from "../1-ui-settings";
 import { matchesFilePattern } from "../6-filtered-files";
@@ -131,6 +131,10 @@ function newTraceItemCreate(file: File): FileState {
             data, // Placeholder, will update after adding to store
             currentLineIdxAtom: atom(-1),
             showOnlySelectedThreadAtom: atom(false),
+            threadLinesAtom: atom<TraceLine[] | undefined>(undefined),
+            threadLineBaseIndicesAtom: atom<number[] | undefined>(undefined),
+            threadBaseIndexToDisplayIndexAtom: atom<number[] | undefined>(undefined),
+            threadLinesThreadIdAtom: atom<number | null>(null),
             matchedFilterIds: [],
             matchedHighlightIds: []
         };
