@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
-import { useAtomValue, useAtom, atom, type PrimitiveAtom } from "jotai";
+import { useAtomValue, useAtom, atom, getDefaultStore, type PrimitiveAtom } from "jotai";
 import { useSnapshot } from "valtio";
 import { formatTimestamp } from "@/utils";
 import { appSettings } from "../../store/1-ui-settings";
@@ -100,9 +100,9 @@ export function TraceList() {
     useEffect( // Reset scroll on file change
         () => {
             if (!scrollRef.current) return;
-            scrollRef.current.scrollTop = scrollTop;
+            scrollRef.current.scrollTop = getDefaultStore().get(scrollTopAtom);
         },
-        [selectedFileId]);
+        [selectedFileId, scrollTopAtom]);
 
     useEffect( // Handle pending timestamp scroll
         () => {
@@ -122,7 +122,7 @@ export function TraceList() {
         (e: React.UIEvent<HTMLDivElement>) => {
             setScrollTop(e.currentTarget.scrollTop);
         },
-        []);
+        [setScrollTop]);
 
     const { totalHeight, visibleLines, offsetY, startIndex, firstLineLength } = calculateVirtualization(linesForView, containerHeight, scrollTop);
 
