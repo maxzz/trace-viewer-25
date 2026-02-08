@@ -53,9 +53,9 @@ function TopMenuToolbar() {
                 <TimelineProgress />
             </div>
             <div className="px-2 flex items-center gap-2">
+                <ThreadOnlyToggle />
                 <ButtonHighlightToggle />
                 <FileFilterDropdown />
-                <ThreadOnlyToggle />
                 <ButtonThemeToggle />
             </div>
         </div>
@@ -75,13 +75,13 @@ function ThreadOnlyToggle() {
 
     return (
         <Label
-            className={classNames("h-6 px-2 rounded border border-border select-none", disabled && "opacity-50")}
+            className={classNames("px-1 h-6 font-normal border-border rounded border select-none gap-1", disabled && "opacity-50")}
             data-disabled={disabled}
             title={disabled ? "Select a line to enable thread-only view" : "Show only lines from the selected thread"}
         >
             Thread
             <Switch
-                className={classNames(disabled && "disabled:opacity-100")}
+                className={classNames("border border-foreground/10", disabled && "disabled:opacity-100")}
                 checked={showOnlySelectedThread}
                 onCheckedChange={setShowOnlySelectedThread}
                 disabled={disabled}
