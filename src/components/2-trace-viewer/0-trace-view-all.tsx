@@ -4,6 +4,7 @@ import { useSnapshot } from "valtio";
 import { formatTimestamp } from "@/utils";
 import { appSettings } from "../../store/1-ui-settings";
 import { currentFileStateAtom } from "../../store/traces-store/0-files-current-state";
+import { currentFileThreadFilterViewStateAtom } from "../../store/traces-store/2-thread-filter-cache";
 import { type TraceLine } from "../../trace-viewer-core/9-core-types";
 import { ITEM_HEIGHT } from "./9-trace-view-constants";
 import { allTimesStore } from "../../store/traces-store/3-all-times-store";
@@ -21,28 +22,14 @@ export function TraceList() {
     const selectedFileId = currentFileState?.id ?? null;
     const fileData = currentFileState?.data;
     const currentLineIdxAtom = currentFileState?.currentLineIdxAtom ?? fallbackLineIndexAtom;
-    const showOnlySelectedThread = useAtomValue(currentFileState?.showOnlySelectedThreadAtom ?? fallbackShowOnlySelectedThreadAtom);
     const viewLines = fileData?.viewLines || [];
-    const threadIds = fileData?.uniqueThreadIds || [];
 
     const scrollRef = useRef<HTMLDivElement>(null);
     const [scrollTop, setScrollTop] = useState(0);
     const [containerHeight, setContainerHeight] = useState(800); // Default
     const [hoveredTimestamp, setHoveredTimestamp] = useAtom(hoveredTimestampAtom);
 
-    const threadLines = useAtomValue(currentFileState?.threadLinesAtom ?? fallbackThreadLinesAtom);
-    const threadLineBaseIndices = useAtomValue(currentFileState?.threadLineBaseIndicesAtom ?? fallbackThreadLineBaseIndicesAtom);
-    const threadBaseIndexToDisplayIndex = useAtomValue(currentFileState?.threadBaseIndexToDisplayIndexAtom ?? fallbackThreadBaseIndexToDisplayIndexAtom);
-    const threadLinesThreadId = useAtomValue(currentFileState?.threadLinesThreadIdAtom ?? fallbackThreadLinesThreadIdAtom);
-
-    const isThreadFilterActive = showOnlySelectedThread
-        && threadLines !== undefined
-        && threadLineBaseIndices !== undefined
-        && threadBaseIndexToDisplayIndex !== undefined
-        && threadLinesThreadId !== null;
-
-    const linesForView = isThreadFilterActive ? threadLines! : viewLines;
-    const threadIdsForView = isThreadFilterActive ? [threadLinesThreadId!] : threadIds;
+    const { isThreadFilterActive, linesForView, threadIdsForView, threadLineBaseIndices, threadBaseIndexToDisplayIndex } = useAtomValue(currentFileThreadFilterViewStateAtom);
 
     const onMouseMove = useCallback(
         (e: React.MouseEvent<HTMLDivElement>) => {
@@ -200,11 +187,6 @@ export function TraceList() {
 
 const hoveredTimestampAtom = atom<{ timestamp: string; top: number; } | null>(null); // Atom to track hovered timestamp info
 const fallbackLineIndexAtom = atom(-1);
-const fallbackShowOnlySelectedThreadAtom = atom(false);
-const fallbackThreadLinesAtom = atom<TraceLine[] | undefined>(undefined);
-const fallbackThreadLineBaseIndicesAtom = atom<number[] | undefined>(undefined);
-const fallbackThreadBaseIndexToDisplayIndexAtom = atom<number[] | undefined>(undefined);
-const fallbackThreadLinesThreadIdAtom = atom<number | null>(null);
 
 function TraceViewScrollController({ scrollRef, containerHeight, selectedFileId, currentLineIdxAtom, isThreadFilterActive, threadBaseIndexToDisplayIndex }: {
     currentLineIdxAtom: PrimitiveAtom<number>;

@@ -13,6 +13,51 @@ export const currentFileSelectedThreadIdAtom = atom(
     }
 );
 
+export type CurrentFileThreadFilterViewState = {
+    isThreadFilterActive: boolean;
+    linesForView: TraceLine[];
+    threadIdsForView: number[];
+    threadLineBaseIndices: number[] | undefined;
+    threadBaseIndexToDisplayIndex: number[] | undefined;
+};
+
+export const currentFileThreadFilterViewStateAtom = atom<CurrentFileThreadFilterViewState>(
+    (get) => {
+        const fileState = get(currentFileStateAtom);
+        const viewLines = fileState?.data.viewLines ?? [];
+        const threadIds = fileState?.data.uniqueThreadIds ?? [];
+        if (!fileState) {
+            return {
+                isThreadFilterActive: false,
+                linesForView: viewLines,
+                threadIdsForView: threadIds,
+                threadLineBaseIndices: undefined,
+                threadBaseIndexToDisplayIndex: undefined,
+            };
+        }
+
+        const showOnlySelectedThread = get(fileState.showOnlySelectedThreadAtom);
+        const threadLines = get(fileState.threadLinesAtom);
+        const threadLineBaseIndices = get(fileState.threadLineBaseIndicesAtom);
+        const threadBaseIndexToDisplayIndex = get(fileState.threadBaseIndexToDisplayIndexAtom);
+        const threadLinesThreadId = get(fileState.threadLinesThreadIdAtom);
+
+        const isThreadFilterActive = showOnlySelectedThread
+            && threadLines !== undefined
+            && threadLineBaseIndices !== undefined
+            && threadBaseIndexToDisplayIndex !== undefined
+            && threadLinesThreadId !== null;
+
+        return {
+            isThreadFilterActive,
+            linesForView: isThreadFilterActive ? threadLines : viewLines,
+            threadIdsForView: isThreadFilterActive ? [threadLinesThreadId] : threadIds,
+            threadLineBaseIndices,
+            threadBaseIndexToDisplayIndex,
+        };
+    }
+);
+
 export const syncCurrentFileThreadLinesCacheAtom = atom(
     null,
     (get, set, _action: "sync") => {
