@@ -25,7 +25,8 @@ export function TraceList() {
     const viewLines = fileData?.viewLines || [];
 
     const scrollRef = useRef<HTMLDivElement>(null);
-    const [scrollTop, setScrollTop] = useState(0);
+    const scrollTopAtom = currentFileState?.scrollTopAtom ?? fallbackScrollTopAtom;
+    const [scrollTop, setScrollTop] = useAtom(scrollTopAtom);
     const [containerHeight, setContainerHeight] = useState(800); // Default
     const [hoveredTimestamp, setHoveredTimestamp] = useAtom(hoveredTimestampAtom);
 
@@ -98,8 +99,8 @@ export function TraceList() {
 
     useEffect( // Reset scroll on file change
         () => {
-            setScrollTop(0);
-            scrollRef.current && (scrollRef.current.scrollTop = 0);
+            if (!scrollRef.current) return;
+            scrollRef.current.scrollTop = scrollTop;
         },
         [selectedFileId]);
 
@@ -187,6 +188,7 @@ export function TraceList() {
 
 const hoveredTimestampAtom = atom<{ timestamp: string; top: number; } | null>(null); // Atom to track hovered timestamp info
 const fallbackLineIndexAtom = atom(-1);
+const fallbackScrollTopAtom = atom(0);
 
 function TraceViewScrollController({ scrollRef, containerHeight, selectedFileId, currentLineIdxAtom, isThreadFilterActive, threadBaseIndexToDisplayIndex }: {
     currentLineIdxAtom: PrimitiveAtom<number>;

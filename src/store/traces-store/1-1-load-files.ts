@@ -130,6 +130,7 @@ function newTraceItemCreate(file: File): FileState {
             id,
             data, // Placeholder, will update after adding to store
             currentLineIdxAtom: atom(-1),
+            scrollTopAtom: atom(0),
             showOnlySelectedThreadAtom: atom(false),
             threadLinesAtom: atom<TraceLine[] | undefined>(undefined),
             threadLineBaseIndicesAtom: atom<number[] | undefined>(undefined),

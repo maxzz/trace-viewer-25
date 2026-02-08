@@ -3,16 +3,6 @@ import { currentFileStateAtom } from "./0-files-current-state";
 import { LineCode, type TraceLine } from "@/trace-viewer-core/9-core-types";
 import { type FileState } from "./9-types-files-store";
 
-export const currentFileSelectedThreadIdAtom = atom(
-    (get) => {
-        const fileState = get(currentFileStateAtom);
-        if (!fileState) return null;
-
-        const currentLineIndex = get(fileState.currentLineIdxAtom);
-        return getSelectedThreadIdFromSelection(fileState.data.viewLines, currentLineIndex);
-    }
-);
-
 export type CurrentFileThreadFilterViewState = {
     isThreadFilterActive: boolean;
     linesForView: TraceLine[];
@@ -58,6 +48,16 @@ export const currentFileThreadFilterViewStateAtom = atom<CurrentFileThreadFilter
     }
 );
 
+export const currentFileSelectedThreadIdAtom = atom(
+    (get) => {
+        const fileState = get(currentFileStateAtom);
+        if (!fileState) return null;
+
+        const currentLineIndex = get(fileState.currentLineIdxAtom);
+        return getSelectedThreadIdFromSelection(fileState.data.viewLines, currentLineIndex);
+    }
+);
+
 export const syncCurrentFileThreadLinesCacheAtom = atom(
     null,
     (get, set, _action: "sync") => {
@@ -100,11 +100,7 @@ export const setCurrentFileShowOnlySelectedThreadAtom = atom(
     }
 );
 
-function clearThreadLinesCache(
-    fileState: FileState,
-    get: Getter,
-    set: Setter,
-) {
+function clearThreadLinesCache(fileState: FileState, get: Getter, set: Setter,) {
     const hasLines = get(fileState.threadLinesAtom) !== undefined;
     const hasIndexMap = get(fileState.threadLineBaseIndicesAtom) !== undefined;
     const hasReverseMap = get(fileState.threadBaseIndexToDisplayIndexAtom) !== undefined;

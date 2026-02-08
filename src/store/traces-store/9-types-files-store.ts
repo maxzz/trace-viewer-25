@@ -20,6 +20,7 @@ export interface FileState {
     data: FileData;
     
     currentLineIdxAtom: PA<number>;             // current line index in the trace file. -1 if no line is selected.
+    scrollTopAtom: PA<number>;                 // trace list scrollTop for this file (px).
     
     showOnlySelectedThreadAtom: PA<boolean>;    // show only selected thread lines in the trace list.
     threadLinesAtom: PA<TraceLine[] | undefined>;                  // cached thread-only lines for the trace list.
