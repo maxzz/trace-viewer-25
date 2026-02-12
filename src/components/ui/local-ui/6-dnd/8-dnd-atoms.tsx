@@ -16,6 +16,7 @@ export const doSetFilesFrom_Dnd_Atom = atom(                    // used by DropI
     async (get, set, dataTransfer: DataTransfer) => {
         const filesWithPaths: FileWithPath[] = [];
         let droppedFolderName: string | undefined;
+        let unsupportedSingleFileName: string | undefined;
 
         // IMPORTANT: webkitGetAsEntry() is only valid synchronously during the drop event.
         // We must collect all entries BEFORE any async operations.
@@ -29,6 +30,13 @@ export const doSetFilesFrom_Dnd_Atom = atom(                    // used by DropI
                 const entry = (item as any).webkitGetAsEntry?.() as FileSystemEntry | null | undefined;
                 if (entry && entry.isDirectory) {
                     droppedFolderName = entry.name;
+                }
+
+                if (!droppedFolderName && item.kind === 'file') {
+                    const file = item.getAsFile();
+                    if (file && !isOurFile(file)) {
+                        unsupportedSingleFileName = file.name;
+                    }
                 }
             }
 
@@ -69,8 +77,12 @@ export const doSetFilesFrom_Dnd_Atom = atom(                    // used by DropI
 
         if (filesWithPaths.length === 0) {
             if ((dataTransfer.items && dataTransfer.items.length > 0) || dataTransfer.files.length > 0) {
-                const sourceName = droppedFolderName || dataTransfer.files?.[0]?.name || "drop";
-                notice.info(`No .trc3 files were found to load from "${sourceName}".`);
+                if (unsupportedSingleFileName) {
+                    notice.info(`Unsupported file "${unsupportedSingleFileName}". Please drop a .trc3 file or a ZIP archive with .trc3 files.`);
+                } else {
+                    const sourceName = droppedFolderName || dataTransfer.files?.[0]?.name || "drop";
+                    notice.info(`No .trc3 files were found to load from "${sourceName}".`);
+                }
             }
             return;
         }
