@@ -2,6 +2,7 @@ import { atom } from "jotai";
 import { isOurFile, isTrc3File, isZipFile } from "@/workers-client";
 import { closeAllFiles } from "@/store/traces-store/0-files-actions";
 import { asyncLoadAnyFiles } from "@/store/traces-store/1-1-load-files";
+import { notice } from "@/components/ui/local-ui/7-toaster";
 
 export type DoSetFilesFrom_Dnd_Atom = typeof doSetFilesFrom_Dnd_Atom;
 
@@ -67,6 +68,9 @@ export const doSetFilesFrom_Dnd_Atom = atom(                    // used by DropI
         }
 
         if (filesWithPaths.length === 0) {
+            if ((dataTransfer.items && dataTransfer.items.length > 0) || dataTransfer.files.length > 0) {
+                notice.info("No .trc3 files were found to load.");
+            }
             return;
         }
 

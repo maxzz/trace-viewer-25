@@ -2,6 +2,7 @@ import { atom, getDefaultStore } from "jotai";
 import { ref } from "valtio";
 import { extractTracesFromZipInWorker, isTrc3File, isZipFile } from "@/workers-client";
 import { setAppTitle } from "@/store/3-ui-app-title";
+import { notice } from "@/components/ui/local-ui/7-toaster";
 import { filesStore, type FileData, type FileState } from "./9-types-files-store";
 import { asyncParseTraceFile } from "./1-2-parse-trace-file";
 import { emptyFileHeader, type TraceLine } from "@/trace-viewer-core/9-core-types";
@@ -21,6 +22,7 @@ export async function asyncLoadAnyFiles(files: File[], droppedFolderName?: strin
     getDefaultStore().set(isLoadingFilesAtom, true);
     allTimesStore.setAllTimes([]);
     try {
+        let loadedTrc3FilesCount = 0;
         const zipFiles = files.filter(f => isZipFile(f));
         const trc3Files = files.filter(f => isTrc3File(f));
 
@@ -29,6 +31,7 @@ export async function asyncLoadAnyFiles(files: File[], droppedFolderName?: strin
             const result = await extractTracesFromZipInWorker(file);
 
             if (result.files.length > 0) {
+                loadedTrc3FilesCount += result.files.length;
                 await loadFilesToStore(result.files);
                 setAppTitle(result.files, result.zipFileName);
             }
@@ -36,7 +39,12 @@ export async function asyncLoadAnyFiles(files: File[], droppedFolderName?: strin
 
         // Load .TRC3 files directly
         await loadFilesToStore(trc3Files);
+        loadedTrc3FilesCount += trc3Files.length;
         setAppTitle(files, droppedFolderName, filePaths);
+
+        if (loadedTrc3FilesCount === 0) {
+            notice.info("No .trc3 files were found to load.");
+        }
 
         appSettings.allTimes.needToRebuild = true;
         buildAlltimes();
