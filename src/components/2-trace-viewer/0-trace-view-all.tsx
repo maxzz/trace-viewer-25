@@ -30,7 +30,7 @@ export function TraceList() {
     const [containerHeight, setContainerHeight] = useState(800); // Default
     const [hoveredTimestamp, setHoveredTimestamp] = useAtom(hoveredTimestampAtom);
 
-    const { isThreadFilterActive, linesForView, threadIdsForView, threadLineBaseIndices, threadBaseIndexToDisplayIndex } = useAtomValue(currentFileThreadFilterViewStateAtom);
+    const { linesForView, threadIdsForView, displayIndexToBaseIndex, baseIndexToDisplayIndex } = useAtomValue(currentFileThreadFilterViewStateAtom);
 
     const onMouseMove = useCallback(
         (e: React.MouseEvent<HTMLDivElement>) => {
@@ -113,10 +113,10 @@ export function TraceList() {
                 scrollRef,
                 containerHeight,
                 selectedFileId,
-                isThreadFilterActive ? (threadBaseIndexToDisplayIndex ?? undefined) : undefined
+                baseIndexToDisplayIndex ?? undefined
             );
         },
-        [pendingScrollTimestamp, pendingScrollFileId, viewLines, containerHeight, selectedFileId, isThreadFilterActive, threadBaseIndexToDisplayIndex]);
+        [pendingScrollTimestamp, pendingScrollFileId, viewLines, containerHeight, selectedFileId, baseIndexToDisplayIndex]);
 
     const onScroll = useCallback(
         (e: React.UIEvent<HTMLDivElement>) => {
@@ -161,7 +161,7 @@ export function TraceList() {
                             <TraceRowMemo
                                 key={line.lineIndex}
                                 line={line}
-                                baseIndex={getBaseIndexForDisplayIndex(isThreadFilterActive, threadLineBaseIndices, startIndex + idx)}
+                                baseIndex={getBaseIndexForDisplayIndex(displayIndexToBaseIndex, startIndex + idx)}
                                 currentLineIdxAtom={currentLineIdxAtom}
                                 useIconsForEntryExit={useIconsForEntryExit}
                                 showLineNumbers={showLineNumbers}
@@ -179,8 +179,7 @@ export function TraceList() {
                 containerHeight={containerHeight}
                 selectedFileId={selectedFileId}
                 currentLineIdxAtom={currentLineIdxAtom}
-                isThreadFilterActive={isThreadFilterActive}
-                threadBaseIndexToDisplayIndex={threadBaseIndexToDisplayIndex}
+                baseIndexToDisplayIndex={baseIndexToDisplayIndex}
             />
         </div>
     );
@@ -190,24 +189,23 @@ const hoveredTimestampAtom = atom<{ timestamp: string; top: number; } | null>(nu
 const fallbackLineIndexAtom = atom(-1);
 const fallbackScrollTopAtom = atom(0);
 
-function TraceViewScrollController({ scrollRef, containerHeight, selectedFileId, currentLineIdxAtom, isThreadFilterActive, threadBaseIndexToDisplayIndex }: {
+function TraceViewScrollController({ scrollRef, containerHeight, selectedFileId, currentLineIdxAtom, baseIndexToDisplayIndex }: {
     currentLineIdxAtom: PrimitiveAtom<number>;
     scrollRef: React.RefObject<HTMLDivElement | null>;
     containerHeight: number;
     selectedFileId: string | null;
-    isThreadFilterActive: boolean;
-    threadBaseIndexToDisplayIndex: number[] | undefined;
+    baseIndexToDisplayIndex: number[] | undefined;
 }) {
     const currentLineIndex = useAtomValue(currentLineIdxAtom);
 
     useEffect( // Scroll to selection
         () => {
-            const displayIndex = isThreadFilterActive
-                ? (threadBaseIndexToDisplayIndex?.[currentLineIndex] ?? -1)
+            const displayIndex = baseIndexToDisplayIndex
+                ? (baseIndexToDisplayIndex[currentLineIndex] ?? -1)
                 : currentLineIndex;
             scrollToSelection(displayIndex, scrollRef, containerHeight);
         },
-        [currentLineIndex, containerHeight, isThreadFilterActive, selectedFileId, scrollRef, threadBaseIndexToDisplayIndex]);
+        [currentLineIndex, containerHeight, selectedFileId, scrollRef, baseIndexToDisplayIndex]);
 
     return null;
 }
@@ -230,9 +228,9 @@ function calculateVirtualization(viewLines: TraceLine[], containerHeight: number
     return { totalHeight, visibleLines, offsetY, startIndex, firstLineLength };
 }
 
-function getBaseIndexForDisplayIndex(isThreadFilterActive: boolean, displayIndexToBaseIndex: number[] | undefined, displayIndex: number) {
-    if (!isThreadFilterActive) return displayIndex;
-    return displayIndexToBaseIndex?.[displayIndex] ?? displayIndex;
+function getBaseIndexForDisplayIndex(displayIndexToBaseIndex: number[] | undefined, displayIndex: number) {
+    if (!displayIndexToBaseIndex) return displayIndex;
+    return displayIndexToBaseIndex[displayIndex] ?? displayIndex;
 }
 
 const iconContainerClasses = "\

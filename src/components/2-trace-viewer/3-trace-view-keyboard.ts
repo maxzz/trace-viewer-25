@@ -1,6 +1,7 @@
 import React from "react";
 import { getDefaultStore } from "jotai";
 import { getCurrentFileState, setCurrentLineIndex } from "../../store/traces-store/0-files-current-state";
+import { currentFileThreadFilterViewStateAtom } from "../../store/traces-store/2-thread-filter-cache";
 import { ITEM_HEIGHT } from "./9-trace-view-constants";
 
 export function handleKeyboardNavigation(e: KeyboardEvent, scrollRef: React.RefObject<HTMLDivElement | null>, containerHeight: number, scrollTop: number) {
@@ -21,10 +22,7 @@ export function handleKeyboardNavigation(e: KeyboardEvent, scrollRef: React.RefO
     if (viewLinesCount === 0) return;
 
     const currentIndex = currentFileState ? getDefaultStore().get(currentFileState.currentLineIdxAtom) : -1;
-    const showOnlySelectedThread = currentFileState ? getDefaultStore().get(currentFileState.showOnlySelectedThreadAtom) : false;
-    const filteredBaseIndices = (showOnlySelectedThread && currentFileState)
-        ? (getDefaultStore().get(currentFileState.threadLineBaseIndicesAtom) ?? undefined)
-        : undefined;
+    const { displayIndexToBaseIndex: filteredBaseIndices } = getDefaultStore().get(currentFileThreadFilterViewStateAtom);
 
     const navigationLinesCount = filteredBaseIndices?.length ?? viewLinesCount;
     if (navigationLinesCount === 0) return;

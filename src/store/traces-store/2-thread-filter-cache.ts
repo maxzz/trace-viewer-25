@@ -1,28 +1,35 @@
 import { atom, type Getter, type Setter } from "jotai";
+import { atomWithProxy } from "jotai-valtio";
 import { currentFileStateAtom } from "./0-files-current-state";
+import { appSettings } from "../1-ui-settings";
 import { LineCode, type TraceLine } from "@/trace-viewer-core/9-core-types";
 import { type FileState } from "./9-types-files-store";
 
 export type CurrentFileThreadFilterViewState = {
     isThreadFilterActive: boolean;
+    isErrorsOnlyActive: boolean;
     linesForView: TraceLine[];
     threadIdsForView: number[];
-    threadLineBaseIndices: number[] | undefined;
-    threadBaseIndexToDisplayIndex: number[] | undefined;
+    displayIndexToBaseIndex: number[] | undefined;
+    baseIndexToDisplayIndex: number[] | undefined;
 };
+
+const appSettingsAtom = atomWithProxy(appSettings);
 
 export const currentFileThreadFilterViewStateAtom = atom<CurrentFileThreadFilterViewState>(
     (get) => {
         const fileState = get(currentFileStateAtom);
         const viewLines = fileState?.data.viewLines ?? [];
         const threadIds = fileState?.data.uniqueThreadIds ?? [];
+        const { showOnlyErrorsInSelectedFile } = get(appSettingsAtom);
         if (!fileState) {
             return {
                 isThreadFilterActive: false,
+                isErrorsOnlyActive: false,
                 linesForView: viewLines,
                 threadIdsForView: threadIds,
-                threadLineBaseIndices: undefined,
-                threadBaseIndexToDisplayIndex: undefined,
+                displayIndexToBaseIndex: undefined,
+                baseIndexToDisplayIndex: undefined,
             };
         }
 
@@ -38,12 +45,30 @@ export const currentFileThreadFilterViewStateAtom = atom<CurrentFileThreadFilter
             && threadBaseIndexToDisplayIndex !== undefined
             && threadLinesThreadId !== null;
 
+        const sourceLines = isThreadFilterActive ? threadLines : viewLines;
+        const sourceThreadIds = isThreadFilterActive ? [threadLinesThreadId] : threadIds;
+        const sourceDisplayIndexToBaseIndex = isThreadFilterActive ? threadLineBaseIndices : undefined;
+
+        const isErrorsOnlyActive = showOnlyErrorsInSelectedFile;
+        if (isErrorsOnlyActive) {
+            const built = buildErrorsOnlyLinesCache(viewLines.length, sourceLines, sourceDisplayIndexToBaseIndex);
+            return {
+                isThreadFilterActive,
+                isErrorsOnlyActive,
+                linesForView: built.lines,
+                threadIdsForView: sourceThreadIds,
+                displayIndexToBaseIndex: built.displayIndexToBaseIndex,
+                baseIndexToDisplayIndex: built.baseIndexToDisplayIndex,
+            };
+        }
+
         return {
             isThreadFilterActive,
-            linesForView: isThreadFilterActive ? threadLines : viewLines,
-            threadIdsForView: isThreadFilterActive ? [threadLinesThreadId] : threadIds,
-            threadLineBaseIndices,
-            threadBaseIndexToDisplayIndex,
+            isErrorsOnlyActive,
+            linesForView: sourceLines,
+            threadIdsForView: sourceThreadIds,
+            displayIndexToBaseIndex: sourceDisplayIndexToBaseIndex,
+            baseIndexToDisplayIndex: isThreadFilterActive ? threadBaseIndexToDisplayIndex : undefined,
         };
     }
 );
@@ -153,5 +178,29 @@ function buildThreadLinesCache(viewLines: readonly TraceLine[], selectedThreadId
     }
 
     return { threadLines, displayIndexToBaseIndex, baseIndexToDisplayIndex };
+}
+
+function buildErrorsOnlyLinesCache(baseLinesCount: number, sourceLines: readonly TraceLine[], sourceDisplayIndexToBaseIndex?: readonly number[]) {
+    const lines: TraceLine[] = [];
+    const displayIndexToBaseIndex: number[] = [];
+    const baseIndexToDisplayIndex = Array.from({ length: baseLinesCount }, () => -1);
+
+    for (let sourceDisplayIndex = 0; sourceDisplayIndex < sourceLines.length; sourceDisplayIndex++) {
+        const line = sourceLines[sourceDisplayIndex];
+        if (!line) continue;
+        if (line.code !== LineCode.Error) continue;
+
+        const baseIndex = sourceDisplayIndexToBaseIndex
+            ? (sourceDisplayIndexToBaseIndex[sourceDisplayIndex] ?? -1)
+            : sourceDisplayIndex;
+        if (baseIndex < 0) continue;
+
+        const displayIndex = lines.length;
+        lines.push(line);
+        displayIndexToBaseIndex.push(baseIndex);
+        baseIndexToDisplayIndex[baseIndex] = displayIndex;
+    }
+
+    return { lines, displayIndexToBaseIndex, baseIndexToDisplayIndex };
 }
 

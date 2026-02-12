@@ -18,6 +18,7 @@ import { Switch } from "../ui/shadcn/switch";
 import { Label } from "../ui/shadcn/label";
 import { classNames } from "@/utils";
 import { setCurrentFileShowOnlySelectedThreadAtom } from "@/store/traces-store/2-thread-filter-cache";
+import { setShowOnlyErrorsInSelectedFileAtom, showOnlyErrorsInSelectedFileAtom } from "@/store/7-errors-only-setting";
 
 export function TraceViewerApp() {
     useAtomValue(listenerToBuildAllTimesEffectAtom);
@@ -54,6 +55,7 @@ function TopMenuToolbar() {
             </div>
             <div className="px-2 flex items-center gap-2">
                 <ThreadOnlyToggle />
+                <ErrorsOnlyToggle />
                 <ButtonHighlightToggle />
                 <FileFilterDropdown />
                 <ButtonThemeToggle />
@@ -84,6 +86,31 @@ function ThreadOnlyToggle() {
                 className={classNames("border border-foreground/10", disabled && "disabled:opacity-100")}
                 checked={showOnlySelectedThread}
                 onCheckedChange={setShowOnlySelectedThread}
+                disabled={disabled}
+            />
+        </Label>
+    );
+}
+
+function ErrorsOnlyToggle() {
+    const currentFileState = useAtomValue(currentFileStateAtom);
+    const setShowOnlyErrorsInSelectedFile = useSetAtom(setShowOnlyErrorsInSelectedFileAtom);
+    const showOnlyErrors = useAtomValue(showOnlyErrorsInSelectedFileAtom);
+
+    const disabled = !currentFileState;
+    const errorsCount = currentFileState?.data.errorsInTraceCount ?? 0;
+
+    return (
+        <Label
+            className={classNames("px-1 h-6 font-normal border-border rounded border select-none gap-1", disabled && "opacity-50")}
+            data-disabled={disabled}
+            title={disabled ? "Select a file to enable errors-only view" : `Show only error lines (${errorsCount} errors)`}
+        >
+            Errors
+            <Switch
+                className={classNames("border border-foreground/10", disabled && "disabled:opacity-100")}
+                checked={showOnlyErrors}
+                onCheckedChange={setShowOnlyErrorsInSelectedFile}
                 disabled={disabled}
             />
         </Label>

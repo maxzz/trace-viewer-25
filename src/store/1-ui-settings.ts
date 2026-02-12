@@ -25,6 +25,7 @@ export interface AppSettings {
     theme: ThemeMode;
     panelSizes?: number[];      // ResizablePanelGroup panel sizes (percentages)
     extraInFooter: boolean;     // Show header info (Computer, OS, Compiled) in footer
+    showOnlyErrorsInSelectedFile: boolean;
     
     // File Filters (Hiding files)
     fileFilters: FileFilter[];
@@ -56,6 +57,7 @@ const DEFAULT_SETTINGS: AppSettings = {
     showLineNumbers: true,
     theme: 'light',
     extraInFooter: false,
+    showOnlyErrorsInSelectedFile: false,
     fileFilters: [],
     selectedFilterId: null,
     highlightRules: [],
