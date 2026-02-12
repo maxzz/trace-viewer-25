@@ -7,3 +7,4 @@ export * from "./06-chevron-right";
 export * from "./07-copy";
 export * from "./08-check";
 export * from "./09-alert-octagon";
+export * from "./10-arrow-left";

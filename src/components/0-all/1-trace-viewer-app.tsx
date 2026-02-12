@@ -11,7 +11,7 @@ import { filesCountAtom } from "@/store/6-filtered-files";
 import { canGoBackAtom, canGoForwardAtom, historyActions } from "@/store/traces-store/0-files-history";
 import { currentFileStateAtom } from "@/store/traces-store/0-files-current-state";
 import { Button } from "../ui/shadcn/button";
-import { IconBinocular, IconChevronLeft } from "../ui/icons";
+import { IconBinocular, IconChevronLeft, IconL_ArrowLeft } from "../ui/icons";
 import { TimelineProgress } from "./4-loading-progress";
 import { ButtonHighlightToggle } from "./3-btn-highlight-toggle";
 import { Switch } from "../ui/shadcn/switch";
@@ -121,14 +121,14 @@ function ButtonHistoryBack() {
     const canGoBack = useAtomValue(canGoBackAtom);
     return (
         <Button
-            className="size-6 rounded-l rounded-r-none"
+            className="group size-6 rounded-l rounded-r-none"
             variant="outline"
             size="icon"
             onClick={historyActions.goBack}
             disabled={!canGoBack}
             title="Go Back"
         >
-            <IconChevronLeft className="size-4" />
+            <IconL_ArrowLeft className="group-disabled:opacity-30 size-4" />
         </Button>
     );
 }
@@ -137,14 +137,14 @@ function ButtonHistoryForward() {
     const canGoForward = useAtomValue(canGoForwardAtom);
     return (
         <Button
-            className="size-6 rounded-r rounded-l-none border-l-0"
+            className="group size-6 rounded-r rounded-l-none border-l-0"
             variant="outline"
             size="icon"
             onClick={historyActions.goForward}
             disabled={!canGoForward}
             title="Go Forward"
         >
-            <IconChevronLeft className="size-4 rotate-180" />
+            <IconL_ArrowLeft className="group-disabled:opacity-30 size-4 rotate-180" />
         </Button>
     );
 }
