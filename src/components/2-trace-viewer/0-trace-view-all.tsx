@@ -1,10 +1,10 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
-import { useAtomValue, useAtom, atom, getDefaultStore, type PrimitiveAtom } from "jotai";
+import { useAtomValue, useAtom, useSetAtom, atom, getDefaultStore, type PrimitiveAtom } from "jotai";
 import { useSnapshot } from "valtio";
 import { formatTimestamp } from "@/utils";
 import { appSettings } from "../../store/1-ui-settings";
 import { currentFileStateAtom } from "../../store/traces-store/0-files-current-state";
-import { currentFileThreadFilterViewStateAtom } from "../../store/traces-store/2-thread-filter-cache";
+import { currentFileSelectedThreadIdAtom, currentFileThreadFilterViewStateAtom, setCurrentFileShowOnlySelectedThreadAtom } from "../../store/traces-store/2-thread-filter-cache";
 import { type TraceLine } from "../../trace-viewer-core/9-core-types";
 import { ITEM_HEIGHT } from "./9-trace-view-constants";
 import { allTimesStore } from "../../store/traces-store/3-all-times-store";
@@ -12,6 +12,8 @@ import { TraceRowMemo } from "./1-trace-view-row";
 import { handlePendingTimestampScroll, scrollToSelection } from "./2-trace-view-scroll";
 import { handleKeyboardNavigation } from "./3-trace-view-keyboard";
 import { SymbolArrowCircleLeft } from "../ui/icons/symbols/all-other/33-arrow-circle-left";
+import { setShowOnlyErrorsInSelectedFileAtom } from "../../store/7-errors-only-setting";
+import { setCurrentLineIndex } from "../../store/traces-store/0-files-current-state";
 
 export function TraceList() {
     const currentFileState = useAtomValue(currentFileStateAtom);
@@ -30,7 +32,22 @@ export function TraceList() {
     const [containerHeight, setContainerHeight] = useState(800); // Default
     const [hoveredTimestamp, setHoveredTimestamp] = useAtom(hoveredTimestampAtom);
 
-    const { linesForView, threadIdsForView, displayIndexToBaseIndex, baseIndexToDisplayIndex } = useAtomValue(currentFileThreadFilterViewStateAtom);
+    const { isErrorsOnlyActive, linesForView, threadIdsForView, displayIndexToBaseIndex, baseIndexToDisplayIndex } = useAtomValue(currentFileThreadFilterViewStateAtom);
+    const setShowOnlyErrorsInSelectedFile = useSetAtom(setShowOnlyErrorsInSelectedFileAtom);
+    const setShowOnlySelectedThread = useSetAtom(setCurrentFileShowOnlySelectedThreadAtom);
+    const viewedThreadId = useAtomValue(currentFileSelectedThreadIdAtom);
+    const showOnlySelectedThreadEnabled = useAtomValue(currentFileState?.showOnlySelectedThreadAtom ?? fallbackShowOnlySelectedThreadAtom);
+
+    const onErrorJump = useCallback(
+        (baseIndex: number, line: TraceLine) => {
+            if (showOnlySelectedThreadEnabled && viewedThreadId !== null && line.threadId !== viewedThreadId) {
+                setShowOnlySelectedThread(false);
+            }
+            setShowOnlyErrorsInSelectedFile(false);
+            setCurrentLineIndex(baseIndex);
+        },
+        [setShowOnlyErrorsInSelectedFile, setShowOnlySelectedThread, showOnlySelectedThreadEnabled, viewedThreadId]
+    );
 
     const onMouseMove = useCallback(
         (e: React.MouseEvent<HTMLDivElement>) => {
@@ -167,6 +184,8 @@ export function TraceList() {
                                 showLineNumbers={showLineNumbers}
                                 uniqueThreadIds={threadIdsForView}
                                 firstLineLength={firstLineLength}
+                                isErrorsOnlyActive={isErrorsOnlyActive}
+                                onErrorJump={onErrorJump}
                             />
                         )
                     )}
@@ -188,6 +207,7 @@ export function TraceList() {
 const hoveredTimestampAtom = atom<{ timestamp: string; top: number; } | null>(null); // Atom to track hovered timestamp info
 const fallbackLineIndexAtom = atom(-1);
 const fallbackScrollTopAtom = atom(0);
+const fallbackShowOnlySelectedThreadAtom = atom(false);
 
 function TraceViewScrollController({ scrollRef, containerHeight, selectedFileId, currentLineIdxAtom, baseIndexToDisplayIndex }: {
     currentLineIdxAtom: PrimitiveAtom<number>;

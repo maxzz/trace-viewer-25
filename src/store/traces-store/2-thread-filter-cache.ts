@@ -45,22 +45,24 @@ export const currentFileThreadFilterViewStateAtom = atom<CurrentFileThreadFilter
             && threadBaseIndexToDisplayIndex !== undefined
             && threadLinesThreadId !== null;
 
-        const sourceLines = isThreadFilterActive ? threadLines : viewLines;
-        const sourceThreadIds = isThreadFilterActive ? [threadLinesThreadId] : threadIds;
-        const sourceDisplayIndexToBaseIndex = isThreadFilterActive ? threadLineBaseIndices : undefined;
-
         const isErrorsOnlyActive = showOnlyErrorsInSelectedFile;
         if (isErrorsOnlyActive) {
-            const built = buildErrorsOnlyLinesCache(viewLines.length, sourceLines, sourceDisplayIndexToBaseIndex);
+            // Errors-only view is independent of thread-only view.
+            // If thread-only toggle is ON, we still show errors from all threads so user can jump out.
+            const built = buildErrorsOnlyLinesCache(viewLines.length, viewLines);
             return {
                 isThreadFilterActive,
                 isErrorsOnlyActive,
                 linesForView: built.lines,
-                threadIdsForView: sourceThreadIds,
+                threadIdsForView: threadIds,
                 displayIndexToBaseIndex: built.displayIndexToBaseIndex,
                 baseIndexToDisplayIndex: built.baseIndexToDisplayIndex,
             };
         }
+
+        const sourceLines = isThreadFilterActive ? threadLines : viewLines;
+        const sourceThreadIds = isThreadFilterActive ? [threadLinesThreadId] : threadIds;
+        const sourceDisplayIndexToBaseIndex = isThreadFilterActive ? threadLineBaseIndices : undefined;
 
         return {
             isThreadFilterActive,

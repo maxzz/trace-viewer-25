@@ -25,7 +25,7 @@ export interface AppSettings {
     theme: ThemeMode;
     panelSizes?: number[];      // ResizablePanelGroup panel sizes (percentages)
     extraInFooter: boolean;     // Show header info (Computer, OS, Compiled) in footer
-    showOnlyErrorsInSelectedFile: boolean;
+    showOnlyErrorsInSelectedFile: boolean; // Show only errors in the selected file
     
     // File Filters (Hiding files)
     fileFilters: FileFilter[];

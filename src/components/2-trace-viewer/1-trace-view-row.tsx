@@ -18,15 +18,17 @@ type TraceRowParams = {
     showLineNumbers: boolean;
     uniqueThreadIds: readonly number[];
     firstLineLength: number;
+    isErrorsOnlyActive: boolean;
+    onErrorJump: (baseIndex: number, line: TraceLine) => void;
 };
 
-function TraceRow({ line, baseIndex, currentLineIdxAtom, useIconsForEntryExit, showLineNumbers, uniqueThreadIds, firstLineLength }: TraceRowParams) {
+function TraceRow({ line, baseIndex, currentLineIdxAtom, useIconsForEntryExit, showLineNumbers, uniqueThreadIds, firstLineLength, isErrorsOnlyActive, onErrorJump }: TraceRowParams) {
     const isSelectedAtom = useMemo(() => selectAtom(currentLineIdxAtom, (s) => s === baseIndex), [currentLineIdxAtom, baseIndex]);
     const isSelected = useAtomValue(isSelectedAtom);
     const showThreadBackground = uniqueThreadIds.length > 0 && uniqueThreadIds[0] !== line.threadId;
 
     return (
-        <div className={getRowClasses(line, isSelected)} style={{ height: ITEM_HEIGHT }} onClick={() => setCurrentLineIndex(baseIndex)}>
+        <div className={classNames(getRowClasses(line, isSelected), "group/trace-row")} style={{ height: ITEM_HEIGHT }} onClick={() => setCurrentLineIndex(baseIndex)}>
             {/* Time Column */}
             <div className={classNames(columnTimeClasses, firstLineLength === 12 ? "w-18" : "w-20", line.code === LineCode.Day && "pl-0 justify-center")} title={line.timestamp} data-timestamp={line.timestamp}>
                 {line.code === LineCode.Day
@@ -74,6 +76,24 @@ function TraceRow({ line, baseIndex, currentLineIdxAtom, useIconsForEntryExit, s
             >
                 {line.code !== LineCode.Day && formatContent(line, useIconsForEntryExit)}
             </div>
+
+            {/* Jump from errors-only view */}
+            {isErrorsOnlyActive && line.code === LineCode.Error && (
+                <div className="px-1 h-full shrink-0 flex items-center justify-center">
+                    <button
+                        type="button"
+                        className="size-5 text-[10px] bg-background/70 border border-border rounded opacity-0 transition-opacity group-hover/trace-row:opacity-100"
+                        title="Show context"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            onErrorJump(baseIndex, line);
+                        }}
+                    >
+                        ↩
+                    </button>
+                </div>
+            )}
         </div>
     );
 }
