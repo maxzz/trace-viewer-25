@@ -60,3 +60,18 @@
     TODO: by clicking enter on input line options dialog should be closed (i.e. default button)
 
 	TODO: scroll in not working if selected the same item (but should happen)
+
+02.11.26
+	TODO: copier: 
+        show common path aliases
+		messages: 
+			From path
+				Copied dest-full-name
+				Same time, skipping: filename
+				Found in use: dest-full-name
+	TODO: navigation by errors; show only errors
+	TODO: show zip file name or folder - done
+	TODO: in file list copy file name 
+	TODO: filter to exclude or how to define regex for that
+	TODO: when navigating from file list and selected item is close to the top or bottom scroll to the center
+	TODO: don't treat file not found as an error (switch and separate counter per file w/ and wo/ file not found)
