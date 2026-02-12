@@ -17,78 +17,103 @@ export const doSetFilesFrom_Dnd_Atom = atom(                    // used by DropI
         const filesWithPaths: FileWithPath[] = [];
         let droppedFolderName: string | undefined;
         let unsupportedSingleFileName: string | undefined;
+        let hasAnyFileDrop = false;
 
         // IMPORTANT: webkitGetAsEntry() is only valid synchronously during the drop event.
         // We must collect all entries BEFORE any async operations.
         const entries: FileSystemEntry[] = [];
         const fallbackFiles: File[] = [];
 
-        if (dataTransfer.items) {
-            // Check if single folder dropped
-            if (dataTransfer.items.length === 1) {
-                const item = dataTransfer.items[0];
-                const entry = (item as any).webkitGetAsEntry?.() as FileSystemEntry | null | undefined;
-                if (entry && entry.isDirectory) {
-                    droppedFolderName = entry.name;
-                }
-
-                if (!droppedFolderName && item.kind === 'file') {
-                    const file = item.getAsFile();
-                    if (file && !isOurFile(file)) {
-                        unsupportedSingleFileName = file.name;
-                    }
-                }
-            }
-
-            // Collect all entries synchronously first
-            for (let i = 0; i < dataTransfer.items.length; i++) {
-                const item = dataTransfer.items[i];
-
-                if (item.kind === 'file') {
-                    const entry = (item as any).webkitGetAsEntry?.() as FileSystemEntry | null | undefined;
-
-                    if (entry) {
-                        entries.push(entry);
-                    } else {
-                        // Fallback to direct file access
-                        const file = item.getAsFile();
-                        if (file && (isTrc3File(file) || isZipFile(file))) {
-                            fallbackFiles.push(file);
+        try {
+            if (dataTransfer.items) {
+                // Check if single folder/file dropped (for better feedback)
+                if (dataTransfer.items.length === 1) {
+                    const item = dataTransfer.items[0];
+                    if (item.kind === 'file') {
+                        hasAnyFileDrop = true;
+                        const entry = (item as any).webkitGetAsEntry?.() as FileSystemEntry | null | undefined;
+                        if (entry?.isDirectory) {
+                            droppedFolderName = entry.name;
+                        } else {
+                            const file = item.getAsFile();
+                            if (file && !isOurFile(file)) {
+                                unsupportedSingleFileName = file.name;
+                            }
                         }
                     }
                 }
-            }
 
-            // Now process entries asynchronously
-            for (const entry of entries) {
-                await processEntry(entry, filesWithPaths);
-            }
-            // Add fallback files with empty path
-            fallbackFiles.forEach(file => filesWithPaths.push({ file, path: '' }));
-        } else {
-            // Fallback for older browsers
-            for (let i = 0; i < dataTransfer.files.length; i++) {
-                const file = dataTransfer.files[i];
-                if (isOurFile(file)) {
-                    filesWithPaths.push({ file, path: '' });
+                // Collect all entries synchronously first
+                for (let i = 0; i < dataTransfer.items.length; i++) {
+                    const item = dataTransfer.items[i];
+
+                    if (item.kind === 'file') {
+                        hasAnyFileDrop = true;
+                        const entry = (item as any).webkitGetAsEntry?.() as FileSystemEntry | null | undefined;
+
+                        if (entry) {
+                            entries.push(entry);
+                        } else {
+                            // Fallback to direct file access
+                            const file = item.getAsFile();
+                            if (file && (isTrc3File(file) || isZipFile(file))) {
+                                fallbackFiles.push(file);
+                            }
+                        }
+                    }
                 }
-            }
-        }
 
-        if (filesWithPaths.length === 0) {
-            if ((dataTransfer.items && dataTransfer.items.length > 0) || dataTransfer.files.length > 0) {
+                // Clear previously uploaded files
+                if (hasAnyFileDrop) {
+                    closeAllFiles();
+                }
+
                 if (unsupportedSingleFileName) {
                     notice.info(`Unsupported file "${unsupportedSingleFileName}". Please drop a .trc3 file or a ZIP archive with .trc3 files.`);
-                } else {
+                    return;
+                }
+
+                // Now process entries asynchronously
+                for (const entry of entries) {
+                    await processEntry(entry, filesWithPaths);
+                }
+                // Add fallback files with empty path
+                fallbackFiles.forEach(file => filesWithPaths.push({ file, path: '' }));
+            } else {
+                // Fallback for older browsers
+                if (dataTransfer.files.length > 0) {
+                    hasAnyFileDrop = true;
+                    closeAllFiles();
+                }
+
+                if (dataTransfer.files.length === 1 && !isOurFile(dataTransfer.files[0])) {
+                    notice.info(`Unsupported file "${dataTransfer.files[0].name}". Please drop a .trc3 file or a ZIP archive with .trc3 files.`);
+                    return;
+                }
+
+                for (let i = 0; i < dataTransfer.files.length; i++) {
+                    const file = dataTransfer.files[i];
+                    if (isOurFile(file)) {
+                        filesWithPaths.push({ file, path: '' });
+                    }
+                }
+            }
+
+            if (filesWithPaths.length === 0) {
+                if (hasAnyFileDrop) {
                     const sourceName = droppedFolderName || dataTransfer.files?.[0]?.name || "drop";
                     notice.info(`No .trc3 files were found to load from "${sourceName}".`);
                 }
+                return;
+            }
+        } catch (e) {
+            console.error("Failed to process dropped files", e);
+            if (hasAnyFileDrop) {
+                const sourceName = droppedFolderName || dataTransfer.files?.[0]?.name || "drop";
+                notice.info(`Failed to read dropped items from "${sourceName}".`);
             }
             return;
         }
-
-        // Clear previously uploaded files
-        closeAllFiles();
 
         // Extract files and paths
         const files = filesWithPaths.map(fp => fp.file);
