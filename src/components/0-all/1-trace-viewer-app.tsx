@@ -122,13 +122,13 @@ function ButtonHistoryBack() {
     return (
         <Button
             className="group size-6 rounded-l rounded-r-none"
-            variant="outline"
+            variant="ghost"
             size="icon"
             onClick={historyActions.goBack}
             disabled={!canGoBack}
             title="Go Back"
         >
-            <IconL_ArrowLeft className="group-disabled:opacity-30 size-4" />
+            <IconL_ArrowLeft className="size-3.5 stroke-foreground/50 group-disabled:opacity-30" />
         </Button>
     );
 }
@@ -138,13 +138,13 @@ function ButtonHistoryForward() {
     return (
         <Button
             className="group size-6 rounded-r rounded-l-none border-l-0"
-            variant="outline"
+            variant="ghost"
             size="icon"
             onClick={historyActions.goForward}
             disabled={!canGoForward}
             title="Go Forward"
         >
-            <IconL_ArrowLeft className="group-disabled:opacity-30 size-4 rotate-180" />
+            <IconL_ArrowLeft className="size-3.5 rotate-180 stroke-foreground/50 group-disabled:opacity-30" />
         </Button>
     );
 }

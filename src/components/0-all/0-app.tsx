@@ -10,7 +10,7 @@ import { DialogFileHeader } from "../4-dialogs/2-dialog-file-header";
 import { DialogEditFilters } from "../4-dialogs/4-dialog-edit-filters";
 import { DialogEditHighlightRules } from "../4-dialogs/5-dialog-edit-highlight-rules";
 import { ZipLoadingOverlay } from "../ui/local-ui/zip-loading-overlay";
-import { SpyAllIcons } from "@/utils/util-hooks/spy-all-icons";
+// import { SpyAllIcons } from "@/utils/util-hooks/spy-all-icons";
 
 export function App() {
     return (
@@ -21,7 +21,7 @@ export function App() {
             <ZipLoadingOverlay />
             <DropItDoc doSetFilesFromDropAtom={doSetFilesFrom_Dnd_Atom} />
 
-            <SpyAllIcons includeSvgSymbols />
+            {/* <SpyAllIcons includeSvgSymbols /> */}
             <TraceViewerApp />
             <Dialogs />
         </div>
