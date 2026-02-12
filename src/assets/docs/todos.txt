@@ -62,13 +62,7 @@
 	TODO: scroll in not working if selected the same item (but should happen)
 
 02.11.26
-	TODO: copier: 
-        show common path aliases
-		messages: 
-			From path
-				Copied dest-full-name
-				Same time, skipping: filename
-				Found in use: dest-full-name
+    TODO: when open folder with multiple zip files we open all of them but probably should not, and window title should show zip file name not folder name.
 	TODO: navigation by errors; show only errors
 	TODO: show zip file name or folder - done
 	TODO: in file list copy file name 
