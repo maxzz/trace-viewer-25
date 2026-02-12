@@ -69,7 +69,8 @@ export const doSetFilesFrom_Dnd_Atom = atom(                    // used by DropI
 
         if (filesWithPaths.length === 0) {
             if ((dataTransfer.items && dataTransfer.items.length > 0) || dataTransfer.files.length > 0) {
-                notice.info("No .trc3 files were found to load.");
+                const sourceName = droppedFolderName || dataTransfer.files?.[0]?.name || "drop";
+                notice.info(`No .trc3 files were found to load from "${sourceName}".`);
             }
             return;
         }

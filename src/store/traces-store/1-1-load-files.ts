@@ -43,7 +43,8 @@ export async function asyncLoadAnyFiles(files: File[], droppedFolderName?: strin
         setAppTitle(files, droppedFolderName, filePaths);
 
         if (loadedTrc3FilesCount === 0) {
-            notice.info("No .trc3 files were found to load.");
+            const sourceName = buildDroppedSourceName(files, droppedFolderName);
+            notice.info(`No .trc3 files were found to load from "${sourceName}".`);
         }
 
         appSettings.allTimes.needToRebuild = true;
@@ -51,6 +52,19 @@ export async function asyncLoadAnyFiles(files: File[], droppedFolderName?: strin
     } finally {
         getDefaultStore().set(isLoadingFilesAtom, false);
     }
+}
+
+function buildDroppedSourceName(files: File[], droppedFolderName?: string): string {
+    if (droppedFolderName) {
+        return droppedFolderName;
+    }
+    if (files.length === 1) {
+        return files[0].name;
+    }
+    if (files.length > 1) {
+        return `${files.length} files`;
+    }
+    return "drop";
 }
 
 async function loadFilesToStore(files: File[]) {
