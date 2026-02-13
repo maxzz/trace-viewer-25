@@ -1,6 +1,6 @@
 import { atom, getDefaultStore } from "jotai";
 import { appSettings } from "../1-ui-settings";
-import { selectFile } from "./0-files-actions";
+import { selectFile } from "./0-2-files-actions";
 
 interface FileHistory {
     items: string[];

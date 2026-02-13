@@ -4,17 +4,17 @@ import { extractTracesFromZipInWorker, isTrc3File, isZipFile } from "@/workers-c
 import { setAppTitle } from "@/store/3-ui-app-title";
 import { notice } from "@/components/ui/local-ui/7-toaster";
 import { filesStore, type FileData, type FileState } from "./9-types-files-store";
-import { asyncParseTraceFile } from "./1-2-parse-trace-file";
+import { asyncParseTraceFile } from "./8-2-parse-trace-file";
 import { emptyFileHeader, type TraceLine } from "@/trace-viewer-core/9-core-types";
 import { recomputeFilterMatches } from "../4-file-filters";
 import { appSettings } from "../1-ui-settings";
 import { matchesFilePattern } from "../6-filtered-files";
 import { buildAlltimes } from "./3-2-all-times-listener";
-import { setFileLoading } from "./1-3-file-loading-atoms";
+import { setFileLoading } from "./8-3-file-loading-atoms";
 import { recomputeHighlightMatches } from "../5-highlight-rules";
 import { allTimesStore } from "./3-1-all-times-store";
-import { selectFile } from "./0-files-actions";
-import { getCurrentFileState, setCurrentFileState } from "./0-files-current-state";
+import { selectFile } from "./0-2-files-actions";
+import { getCurrentFileState, setCurrentFileState } from "./0-1-files-current-state";
 
 export const isLoadingFilesAtom = atom(false);
 

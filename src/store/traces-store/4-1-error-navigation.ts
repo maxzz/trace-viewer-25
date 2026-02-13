@@ -1,8 +1,8 @@
 import { atom } from "jotai";
 import { appSettings } from "@/store/1-ui-settings";
-import { currentFileStateAtom } from "@/store/traces-store/0-files-current-state";
+import { currentFileStateAtom } from "@/store/traces-store/0-1-files-current-state";
 import { LineCode } from "@/trace-viewer-core/9-core-types";
-import { currentFileSelectedThreadIdAtom, setCurrentFileShowOnlySelectedThreadAtom, syncCurrentFileThreadLinesCacheAtom } from "@/store/traces-store/2-thread-filter-cache";
+import { currentFileSelectedThreadIdAtom, setCurrentFileShowOnlySelectedThreadAtom, syncCurrentFileThreadLinesCacheAtom } from "@/store/traces-store/0-4-thread-filter-cache";
 
 type ErrorsNavigationWrapDialogState = {
     direction: "prev" | "next";

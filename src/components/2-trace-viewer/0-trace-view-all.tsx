@@ -3,8 +3,8 @@ import { useAtomValue, useAtom, useSetAtom, atom, getDefaultStore, type Primitiv
 import { useSnapshot } from "valtio";
 import { formatTimestamp } from "@/utils";
 import { appSettings } from "@/store/1-ui-settings";
-import { currentFileStateAtom } from "@/store/traces-store/0-files-current-state";
-import { currentFileThreadFilterViewStateAtom } from "@/store/traces-store/2-thread-filter-cache";
+import { currentFileStateAtom } from "@/store/traces-store/0-1-files-current-state";
+import { currentFileThreadFilterViewStateAtom } from "@/store/traces-store/0-4-thread-filter-cache";
 import { type TraceLine } from "@/trace-viewer-core/9-core-types";
 import { ITEM_HEIGHT } from "./9-trace-view-constants";
 import { allTimesStore } from "@/store/traces-store/3-1-all-times-store";

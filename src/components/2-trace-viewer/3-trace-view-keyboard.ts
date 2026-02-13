@@ -1,7 +1,7 @@
 import React from "react";
 import { getDefaultStore } from "jotai";
-import { getCurrentFileState, setCurrentLineIndex } from "../../store/traces-store/0-files-current-state";
-import { currentFileThreadFilterViewStateAtom } from "../../store/traces-store/2-thread-filter-cache";
+import { getCurrentFileState, setCurrentLineIndex } from "../../store/traces-store/0-1-files-current-state";
+import { currentFileThreadFilterViewStateAtom } from "../../store/traces-store/0-4-thread-filter-cache";
 import { ITEM_HEIGHT } from "./9-trace-view-constants";
 
 export function handleKeyboardNavigation(e: KeyboardEvent, scrollRef: React.RefObject<HTMLDivElement | null>, containerHeight: number, scrollTop: number) {

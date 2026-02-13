@@ -1,6 +1,6 @@
 import { atom, getDefaultStore } from "jotai";
 import { filesStore, type FileState } from "./9-types-files-store";
-import { syncCurrentFileThreadLinesCacheAtom } from "./2-thread-filter-cache";
+import { syncCurrentFileThreadLinesCacheAtom } from "./0-4-thread-filter-cache";
 
 export const currentFileStateAtom = atom<FileState | null>(null);
 

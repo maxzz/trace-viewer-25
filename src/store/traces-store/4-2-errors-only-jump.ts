@@ -1,7 +1,7 @@
 import { atom } from "jotai";
 import { setShowOnlyErrorsInSelectedFileAtom } from "../7-errors-only-setting";
-import { currentFileStateAtom } from "./0-files-current-state";
-import { currentFileSelectedThreadIdAtom, setCurrentFileShowOnlySelectedThreadAtom, syncCurrentFileThreadLinesCacheAtom } from "./2-thread-filter-cache";
+import { currentFileStateAtom } from "./0-1-files-current-state";
+import { currentFileSelectedThreadIdAtom, setCurrentFileShowOnlySelectedThreadAtom, syncCurrentFileThreadLinesCacheAtom } from "./0-4-thread-filter-cache";
 
 export const jumpFromErrorsOnlyToContextAtom = atom(
     null,

@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { notice } from "@/components/ui/local-ui/7-toaster";
 import { cancelAllTimesBuild } from "@/workers-client";
 import { allTimesStore } from "@/store/traces-store/3-1-all-times-store";
-import { isLoadingFilesAtom } from "@/store/traces-store/1-1-load-files";
+import { isLoadingFilesAtom } from "@/store/traces-store/8-1-load-files";
 import { dialogTimelineCancelOpenAtom } from "@/store/2-ui-atoms";
 
 export function TimelineProgress() {

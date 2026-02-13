@@ -1,6 +1,6 @@
 import { atom, type Getter, type Setter } from "jotai";
 import { atomWithProxy } from "jotai-valtio";
-import { currentFileStateAtom } from "./0-files-current-state";
+import { currentFileStateAtom } from "./0-1-files-current-state";
 import { appSettings } from "../1-ui-settings";
 import { LineCode, type TraceLine } from "@/trace-viewer-core/9-core-types";
 import { type FileState } from "./9-types-files-store";

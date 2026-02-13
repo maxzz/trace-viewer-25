@@ -4,7 +4,7 @@ import { selectAtom } from "jotai/utils";
 import type { PrimitiveAtom } from "jotai";
 import { classNames } from "@/utils";
 import { type TraceLine, LineCode } from "../../trace-viewer-core/9-core-types";
-import { setCurrentLineIndex } from "../../store/traces-store/0-files-current-state";
+import { setCurrentLineIndex } from "../../store/traces-store/0-1-files-current-state";
 import { ITEM_HEIGHT } from "./9-trace-view-constants";
 import { columnLineNumberClasses, columnTimeClasses, columnThreadIdClasses, lineClasses, lineCurrentClasses, lineNotCurrentClasses, lineErrorClasses } from "./8-trace-view-classes";
 

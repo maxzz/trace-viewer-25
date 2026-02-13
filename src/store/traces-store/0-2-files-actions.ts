@@ -1,7 +1,7 @@
 import { filesStore } from "./9-types-files-store";
-import { getCurrentFileState, setCurrentFileState } from "./0-files-current-state";
-import { removeFileLoadingAtom } from "./1-3-file-loading-atoms";
-import { historyActions } from "./0-files-history";
+import { getCurrentFileState, setCurrentFileState } from "./0-1-files-current-state";
+import { removeFileLoadingAtom } from "./8-3-file-loading-atoms";
+import { historyActions } from "./0-3-files-history";
 
 export function selectFile(id: string | null) {
     if (id) {

@@ -9,10 +9,10 @@ import { AlertCircle, FileText } from "lucide-react";
 import { SymbolArrowCircleLeft } from "../ui/icons/symbols/all-other/33-arrow-circle-left";
 import { SymbolSpinner } from "../ui/icons/symbols";
 import { type FileState } from "@/store/traces-store/9-types-files-store";
-import { selectFile, closeFile, closeOtherFiles, closeAllFiles } from "@/store/traces-store/0-files-actions";
+import { selectFile, closeFile, closeOtherFiles, closeAllFiles } from "@/store/traces-store/0-2-files-actions";
 import { allTimesStore } from "@/store/traces-store/3-1-all-times-store";
 import { dialogFileHeaderOpenAtom, dialogEditHighlightsOpenAtom } from "@/store/2-ui-atoms";
-import { getFileLoadingAtom } from "@/store/traces-store/1-3-file-loading-atoms";
+import { getFileLoadingAtom } from "@/store/traces-store/8-3-file-loading-atoms";
 import { highlightActions } from "@/store/5-highlight-rules";
 import { getOverlayKeyClasses } from "../ui/local-ui/color-picker-popup";
 

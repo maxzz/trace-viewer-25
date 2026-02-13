@@ -2,9 +2,9 @@ import { useCallback, useEffect, useRef } from "react";
 import { useSetAtom, useAtomValue } from "jotai";
 import { Input } from "../ui/shadcn/input";
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarShortcut, MenubarTrigger } from "../ui/shadcn/menubar";
-import { currentFileStateAtom } from "@/store/traces-store/0-files-current-state";
-import { closeAllFiles, closeFile, closeOtherFiles } from "@/store/traces-store/0-files-actions";
-import { asyncLoadAnyFiles } from "@/store/traces-store/1-1-load-files";
+import { currentFileStateAtom } from "@/store/traces-store/0-1-files-current-state";
+import { closeAllFiles, closeFile, closeOtherFiles } from "@/store/traces-store/0-2-files-actions";
+import { asyncLoadAnyFiles } from "@/store/traces-store/8-1-load-files";
 import { filesCountAtom } from "@/store/6-filtered-files";
 import { dialogFileHeaderOpenAtom, dialogAboutOpenAtom, dialogOptionsOpenAtom, dialogEditFiltersOpenAtom, dialogEditHighlightsOpenAtom } from "@/store/2-ui-atoms";
 
