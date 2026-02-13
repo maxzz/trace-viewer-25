@@ -1,0 +1,29 @@
+import { atom } from "jotai";
+import { setShowOnlyErrorsInSelectedFileAtom } from "../7-errors-only-setting";
+import { currentFileStateAtom } from "./0-files-current-state";
+import { currentFileSelectedThreadIdAtom, setCurrentFileShowOnlySelectedThreadAtom, syncCurrentFileThreadLinesCacheAtom } from "./2-thread-filter-cache";
+
+type JumpFromErrorsOnlyPayload = {
+    baseIndex: number;
+    lineThreadId: number;
+};
+
+export const jumpFromErrorsOnlyToContextAtom = atom(
+    null,
+    (get, set, payload: JumpFromErrorsOnlyPayload) => {
+        const fileState = get(currentFileStateAtom);
+        if (!fileState) return;
+
+        const showOnlySelectedThreadEnabled = get(fileState.showOnlySelectedThreadAtom);
+        const viewedThreadId = get(currentFileSelectedThreadIdAtom);
+        if (showOnlySelectedThreadEnabled && viewedThreadId !== null && payload.lineThreadId !== viewedThreadId) {
+            set(setCurrentFileShowOnlySelectedThreadAtom, false);
+        }
+
+        set(setShowOnlyErrorsInSelectedFileAtom, false);
+
+        set(fileState.currentLineIdxAtom, payload.baseIndex);
+        set(syncCurrentFileThreadLinesCacheAtom, "sync");
+    }
+);
+
