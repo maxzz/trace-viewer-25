@@ -3,9 +3,8 @@ import { useSnapshot } from "valtio";
 import { classNames } from "@/utils";
 import { appSettings } from "../../store/1-ui-settings";
 import { Label } from "../ui/shadcn/label";
-import { Button } from "../ui/shadcn/button";
 import { Switch } from "../ui/shadcn/switch";
-import { IconBinocular, IconL_ArrowLeft } from "../ui/icons";
+import { IconBinocular } from "../ui/icons";
 import { listenerToBuildAllTimesEffectAtom } from "@/store/traces-store/3-2-all-times-listener";
 import { TopMenu } from "./2-top-menu";
 import { TraceMainView } from "./6-resizable-panels";
@@ -15,9 +14,9 @@ import { ButtonHighlightToggle } from "./3-btn-highlight-toggle";
 import { FileFilterDropdown } from "./3-btn-filters-select";
 import { ButtonThemeToggle } from "./3-btn-theme-toggle";
 import { TimelineProgress } from "./4-loading-progress";
+import { ButtonHistoryBack, ButtonHistoryForward } from "./3-btn-history-nav";
 import { filesCountAtom } from "@/store/6-filtered-files";
 import { currentFileStateAtom } from "@/store/traces-store/0-1-files-current-state";
-import { canGoBackAtom, canGoForwardAtom, historyActions } from "@/store/traces-store/0-3-files-history";
 import { setCurrentFileShowOnlySelectedThreadAtom } from "@/store/traces-store/0-4-thread-filter-cache";
 import { setShowOnlyErrorsInSelectedFileAtom, showOnlyErrorsInSelectedFileAtom } from "@/store/7-errors-only-setting";
 
@@ -116,38 +115,6 @@ function ErrorsOnlyToggle() {
                 disabled={disabled}
             />
         </Label>
-    );
-}
-
-function ButtonHistoryBack() {
-    const canGoBack = useAtomValue(canGoBackAtom);
-    return (
-        <Button
-            className="group size-6 rounded-l rounded-r-none"
-            variant="ghost"
-            size="icon"
-            onClick={historyActions.goBack}
-            disabled={!canGoBack}
-            title="Go Back"
-        >
-            <IconL_ArrowLeft className="size-3.5 stroke-foreground/50 group-disabled:opacity-30" />
-        </Button>
-    );
-}
-
-function ButtonHistoryForward() {
-    const canGoForward = useAtomValue(canGoForwardAtom);
-    return (
-        <Button
-            className="group size-6 rounded-r rounded-l-none border-l-0"
-            variant="ghost"
-            size="icon"
-            onClick={historyActions.goForward}
-            disabled={!canGoForward}
-            title="Go Forward"
-        >
-            <IconL_ArrowLeft className="size-3.5 rotate-180 stroke-foreground/50 group-disabled:opacity-30" />
-        </Button>
     );
 }
 
