@@ -4,11 +4,6 @@ import { currentFileStateAtom } from "@/store/traces-store/0-1-files-current-sta
 import { LineCode } from "@/trace-viewer-core/9-core-types";
 import { currentFileSelectedThreadIdAtom, setCurrentFileShowOnlySelectedThreadAtom, syncCurrentFileThreadLinesCacheAtom } from "@/store/traces-store/0-4-thread-filter-cache";
 
-type ErrorsNavigationWrapDialogState = {
-    direction: "prev" | "next";
-    targetBaseIndex: number;
-} | null;
-
 export const currentFileErrorBaseIndicesAtom = atom(
     (get) => {
         const fileState = get(currentFileStateAtom);
@@ -40,24 +35,33 @@ export const currentFileErrorsNavPositionAtom = atom(
     }
 );
 
-export const errorsNavigationWrapDialogAtom = atom<ErrorsNavigationWrapDialogState>(null);
+// Dialog for confirming error navigation wrap dialog
 
-export const cancelErrorsNavigationWrapDialogAtom = atom(
+type ErrorsNavConfirmDlgState = {
+    direction: "prev" | "next";
+    targetBaseIndex: number;
+} | null;
+
+export const errorsNavConfirmDlgAtom = atom<ErrorsNavConfirmDlgState>(null);
+
+export const errorsNavConfirmDlgOnCancelAtom = atom(
     null,
     (_get, set) => {
-        set(errorsNavigationWrapDialogAtom, null);
+        set(errorsNavConfirmDlgAtom, null);
     }
 );
 
-export const confirmErrorsNavigationWrapDialogAtom = atom(
+export const errorsNavConfirmDlgOnOKAtom = atom(
     null,
     (get, set) => {
-        const dialog = get(errorsNavigationWrapDialogAtom);
+        const dialog = get(errorsNavConfirmDlgAtom);
         if (!dialog) return;
-        set(errorsNavigationWrapDialogAtom, null);
+        set(errorsNavConfirmDlgAtom, null);
         set(selectErrorBaseIndexAtom, dialog.targetBaseIndex);
     }
 );
+
+// Go to next/prev error
 
 export const goToNextErrorAtom = atom(
     null,
@@ -81,7 +85,7 @@ export const goToNextErrorAtom = atom(
             return;
         }
 
-        set(errorsNavigationWrapDialogAtom, { direction: "next", targetBaseIndex: target });
+        set(errorsNavConfirmDlgAtom, { direction: "next", targetBaseIndex: target });
     }
 );
 
@@ -107,9 +111,11 @@ export const goToPrevErrorAtom = atom(
             return;
         }
 
-        set(errorsNavigationWrapDialogAtom, { direction: "prev", targetBaseIndex: target });
+        set(errorsNavConfirmDlgAtom, { direction: "prev", targetBaseIndex: target });
     }
 );
+
+// Select error base index
 
 const selectErrorBaseIndexAtom = atom(
     null,
@@ -149,4 +155,3 @@ function findPrevErrorBaseIndex(errors: readonly number[], currentLineIndex: num
     }
     return null;
 }
-
