@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { appSettings } from "../../store/1-ui-settings";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../ui/shadcn/resizable";
 import { FileList } from "../1-file-list/0-file-list-all";
-import { TraceList } from "../2-trace-viewer";
+import { TraceListForCurrentFile } from "../2-trace-viewer";
 
 export function TraceMainView() {
     const savedSizes = appSettings.panelSizes;
@@ -38,7 +38,7 @@ export function TraceMainView() {
                 defaultSize={`${defaultTracePanelSize}`}
             >
                 <div className="h-full overflow-hidden flex flex-col">
-                    <TraceList />
+                    <TraceListForCurrentFile />
                 </div>
             </ResizablePanel>
         </ResizablePanelGroup>

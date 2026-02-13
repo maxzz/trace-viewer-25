@@ -13,20 +13,26 @@ import { handlePendingTimestampScroll, scrollToSelection } from "./2-trace-view-
 import { handleKeyboardNavigation } from "./3-trace-view-keyboard";
 import { SymbolArrowCircleLeft } from "../ui/icons/symbols/all-other/33-arrow-circle-left";
 import { jumpFromErrorsOnlyToContextAtom } from "../../store/traces-store/7-errors-only-jump";
+import type { FileState } from "../../store/traces-store/9-types-files-store";
 
-export function TraceList() {
+export function TraceListForCurrentFile() {
     const currentFileState = useAtomValue(currentFileStateAtom);
+    if (!currentFileState) return <div />;
+    return <TraceList currentFileState={currentFileState} />;
+}
+
+export function TraceList({ currentFileState }: { currentFileState: FileState; }) {
     const { pendingScrollTimestamp, pendingScrollFileId } = useSnapshot(allTimesStore);
     const { useIconsForEntryExit, showLineNumbers, allTimes: { show: showOnAllTimes } } = useSnapshot(appSettings);
 
     // Derived from currentFileState
-    const selectedFileId = currentFileState?.id ?? null;
-    const fileData = currentFileState?.data;
-    const currentLineIdxAtom = currentFileState?.currentLineIdxAtom ?? fallbackLineIndexAtom;
-    const viewLines = fileData?.viewLines || [];
+    const selectedFileId = currentFileState.id;
+    const fileData = currentFileState.data;
+    const currentLineIdxAtom = currentFileState.currentLineIdxAtom;
+    const viewLines = fileData.viewLines || [];
 
     const scrollRef = useRef<HTMLDivElement>(null);
-    const scrollTopAtom = currentFileState?.scrollTopAtom ?? fallbackScrollTopAtom;
+    const scrollTopAtom = currentFileState.scrollTopAtom;
     const [scrollTop, setScrollTop] = useAtom(scrollTopAtom);
     const [containerHeight, setContainerHeight] = useState(800); // Default
     const [hoveredTimestamp, setHoveredTimestamp] = useAtom(hoveredTimestampAtom);
@@ -190,8 +196,6 @@ export function TraceList() {
 }
 
 const hoveredTimestampAtom = atom<{ timestamp: string; top: number; } | null>(null); // Atom to track hovered timestamp info
-const fallbackLineIndexAtom = atom(-1);
-const fallbackScrollTopAtom = atom(0);
 
 function TraceViewScrollController({ scrollRef, containerHeight, selectedFileId, currentLineIdxAtom, baseIndexToDisplayIndex }: {
     currentLineIdxAtom: PrimitiveAtom<number>;
