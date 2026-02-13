@@ -94,8 +94,8 @@ function ThreadOnlyToggle() {
 
 function ErrorsOnlyToggle() {
     const currentFileState = useAtomValue(currentFileStateAtom);
-    const setShowOnlyErrorsInSelectedFile = useSetAtom(setShowOnlyErrorsInSelectedFileAtom);
     const showOnlyErrors = useAtomValue(showOnlyErrorsInSelectedFileAtom);
+    const setShowOnlyErrorsInSelectedFile = useSetAtom(setShowOnlyErrorsInSelectedFileAtom);
 
     const disabled = !currentFileState;
     const errorsCount = currentFileState?.data.errorsInTraceCount ?? 0;

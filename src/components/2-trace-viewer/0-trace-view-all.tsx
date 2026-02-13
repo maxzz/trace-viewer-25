@@ -39,6 +39,7 @@ export function TraceList({ currentFileState }: { currentFileState: FileState; }
 
     const { isErrorsOnlyActive, linesForView, threadIdsForView, displayIndexToBaseIndex, baseIndexToDisplayIndex } = useAtomValue(currentFileThreadFilterViewStateAtom);
     const onErrorJump = useSetAtom(jumpFromErrorsOnlyToContextAtom);
+    const errorsCount = currentFileState.data.errorsInTraceCount;
 
     const onMouseMove = useCallback(
         (e: React.MouseEvent<HTMLDivElement>) => {
@@ -143,6 +144,16 @@ export function TraceList({ currentFileState }: { currentFileState: FileState; }
             onMouseLeave={() => setHoveredTimestamp(null)}
             tabIndex={0}
         >
+            {/* Empty state for Errors-only mode */}
+            {isErrorsOnlyActive && errorsCount === 0 && (
+                <div className="absolute inset-0 bg-foreground/5 pointer-events-none flex items-center justify-center">
+                    <div className="px-3 py-2 max-w-120 text-center text-xs text-foreground bg-background/80 border border-border rounded">
+                        <div className="font-semibold">Errors-only mode is enabled</div>
+                        <div className="opacity-80">This file has no errors.</div>
+                    </div>
+                </div>
+            )}
+
             {/* for styles debugging */}
             {/* <div className={iconContainerClasses} title="Locate in all times timeline">
                 <SymbolArrowCircleLeft className={iconClasses} />
