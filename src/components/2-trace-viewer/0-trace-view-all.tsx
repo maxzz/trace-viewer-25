@@ -146,10 +146,10 @@ export function TraceList({ currentFileState }: { currentFileState: FileState; }
         >
             {/* Empty state for Errors-only mode */}
             {isErrorsOnlyActive && errorsCount === 0 && (
-                <div className="absolute inset-0 bg-foreground/5 pointer-events-none flex items-center justify-center">
-                    <div className="px-3 py-2 max-w-120 text-center text-xs text-foreground bg-background/80 border border-border rounded">
-                        <div className="font-semibold">Errors-only mode is enabled</div>
-                        <div className="opacity-80">This file has no errors.</div>
+                <div className="absolute inset-0 p-2 bg-foreground/5 pointer-events-none flex items-start justify-center">
+                    <div className="px-3 py-2 max-w-120 text-center text-xs text-foreground bg-background/80 border border-border rounded-md shadow-sm">
+                        <div className="font-semibold">The error-only display mode is activated.</div>
+                        <div className="text-green-600">This file has no errors.</div>
                     </div>
                 </div>
             )}
