@@ -11,7 +11,7 @@ import { classNames } from '@/utils';
 
 export function DialogOptions() {
     const [open, onOpenChange] = useAtom(dialogOptionsOpenAtom);
-    const { showFooter, useIconsForEntryExit, showLineNumbers, extraInFooter, allTimes, historyLimit, startupFilePattern } = useSnapshot(appSettings);
+    const { showFooter, useIconsForEntryExit, showLineNumbers, extraInFooter, showErrorsNavigationWrapDialog, allTimes, historyLimit, startupFilePattern } = useSnapshot(appSettings);
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -28,6 +28,8 @@ export function DialogOptions() {
                     <OptionCheckbox checked={useIconsForEntryExit} onCheckedChange={handleUseIconsChange} label="Use Icons for Entry/Exit lines" />
 
                     <OptionCheckbox checked={showLineNumbers} onCheckedChange={handleShowLineNumbersChange} label="Show line indices in the trace file view" />
+
+                    <OptionCheckbox checked={showErrorsNavigationWrapDialog} onCheckedChange={handleShowErrorsNavWrapDialogChange} label="Show wrap dialog when navigating errors" />
 
                     <div className="mt-2 font-semibold">All times options:</div>
 
@@ -109,6 +111,10 @@ function handleExtraInFooterChange(checked: boolean) {
 
 function handleShowLineNumbersChange(checked: boolean) {
     appSettings.showLineNumbers = checked;
+}
+
+function handleShowErrorsNavWrapDialogChange(checked: boolean) {
+    appSettings.showErrorsNavigationWrapDialog = checked;
 }
 
 function handleHistoryLimitChange(e: React.ChangeEvent<HTMLInputElement>) {

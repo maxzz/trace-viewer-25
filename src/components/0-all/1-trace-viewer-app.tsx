@@ -1,4 +1,4 @@
-import { useAtomValue, useSetAtom, atom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom, atom } from "jotai";
 import { useSnapshot } from "valtio";
 import { listenerToBuildAllTimesEffectAtom } from "@/store/traces-store/8-all-times-listener";
 import { appSettings } from "../../store/1-ui-settings";
@@ -19,6 +19,9 @@ import { Label } from "../ui/shadcn/label";
 import { classNames } from "@/utils";
 import { setCurrentFileShowOnlySelectedThreadAtom } from "@/store/traces-store/2-thread-filter-cache";
 import { setShowOnlyErrorsInSelectedFileAtom, showOnlyErrorsInSelectedFileAtom } from "@/store/7-errors-only-setting";
+import { cancelErrorsNavigationWrapDialogAtom, confirmErrorsNavigationWrapDialogAtom, currentFileErrorsNavPositionAtom, errorsNavigationWrapDialogAtom, goToNextErrorAtom, goToPrevErrorAtom } from "@/store/traces-store/8-error-navigation";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/shadcn/dialog";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 export function TraceViewerApp() {
     useAtomValue(listenerToBuildAllTimesEffectAtom);
@@ -28,6 +31,7 @@ export function TraceViewerApp() {
 
     return (
         <div className="h-full text-xs flex flex-col overflow-hidden">
+            <DialogErrorsNavWrap />
             <div className="bg-background flex items-center justify-between">
                 <TopMenu />
                 <TopMenuToolbar />
@@ -54,6 +58,7 @@ function TopMenuToolbar() {
                 <TimelineProgress />
             </div>
             <div className="px-2 flex items-center gap-2">
+                <ErrorsNavControls />
                 <ErrorsOnlyToggle />
                 <ThreadOnlyToggle />
                 <FileFilterDropdown />
@@ -114,6 +119,89 @@ function ErrorsOnlyToggle() {
                 disabled={disabled}
             />
         </Label>
+    );
+}
+
+function ErrorsNavControls() {
+    const currentFileState = useAtomValue(currentFileStateAtom);
+    const { current, total } = useAtomValue(currentFileErrorsNavPositionAtom);
+    const goPrev = useSetAtom(goToPrevErrorAtom);
+    const goNext = useSetAtom(goToNextErrorAtom);
+
+    const disabled = !currentFileState || total === 0;
+
+    return (
+        <div className={classNames("h-6 flex items-center", disabled && "opacity-50")} data-disabled={disabled}>
+            <Button
+                className="group size-6 rounded-r-none"
+                variant="ghost"
+                size="icon"
+                title="Previous error"
+                disabled={disabled}
+                onClick={() => goPrev()}
+            >
+                <ChevronUp className="size-3.5 stroke-foreground/50 group-disabled:opacity-30" />
+            </Button>
+            <div className="px-1 h-6 text-[10px] font-mono tabular-nums text-muted-foreground border-y border-border select-none flex items-center justify-center">
+                {current}/{total}
+            </div>
+            <Button
+                className="group size-6 rounded-l-none"
+                variant="ghost"
+                size="icon"
+                title="Next error"
+                disabled={disabled}
+                onClick={() => goNext()}
+            >
+                <ChevronDown className="size-3.5 stroke-foreground/50 group-disabled:opacity-30" />
+            </Button>
+        </div>
+    );
+}
+
+function DialogErrorsNavWrap() {
+    const [state, setState] = useAtom(errorsNavigationWrapDialogAtom);
+    const confirm = useSetAtom(confirmErrorsNavigationWrapDialogAtom);
+    const cancel = useSetAtom(cancelErrorsNavigationWrapDialogAtom);
+    const { showErrorsNavigationWrapDialog } = useSnapshot(appSettings);
+
+    const isNext = state?.direction === "next";
+    const open = !!state;
+    const dontShowAgain = !showErrorsNavigationWrapDialog;
+
+    return (
+        <Dialog
+            open={open}
+            onOpenChange={(v) => {
+                if (!v) {
+                    setState(null);
+                }
+            }}
+        >
+            <DialogContent className="max-w-[360px]!" aria-describedby={undefined}>
+                <DialogHeader>
+                    <DialogTitle className="text-sm">
+                        {isNext ? "Reached end of file" : "Reached start of file"}
+                    </DialogTitle>
+                </DialogHeader>
+
+                <Label className="h-6 text-xs font-normal select-none gap-2 flex items-center justify-between">
+                    Don't show it again
+                    <Switch
+                        className="border border-foreground/10"
+                        checked={dontShowAgain}
+                        onCheckedChange={(checked) => {
+                            appSettings.showErrorsNavigationWrapDialog = !checked;
+                        }}
+                    />
+                </Label>
+
+                <DialogFooter className="justify-end!">
+                    <Button variant="outline" onClick={() => cancel()}>Cancel</Button>
+                    <Button onClick={() => confirm()}>{isNext ? "Go to start" : "Go to end"}</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     );
 }
 
