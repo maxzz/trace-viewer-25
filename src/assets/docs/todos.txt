@@ -69,3 +69,7 @@
 	TODO: filter to exclude or how to define regex for that
 	TODO: when navigating from file list and selected item is close to the top or bottom scroll to the center
 	TODO: don't treat file not found as an error (switch and separate counter per file w/ and wo/ file not found)
+
+02.12.26
+	TODO: if error mode is on show in view "There are no errors" - done
+	TODO: save selected file - won't do: `@src/components/1-file-list/1-file-list-row.tsx:95-116 add menu item to save` <- we don`t save raw contents of file.
