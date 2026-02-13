@@ -1,25 +1,25 @@
 import { useAtomValue, useSetAtom, atom } from "jotai";
 import { useSnapshot } from "valtio";
-import { listenerToBuildAllTimesEffectAtom } from "@/store/traces-store/3-2-all-times-listener";
+import { classNames } from "@/utils";
 import { appSettings } from "../../store/1-ui-settings";
+import { Label } from "../ui/shadcn/label";
+import { Button } from "../ui/shadcn/button";
+import { Switch } from "../ui/shadcn/switch";
+import { IconBinocular, IconL_ArrowLeft } from "../ui/icons";
+import { listenerToBuildAllTimesEffectAtom } from "@/store/traces-store/3-2-all-times-listener";
 import { TopMenu } from "./2-top-menu";
 import { TraceMainView } from "./6-resizable-panels";
 import { TraceFooter } from "./7-footer";
+import { ErrorsNavControls } from "./3-btn-errors-nav";
+import { ButtonHighlightToggle } from "./3-btn-highlight-toggle";
 import { FileFilterDropdown } from "./3-btn-filters-select";
 import { ButtonThemeToggle } from "./3-btn-theme-toggle";
-import { filesCountAtom } from "@/store/6-filtered-files";
-import { canGoBackAtom, canGoForwardAtom, historyActions } from "@/store/traces-store/0-3-files-history";
-import { currentFileStateAtom } from "@/store/traces-store/0-1-files-current-state";
-import { Button } from "../ui/shadcn/button";
-import { IconBinocular, IconL_ArrowLeft } from "../ui/icons";
 import { TimelineProgress } from "./4-loading-progress";
-import { ButtonHighlightToggle } from "./3-btn-highlight-toggle";
-import { Switch } from "../ui/shadcn/switch";
-import { Label } from "../ui/shadcn/label";
-import { classNames } from "@/utils";
+import { filesCountAtom } from "@/store/6-filtered-files";
+import { currentFileStateAtom } from "@/store/traces-store/0-1-files-current-state";
+import { canGoBackAtom, canGoForwardAtom, historyActions } from "@/store/traces-store/0-3-files-history";
 import { setCurrentFileShowOnlySelectedThreadAtom } from "@/store/traces-store/0-4-thread-filter-cache";
 import { setShowOnlyErrorsInSelectedFileAtom, showOnlyErrorsInSelectedFileAtom } from "@/store/7-errors-only-setting";
-import { DialogErrorsNavWrap, ErrorsNavControls } from "./8-errors-nav";
 
 export function TraceViewerApp() {
     useAtomValue(listenerToBuildAllTimesEffectAtom);
@@ -29,7 +29,6 @@ export function TraceViewerApp() {
 
     return (
         <div className="h-full text-xs flex flex-col overflow-hidden">
-            <DialogErrorsNavWrap />
             <div className="bg-background flex items-center justify-between">
                 <TopMenu />
                 <TopMenuToolbar />
