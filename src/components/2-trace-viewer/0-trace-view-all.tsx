@@ -2,18 +2,18 @@ import React, { useRef, useState, useEffect, useCallback } from "react";
 import { useAtomValue, useAtom, useSetAtom, atom, getDefaultStore, type PrimitiveAtom } from "jotai";
 import { useSnapshot } from "valtio";
 import { formatTimestamp } from "@/utils";
-import { appSettings } from "../../store/1-ui-settings";
-import { currentFileStateAtom } from "../../store/traces-store/0-files-current-state";
-import { currentFileThreadFilterViewStateAtom } from "../../store/traces-store/2-thread-filter-cache";
-import { type TraceLine } from "../../trace-viewer-core/9-core-types";
+import { appSettings } from "@/store/1-ui-settings";
+import { currentFileStateAtom } from "@/store/traces-store/0-files-current-state";
+import { currentFileThreadFilterViewStateAtom } from "@/store/traces-store/2-thread-filter-cache";
+import { type TraceLine } from "@/trace-viewer-core/9-core-types";
 import { ITEM_HEIGHT } from "./9-trace-view-constants";
-import { allTimesStore } from "../../store/traces-store/3-all-times-store";
+import { allTimesStore } from "@/store/traces-store/3-all-times-store";
 import { TraceRowMemo } from "./1-trace-view-row";
 import { handlePendingTimestampScroll, scrollToSelection } from "./2-trace-view-scroll";
 import { handleKeyboardNavigation } from "./3-trace-view-keyboard";
 import { SymbolArrowCircleLeft } from "../ui/icons/symbols/all-other/33-arrow-circle-left";
-import { jumpFromErrorsOnlyToContextAtom } from "../../store/traces-store/7-errors-only-jump";
-import type { FileState } from "../../store/traces-store/9-types-files-store";
+import { jumpFromErrorsOnlyToContextAtom } from "@/store/traces-store/7-errors-only-jump";
+import type { FileState } from "@/store/traces-store/9-types-files-store";
 
 export function TraceListForCurrentFile() {
     const currentFileState = useAtomValue(currentFileStateAtom);
