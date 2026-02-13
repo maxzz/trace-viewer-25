@@ -74,15 +74,11 @@ function TraceRow({ line, baseIndex, currentLineIdxAtom, useIconsForEntryExit, s
                     backgroundColor: showThreadBackground ? getThreadColor(line.threadId, 0.1) : undefined  //0.05
                 }}
             >
-                {line.code !== LineCode.Day && formatContent(line, useIconsForEntryExit)}
-            </div>
-
-            {/* Jump from errors-only view */}
-            {isErrorsOnlyActive && line.code === LineCode.Error && (
-                <div className="px-1 h-full shrink-0 flex items-center justify-center">
+                {/* Jump from errors-only view */}
+                {isErrorsOnlyActive && line.code === LineCode.Error && (
                     <button
                         type="button"
-                        className="size-5 text-[10px] bg-background/70 border border-border rounded opacity-0 transition-opacity group-hover/trace-row:opacity-100"
+                        className="shrink-0 mr-1 size-5 text-[10px] bg-background/70 border border-border rounded opacity-0 transition-opacity group-hover/trace-row:opacity-100"
                         title="Show context"
                         onClick={(e) => {
                             e.preventDefault();
@@ -92,8 +88,9 @@ function TraceRow({ line, baseIndex, currentLineIdxAtom, useIconsForEntryExit, s
                     >
                         ↩
                     </button>
-                </div>
-            )}
+                )}
+                {line.code !== LineCode.Day && formatContent(line, useIconsForEntryExit)}
+            </div>
         </div>
     );
 }

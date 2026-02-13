@@ -11,7 +11,7 @@ import { filesCountAtom } from "@/store/6-filtered-files";
 import { canGoBackAtom, canGoForwardAtom, historyActions } from "@/store/traces-store/0-files-history";
 import { currentFileStateAtom } from "@/store/traces-store/0-files-current-state";
 import { Button } from "../ui/shadcn/button";
-import { IconBinocular, IconChevronLeft, IconL_ArrowLeft } from "../ui/icons";
+import { IconBinocular, IconL_ArrowLeft } from "../ui/icons";
 import { TimelineProgress } from "./4-loading-progress";
 import { ButtonHighlightToggle } from "./3-btn-highlight-toggle";
 import { Switch } from "../ui/shadcn/switch";
@@ -54,10 +54,10 @@ function TopMenuToolbar() {
                 <TimelineProgress />
             </div>
             <div className="px-2 flex items-center gap-2">
-                <ThreadOnlyToggle />
                 <ErrorsOnlyToggle />
-                <ButtonHighlightToggle />
+                <ThreadOnlyToggle />
                 <FileFilterDropdown />
+                <ButtonHighlightToggle />
                 <ButtonThemeToggle />
             </div>
         </div>
