@@ -3,14 +3,9 @@ import { setShowOnlyErrorsInSelectedFileAtom } from "../7-errors-only-setting";
 import { currentFileStateAtom } from "./0-files-current-state";
 import { currentFileSelectedThreadIdAtom, setCurrentFileShowOnlySelectedThreadAtom, syncCurrentFileThreadLinesCacheAtom } from "./2-thread-filter-cache";
 
-type JumpFromErrorsOnlyPayload = {
-    baseIndex: number;
-    lineThreadId: number;
-};
-
 export const jumpFromErrorsOnlyToContextAtom = atom(
     null,
-    (get, set, payload: JumpFromErrorsOnlyPayload) => {
+    (get, set, payload: { baseIndex: number; lineThreadId: number; }) => {
         const fileState = get(currentFileStateAtom);
         if (!fileState) return;
 
