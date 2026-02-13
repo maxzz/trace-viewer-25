@@ -1,6 +1,6 @@
 import { useAtom, useAtomValue, useSetAtom, atom } from "jotai";
 import { useSnapshot } from "valtio";
-import { listenerToBuildAllTimesEffectAtom } from "@/store/traces-store/8-all-times-listener";
+import { listenerToBuildAllTimesEffectAtom } from "@/store/traces-store/3-2-all-times-listener";
 import { appSettings } from "../../store/1-ui-settings";
 import { TopMenu } from "./2-top-menu";
 import { TraceMainView } from "./6-resizable-panels";
@@ -19,7 +19,7 @@ import { Label } from "../ui/shadcn/label";
 import { classNames } from "@/utils";
 import { setCurrentFileShowOnlySelectedThreadAtom } from "@/store/traces-store/2-thread-filter-cache";
 import { setShowOnlyErrorsInSelectedFileAtom, showOnlyErrorsInSelectedFileAtom } from "@/store/7-errors-only-setting";
-import { cancelErrorsNavigationWrapDialogAtom, confirmErrorsNavigationWrapDialogAtom, currentFileErrorsNavPositionAtom, errorsNavigationWrapDialogAtom, goToNextErrorAtom, goToPrevErrorAtom } from "@/store/traces-store/8-error-navigation";
+import { cancelErrorsNavigationWrapDialogAtom, confirmErrorsNavigationWrapDialogAtom, currentFileErrorsNavPositionAtom, errorsNavigationWrapDialogAtom, goToNextErrorAtom, goToPrevErrorAtom } from "@/store/traces-store/4-1-error-navigation";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/shadcn/dialog";
 import { ChevronDown, ChevronUp } from "lucide-react";
 

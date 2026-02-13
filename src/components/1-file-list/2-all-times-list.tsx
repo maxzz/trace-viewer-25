@@ -5,8 +5,8 @@ import { classNames } from "@/utils";
 import { motion, AnimatePresence } from "motion/react";
 import { appSettings } from "@/store/1-ui-settings";
 import { ScrollArea2 } from "../ui/shadcn/scroll-area";
-import { allTimesStore } from "@/store/traces-store/3-all-times-store";
-import { allTimesPanelRefAtom, allTimesScrollEffectAtom } from "@/store/traces-store/9-all-times-scroll-effect";
+import { allTimesStore } from "@/store/traces-store/3-1-all-times-store";
+import { allTimesPanelRefAtom, allTimesScrollEffectAtom } from "@/store/traces-store/3-3-all-times-scroll-effect";
 
 export function AllTimesPanel() {
     const { show, onLeft } = useSnapshot(appSettings).allTimes;

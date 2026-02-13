@@ -1,7 +1,7 @@
 import { atom } from "jotai";
 import { atomEffect } from "jotai-effect";
 import { subscribeKey } from "valtio/utils";
-import { allTimesStore } from "./3-all-times-store";
+import { allTimesStore } from "./3-1-all-times-store";
 
 /**
  * Atom to store the AllTimesPanel scroll viewport element.

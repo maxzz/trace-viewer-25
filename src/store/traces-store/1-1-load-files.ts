@@ -9,10 +9,10 @@ import { emptyFileHeader, type TraceLine } from "@/trace-viewer-core/9-core-type
 import { recomputeFilterMatches } from "../4-file-filters";
 import { appSettings } from "../1-ui-settings";
 import { matchesFilePattern } from "../6-filtered-files";
-import { buildAlltimes } from "./8-all-times-listener";
+import { buildAlltimes } from "./3-2-all-times-listener";
 import { setFileLoading } from "./1-3-file-loading-atoms";
 import { recomputeHighlightMatches } from "../5-highlight-rules";
-import { allTimesStore } from "./3-all-times-store";
+import { allTimesStore } from "./3-1-all-times-store";
 import { selectFile } from "./0-files-actions";
 import { getCurrentFileState, setCurrentFileState } from "./0-files-current-state";
 

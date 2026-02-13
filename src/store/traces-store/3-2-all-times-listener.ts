@@ -2,7 +2,7 @@ import { atomEffect } from "jotai-effect";
 import { subscribe } from "valtio";
 import { subscribeKey } from "valtio/utils";
 import { appSettings } from "../1-ui-settings";
-import { allTimesStore } from "./3-all-times-store";
+import { allTimesStore } from "./3-1-all-times-store";
 import { filesStore } from "./9-types-files-store";
 import { cancelAllTimesBuild } from "../../workers-client/all-times-client";
 import { dialogEditFiltersOpenAtom } from "../2-ui-atoms";

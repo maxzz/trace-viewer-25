@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/shadcn/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/shadcn/dialog";
 import { notice } from "@/components/ui/local-ui/7-toaster";
 import { cancelAllTimesBuild } from "@/workers-client";
-import { allTimesStore } from "@/store/traces-store/3-all-times-store";
+import { allTimesStore } from "@/store/traces-store/3-1-all-times-store";
 import { isLoadingFilesAtom } from "@/store/traces-store/1-1-load-files";
 import { dialogTimelineCancelOpenAtom } from "@/store/2-ui-atoms";
 
