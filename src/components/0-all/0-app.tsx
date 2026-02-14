@@ -1,7 +1,9 @@
 import { useAtomValue } from "jotai";
+import { useSnapshot } from "valtio";
+import { appSettings } from "@/store/1-ui-settings";
 import { DropItDoc } from "../ui/local-ui/6-dnd/ui-drop-it-doc";
 import { Toaster } from "../ui/local-ui/7-toaster";
-import { UISymbolDefs } from "../ui/icons";
+import { UISymbolDefs, IconBinocular } from "../ui/icons";
 import { doSetFilesFrom_Dnd_Atom } from "../ui/local-ui/6-dnd/8-dnd-atoms";
 import { AppGlobals } from "../4-dialogs/0-app-globals";
 import { DialogAbout } from "../4-dialogs/3-dialog-about";
@@ -14,8 +16,9 @@ import { ZipLoadingOverlay } from "../ui/local-ui/zip-loading-overlay";
 import { listenerToBuildAllTimesEffectAtom } from "@/store/traces-store/3-2-all-times-listener";
 import { filesCountAtom } from "@/store/6-filtered-files";
 import { TopMenu } from "./1-top-menu";
+import { TopMenuToolbar } from "./2-top-menu-toolbar";
 import { TraceMainView } from "./6-resizable-panels";
-import { Footer, NoFilesView, TopMenuToolbar } from "./2-top-menu-toolbar";
+import { TraceFooter } from "./7-footer";
 // import { SpyAllIcons } from "@/utils/util-hooks/spy-all-icons";
 
 export function App() {
@@ -46,7 +49,7 @@ export function TraceViewerApp() {
                 <TopMenu />
                 <TopMenuToolbar />
             </div>
-        
+
             <div className="flex-1 flex flex-col overflow-hidden relative">
                 {!fileCount
                     ? <NoFilesView />
@@ -55,6 +58,24 @@ export function TraceViewerApp() {
             </div>
 
             <Footer hasFile={!!fileCount} />
+        </div>
+    );
+}
+
+function Footer({ hasFile }: { hasFile: boolean; }) {
+    const { showFooter } = useSnapshot(appSettings);
+    return (<>
+        {showFooter && hasFile && <TraceFooter />}
+    </>);
+}
+
+function NoFilesView() {
+    return (
+        <div className="absolute inset-0 bg-foreground/5 flex flex-col items-center justify-center pointer-events-none">
+            <IconBinocular className="size-8" />
+            <p className="max-w-76 text-center text-xs text-foreground">
+                Drag and drop the .trc3 file, folder, ZIP archive, or use the file selection dialog to view the traces.
+            </p>
         </div>
     );
 }
