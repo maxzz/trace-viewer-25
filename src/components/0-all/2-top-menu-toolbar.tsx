@@ -43,6 +43,32 @@ export function TopMenuToolbar() {
 const fallbackShowOnlySelectedThreadAtom = atom(false);
 const fallbackLineIndexAtom = atom(-1);
 
+type ToggleLabelSwitchProps = {
+    label: string;
+    checked: boolean;
+    disabled: boolean;
+    title: string;
+    onCheckedChange: (checked: boolean) => void;
+};
+
+function ToggleLabelSwitch({ label, checked, disabled, title, onCheckedChange }: ToggleLabelSwitchProps) {
+    return (
+        <Label
+            className={classNames("px-1 h-6 font-normal border-border rounded border select-none gap-1", disabled && "opacity-50")}
+            data-disabled={disabled}
+            title={title}
+        >
+            {label}
+            <Switch
+                className={classNames("border border-foreground/10", disabled && "disabled:opacity-100")}
+                checked={checked}
+                onCheckedChange={onCheckedChange}
+                disabled={disabled}
+            />
+        </Label>
+    );
+}
+
 function ToggleThreadOnly() {
     const currentFileState = useAtomValue(currentFileStateAtom);
     const showOnlySelectedThread = useAtomValue(currentFileState?.showOnlySelectedThreadAtom ?? fallbackShowOnlySelectedThreadAtom);
@@ -52,19 +78,13 @@ function ToggleThreadOnly() {
     const disabled = !currentFileState || currentLineIndex < 0;
 
     return (
-        <Label
-            className={classNames("px-1 h-6 font-normal border-border rounded border select-none gap-1", disabled && "opacity-50")}
-            data-disabled={disabled}
+        <ToggleLabelSwitch
+            label="Thread"
+            checked={showOnlySelectedThread}
+            disabled={disabled}
             title={disabled ? "Select a line to enable thread-only view" : "Show only lines from the selected thread"}
-        >
-            Thread
-            <Switch
-                className={classNames("border border-foreground/10", disabled && "disabled:opacity-100")}
-                checked={showOnlySelectedThread}
-                onCheckedChange={setShowOnlySelectedThread}
-                disabled={disabled}
-            />
-        </Label>
+            onCheckedChange={setShowOnlySelectedThread}
+        />
     );
 }
 
@@ -77,19 +97,13 @@ function ToggleErrorsOnly() {
     const errorsCount = useAtomValue(currentFileErrorsCountAtom);
 
     return (
-        <Label
-            className={classNames("px-1 h-6 font-normal border-border rounded border select-none gap-1", disabled && "opacity-50")}
-            data-disabled={disabled}
+        <ToggleLabelSwitch
+            label="Errors"
+            checked={showOnlyErrors}
+            disabled={disabled}
             title={disabled ? "Select a file to enable errors-only view" : `Show only error lines (${errorsCount} errors)`}
-        >
-            Errors
-            <Switch
-                className={classNames("border border-foreground/10", disabled && "disabled:opacity-100")}
-                checked={showOnlyErrors}
-                onCheckedChange={setShowOnlyErrorsInSelectedFile}
-                disabled={disabled}
-            />
-        </Label>
+            onCheckedChange={setShowOnlyErrorsInSelectedFile}
+        />
     );
 }
 
@@ -103,24 +117,18 @@ function ToggleErrorsWithoutNoise() {
     const allFilesErrorsTotals = useAtomValue(allFilesErrorsTotalsAtom);
 
     return (
-        <Label
-            className={classNames("px-1 h-6 font-normal border-border rounded border select-none gap-1", disabled && "opacity-50")}
-            data-disabled={disabled}
+        <ToggleLabelSwitch
+            label="Noise"
+            checked={excludeNoiseErrors}
+            disabled={disabled}
             title={disabled
                 ? "Select a file to configure error filtering"
                 : (excludeNoiseErrors
                     ? `Noise errors are hidden (file: ${errorsCount}, all: ${allFilesErrorsTotals.errorsCountWithoutNoise}/${allFilesErrorsTotals.errorsCount})`
                     : `Noise errors are shown (all: ${allFilesErrorsTotals.errorsCountWithoutNoise}/${allFilesErrorsTotals.errorsCount}, includes 0x80070002)`)
             }
-        >
-            Noise
-            <Switch
-                className={classNames("border border-foreground/10", disabled && "disabled:opacity-100")}
-                checked={excludeNoiseErrors}
-                onCheckedChange={setExcludeNoiseErrors}
-                disabled={disabled}
-            />
-        </Label>
+            onCheckedChange={setExcludeNoiseErrors}
+        />
     );
 }
 
