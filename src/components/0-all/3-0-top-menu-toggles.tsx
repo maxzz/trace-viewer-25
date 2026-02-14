@@ -9,33 +9,11 @@ import { excludeNoiseErrorsInSelectedFileAtom, setExcludeNoiseErrorsInSelectedFi
 import { currentFileErrorsCountAtom } from "@/store/traces-store/4-3-errors-count";
 import { allFilesErrorsTotalsAtom } from "@/store/traces-store/4-4-errors-totals";
 
-export function ToggleThreadOnly() {
-    const currentFileState = useAtomValue(currentFileStateAtom);
-    const showOnlySelectedThread = useAtomValue(currentFileState?.showOnlySelectedThreadAtom ?? fallbackShowOnlySelectedThreadAtom);
-    const currentLineIndex = useAtomValue(currentFileState?.currentLineIdxAtom ?? fallbackLineIndexAtom);
-    const setShowOnlySelectedThread = useSetAtom(setCurrentFileShowOnlySelectedThreadAtom);
-
-    const disabled = !currentFileState || currentLineIndex < 0;
-
-    return (
-        <ToggleLabelSwitch
-            label="Thread"
-            checked={showOnlySelectedThread}
-            disabled={disabled}
-            title={disabled ? "Select a line to enable thread-only view" : "Show only lines from the selected thread"}
-            onCheckedChange={setShowOnlySelectedThread}
-        />
-    );
-}
-
-const fallbackShowOnlySelectedThreadAtom = atom(false);
-const fallbackLineIndexAtom = atom(-1);
-
 export function ToggleErrorsOnly() {
     const currentFileState = useAtomValue(currentFileStateAtom);
     const showOnlyErrors = useAtomValue(showOnlyErrorsInSelectedFileAtom);
     const setShowOnlyErrorsInSelectedFile = useSetAtom(setShowOnlyErrorsInSelectedFileAtom);
-
+    
     const disabled = !currentFileState;
     const errorsCount = useAtomValue(currentFileErrorsCountAtom);
 
@@ -61,7 +39,7 @@ export function ToggleErrorsWithoutNoise() {
 
     return (
         <ToggleLabelSwitch
-            label="Noise"
+            label="Noiseless"
             checked={excludeNoiseErrors}
             disabled={disabled}
             title={disabled
@@ -74,6 +52,28 @@ export function ToggleErrorsWithoutNoise() {
         />
     );
 }
+
+export function ToggleThreadOnly() {
+    const currentFileState = useAtomValue(currentFileStateAtom);
+    const showOnlySelectedThread = useAtomValue(currentFileState?.showOnlySelectedThreadAtom ?? fallbackShowOnlySelectedThreadAtom);
+    const currentLineIndex = useAtomValue(currentFileState?.currentLineIdxAtom ?? fallbackLineIndexAtom);
+    const setShowOnlySelectedThread = useSetAtom(setCurrentFileShowOnlySelectedThreadAtom);
+
+    const disabled = !currentFileState || currentLineIndex < 0;
+
+    return (
+        <ToggleLabelSwitch
+            label="Thread"
+            checked={showOnlySelectedThread}
+            disabled={disabled}
+            title={disabled ? "Select a line to enable thread-only view" : "Show only lines from the selected thread"}
+            onCheckedChange={setShowOnlySelectedThread}
+        />
+    );
+}
+
+const fallbackShowOnlySelectedThreadAtom = atom(false);
+const fallbackLineIndexAtom = atom(-1);
 
 type ToggleLabelSwitchProps = {
     label: string;

@@ -4,7 +4,7 @@ import { appSettings } from "../../store/1-ui-settings";
 import { IconBinocular } from "../ui/icons";
 import { TraceFooter } from "./7-footer";
 import { ErrorsNavControls } from "./3-2-btn-nav-errors";
-import { ToggleErrorsOnly, ToggleErrorsWithoutNoise, ToggleThreadOnly } from "./2-top-menu-toggles";
+import { ToggleErrorsOnly, ToggleErrorsWithoutNoise, ToggleThreadOnly } from "./3-0-top-menu-toggles";
 import { ButtonHighlightToggle } from "./3-4-btn-highlight-toggle";
 import { FileFilterDropdown } from "./3-3-btn-filters-select";
 import { ButtonThemeToggle } from "./3-5-btn-theme-toggle";
