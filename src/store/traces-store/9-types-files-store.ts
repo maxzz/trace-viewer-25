@@ -21,9 +21,9 @@ export interface FileState {
     data: FileData;
     
     currentLineIdxAtom: PA<number>;             // current line index in the trace file. -1 if no line is selected.
-    scrollTopAtom: PA<number>;                 // trace list scrollTop for this file (px).
+    scrollTopAtom: PA<number>;                  // trace list scrollTop for this file (px).
     
-    showOnlySelectedThreadAtom: PA<boolean>;    // show only selected thread lines in the trace list.
+    showOnlySelectedThreadAtom: PA<boolean>;                       // show only selected thread lines in the trace list.
     threadLinesAtom: PA<TraceLine[] | undefined>;                  // cached thread-only lines for the trace list.
     threadLineBaseIndicesAtom: PA<number[] | undefined>;           // displayIndex -> baseIndex (index in data.viewLines).
     threadBaseIndexToDisplayIndexAtom: PA<number[] | undefined>;   // baseIndex -> displayIndex.

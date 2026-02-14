@@ -4,6 +4,8 @@ import { appSettings } from "../../store/1-ui-settings";
 import { Cpu } from "lucide-react";
 import { filesCountAtom } from "../../store/6-filtered-files";
 import { currentFileStateAtom } from "../../store/traces-store/0-1-files-current-state";
+import { allFilesErrorsTotalsAtom } from "../../store/traces-store/4-4-errors-totals";
+import { excludeNoiseErrorsInSelectedFileAtom } from "../../store/8-errors-noise-setting";
 
 export function TraceFooter() {
     return (
@@ -17,6 +19,7 @@ export function TraceFooter() {
                     <div className="ml-2 flex items-center gap-1">
                         <span>Loaded:</span>
                         <FooterFilesCount />
+                        <FooterAllFilesErrorCount />
                     </div>
 
                     <FooterExtraInfo />
@@ -88,6 +91,21 @@ function FooterExtraInfo() {
 function FooterFilesCount() {
     const fileCount = useAtomValue(filesCountAtom);
     return <span className="py-0.5 rounded text-[10px]">{fileCount}</span>;
+}
+
+function FooterAllFilesErrorCount() {
+    const { errorsCount, errorsCountWithoutNoise } = useAtomValue(allFilesErrorsTotalsAtom);
+    const excludeNoise = useAtomValue(excludeNoiseErrorsInSelectedFileAtom);
+
+    if (errorsCount === 0) return null;
+
+    return (
+        <span title={`All files errors: ${errorsCountWithoutNoise}/${errorsCount} (without noise/total)`}>
+            , <span className="font-semibold">Errors:</span>{" "}
+            {excludeNoise ? errorsCountWithoutNoise.toLocaleString() : errorsCount.toLocaleString()}
+            <span className="text-[10px] opacity-70"> ({errorsCountWithoutNoise.toLocaleString()}/{errorsCount.toLocaleString()})</span>
+        </span>
+    );
 }
 
 function FooterLineCount() {

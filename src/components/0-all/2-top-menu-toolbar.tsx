@@ -17,6 +17,7 @@ import { setCurrentFileShowOnlySelectedThreadAtom } from "@/store/traces-store/0
 import { setShowOnlyErrorsInSelectedFileAtom, showOnlyErrorsInSelectedFileAtom } from "@/store/7-errors-only-setting";
 import { excludeNoiseErrorsInSelectedFileAtom, setExcludeNoiseErrorsInSelectedFileAtom } from "@/store/8-errors-noise-setting";
 import { currentFileErrorsCountAtom } from "@/store/traces-store/4-3-errors-count";
+import { allFilesErrorsTotalsAtom } from "@/store/traces-store/4-4-errors-totals";
 
 export function TopMenuToolbar() {
     return (
@@ -99,12 +100,18 @@ function ToggleErrorsWithoutNoise() {
 
     const disabled = !currentFileState;
     const errorsCount = useAtomValue(currentFileErrorsCountAtom);
+    const allFilesErrorsTotals = useAtomValue(allFilesErrorsTotalsAtom);
 
     return (
         <Label
             className={classNames("px-1 h-6 font-normal border-border rounded border select-none gap-1", disabled && "opacity-50")}
             data-disabled={disabled}
-            title={disabled ? "Select a file to configure error filtering" : (excludeNoiseErrors ? `Noise errors are hidden (${errorsCount} errors)` : "Noise errors are shown (includes 0x80070002)")}
+            title={disabled
+                ? "Select a file to configure error filtering"
+                : (excludeNoiseErrors
+                    ? `Noise errors are hidden (file: ${errorsCount}, all: ${allFilesErrorsTotals.errorsCountWithoutNoise}/${allFilesErrorsTotals.errorsCount})`
+                    : `Noise errors are shown (all: ${allFilesErrorsTotals.errorsCountWithoutNoise}/${allFilesErrorsTotals.errorsCount}, includes 0x80070002)`)
+            }
         >
             Noise
             <Switch
