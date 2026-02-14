@@ -13,9 +13,9 @@ import { DialogErrorsNavWrap } from "./3-2-btn-errors-nav";
 import { useAtomValue } from "jotai";
 import { listenerToBuildAllTimesEffectAtom } from "@/store/traces-store/3-2-all-times-listener";
 import { filesCountAtom } from "@/store/6-filtered-files";
-import { TopMenu } from "./2-top-menu";
+import { TopMenu } from "./1-top-menu";
 import { TraceMainView } from "./6-resizable-panels";
-import { Footer, NoFilesView, TopMenuToolbar } from "./1-app-view";
+import { Footer, NoFilesView, TopMenuToolbar } from "./2-top-menu-toolbar";
 // import { SpyAllIcons } from "@/utils/util-hooks/spy-all-icons";
 
 export function App() {
