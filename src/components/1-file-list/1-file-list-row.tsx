@@ -79,6 +79,7 @@ export const FileListRow = memo(
                         {isMarked && (
                             <div
                                 className="ml-auto shrink-0 z-10 hover:scale-125 transition-transform cursor-pointer"
+                                title={allTimesSelectedTimestamp ?? undefined}
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     selectFile(fileState.id);
