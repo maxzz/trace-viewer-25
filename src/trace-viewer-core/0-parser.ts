@@ -1,5 +1,6 @@
 import { LineCode, type TraceLine, type TraceHeader, type TraceLineDescriptor } from "./9-core-types";
 import { TraceCrypto } from "./1-crypto";
+import { formatErrorLineContent } from "./3-format-error-line";
 
 export class ThreadFlow {
     public threadId: number;
@@ -107,6 +108,10 @@ export class TraceParser {
                 const result = this.processTextContent(length, code, decryptedContent);
                 text = result.text;
                 textColor = result.textColor;
+            }
+
+            if (code === LineCode.Error) {
+                text = formatErrorLineContent(text);
             }
 
             // Update Time/Date context

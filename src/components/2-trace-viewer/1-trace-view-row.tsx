@@ -4,7 +4,6 @@ import { selectAtom } from "jotai/utils";
 import type { PrimitiveAtom } from "jotai";
 import { classNames } from "@/utils";
 import { type TraceLine, LineCode } from "../../trace-viewer-core/9-core-types";
-import { formatErrorLineContent } from "../../trace-viewer-core/3-format-error-line";
 import { setCurrentLineIndex } from "../../store/traces-store/0-1-files-current-state";
 import { ITEM_HEIGHT } from "./9-trace-view-constants";
 import { columnLineNumberClasses, columnTimeClasses, columnThreadIdClasses, lineClasses, lineCurrentClasses, lineNotCurrentClasses, lineErrorClasses } from "./8-trace-view-classes";
@@ -108,9 +107,8 @@ const formatContent = (line: TraceLine, useIconsForEntryExit: boolean) => {
         if (line.code === LineCode.Exit) return `<<< ${line.content}`;
     }
 
-    if (line.code === LineCode.Error) {
-        return formatErrorLineContent(line.content);
-    }
+    // if (line.code === LineCode.Error) { // TODO: Formatted by parser but here we can add custom formatting
+    // }
 
     return line.content;
 };
