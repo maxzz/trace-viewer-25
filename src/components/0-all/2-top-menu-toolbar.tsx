@@ -15,6 +15,8 @@ import { ButtonHistoryBack, ButtonHistoryForward } from "./3-1-btn-nav-history";
 import { currentFileStateAtom } from "@/store/traces-store/0-1-files-current-state";
 import { setCurrentFileShowOnlySelectedThreadAtom } from "@/store/traces-store/0-4-thread-filter-cache";
 import { setShowOnlyErrorsInSelectedFileAtom, showOnlyErrorsInSelectedFileAtom } from "@/store/7-errors-only-setting";
+import { excludeNoiseErrorsInSelectedFileAtom, setExcludeNoiseErrorsInSelectedFileAtom } from "@/store/8-errors-noise-setting";
+import { currentFileErrorsCountAtom } from "@/store/traces-store/4-3-errors-count";
 
 export function TopMenuToolbar() {
     return (
@@ -27,6 +29,7 @@ export function TopMenuToolbar() {
             <div className="px-2 flex items-center gap-2">
                 <ErrorsNavControls />
                 <ToggleErrorsOnly />
+                <ToggleErrorsWithoutNoise />
                 <ToggleThreadOnly />
                 <FileFilterDropdown />
                 <ButtonHighlightToggle />
@@ -70,7 +73,7 @@ function ToggleErrorsOnly() {
     const setShowOnlyErrorsInSelectedFile = useSetAtom(setShowOnlyErrorsInSelectedFileAtom);
 
     const disabled = !currentFileState;
-    const errorsCount = currentFileState?.data.errorsInTraceCount ?? 0;
+    const errorsCount = useAtomValue(currentFileErrorsCountAtom);
 
     return (
         <Label
@@ -83,6 +86,31 @@ function ToggleErrorsOnly() {
                 className={classNames("border border-foreground/10", disabled && "disabled:opacity-100")}
                 checked={showOnlyErrors}
                 onCheckedChange={setShowOnlyErrorsInSelectedFile}
+                disabled={disabled}
+            />
+        </Label>
+    );
+}
+
+function ToggleErrorsWithoutNoise() {
+    const currentFileState = useAtomValue(currentFileStateAtom);
+    const excludeNoiseErrors = useAtomValue(excludeNoiseErrorsInSelectedFileAtom);
+    const setExcludeNoiseErrors = useSetAtom(setExcludeNoiseErrorsInSelectedFileAtom);
+
+    const disabled = !currentFileState;
+    const errorsCount = useAtomValue(currentFileErrorsCountAtom);
+
+    return (
+        <Label
+            className={classNames("px-1 h-6 font-normal border-border rounded border select-none gap-1", disabled && "opacity-50")}
+            data-disabled={disabled}
+            title={disabled ? "Select a file to configure error filtering" : (excludeNoiseErrors ? `Noise errors are hidden (${errorsCount} errors)` : "Noise errors are shown (includes 0x80070002)")}
+        >
+            Noise
+            <Switch
+                className={classNames("border border-foreground/10", disabled && "disabled:opacity-100")}
+                checked={excludeNoiseErrors}
+                onCheckedChange={setExcludeNoiseErrors}
                 disabled={disabled}
             />
         </Label>

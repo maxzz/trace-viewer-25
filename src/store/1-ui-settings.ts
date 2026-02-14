@@ -26,6 +26,7 @@ export interface AppSettings {
     panelSizes?: number[];      // ResizablePanelGroup panel sizes (percentages)
     extraInFooter: boolean;     // Show header info (Computer, OS, Compiled) in footer
     showOnlyErrorsInSelectedFile: boolean; // Show only errors in the selected file
+    excludeNoiseErrorsInSelectedFile: boolean; // Exclude NOISE_ERROR_CODE from error list/navigation/views
     showErrorsNavigationWrapDialog: boolean;
     
     // File Filters (Hiding files)
@@ -59,6 +60,7 @@ const DEFAULT_SETTINGS: AppSettings = {
     theme: 'light',
     extraInFooter: false,
     showOnlyErrorsInSelectedFile: false,
+    excludeNoiseErrorsInSelectedFile: false,
     showErrorsNavigationWrapDialog: true,
     fileFilters: [],
     selectedFilterId: null,

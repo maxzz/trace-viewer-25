@@ -4,6 +4,7 @@ import { currentFileStateAtom } from "./0-1-files-current-state";
 import { appSettings } from "../1-ui-settings";
 import { LineCode, type TraceLine } from "@/trace-viewer-core/9-core-types";
 import { type FileState } from "./9-types-files-store";
+import { NOISE_ERROR_CODE } from "@/trace-viewer-core/3-format-error-line";
 
 export type CurrentFileThreadFilterViewState = {
     isThreadFilterActive: boolean;
@@ -21,7 +22,7 @@ export const currentFileThreadFilterViewStateAtom = atom<CurrentFileThreadFilter
         const fileState = get(currentFileStateAtom);
         const viewLines = fileState?.data.viewLines ?? [];
         const threadIds = fileState?.data.uniqueThreadIds ?? [];
-        const { showOnlyErrorsInSelectedFile } = get(appSettingsAtom);
+        const { showOnlyErrorsInSelectedFile, excludeNoiseErrorsInSelectedFile } = get(appSettingsAtom);
         if (!fileState) {
             return {
                 isThreadFilterActive: false,
@@ -49,7 +50,7 @@ export const currentFileThreadFilterViewStateAtom = atom<CurrentFileThreadFilter
         if (isErrorsOnlyActive) {
             // Errors-only view is independent of thread-only view.
             // If thread-only toggle is ON, we still show errors from all threads so user can jump out.
-            const built = buildErrorsOnlyLinesCache(viewLines.length, viewLines);
+            const built = buildErrorsOnlyLinesCache(viewLines.length, viewLines, excludeNoiseErrorsInSelectedFile);
             return {
                 isThreadFilterActive,
                 isErrorsOnlyActive,
@@ -182,7 +183,7 @@ function buildThreadLinesCache(viewLines: readonly TraceLine[], selectedThreadId
     return { threadLines, displayIndexToBaseIndex, baseIndexToDisplayIndex };
 }
 
-function buildErrorsOnlyLinesCache(baseLinesCount: number, sourceLines: readonly TraceLine[], sourceDisplayIndexToBaseIndex?: readonly number[]) {
+function buildErrorsOnlyLinesCache(baseLinesCount: number, sourceLines: readonly TraceLine[], excludeNoiseErrors: boolean, sourceDisplayIndexToBaseIndex?: readonly number[]) {
     const lines: TraceLine[] = [];
     const displayIndexToBaseIndex: number[] = [];
     const baseIndexToDisplayIndex = Array.from({ length: baseLinesCount }, () => -1);
@@ -191,6 +192,7 @@ function buildErrorsOnlyLinesCache(baseLinesCount: number, sourceLines: readonly
         const line = sourceLines[sourceDisplayIndex];
         if (!line) continue;
         if (line.code !== LineCode.Error) continue;
+        if (excludeNoiseErrors && line.content.includes(NOISE_ERROR_CODE)) continue;
 
         const baseIndex = sourceDisplayIndexToBaseIndex
             ? (sourceDisplayIndexToBaseIndex[sourceDisplayIndex] ?? -1)

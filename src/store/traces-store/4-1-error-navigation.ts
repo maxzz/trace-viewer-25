@@ -1,20 +1,26 @@
 import { atom } from "jotai";
 import { appSettings } from "@/store/1-ui-settings";
+import { atomWithProxy } from "jotai-valtio";
 import { currentFileStateAtom } from "@/store/traces-store/0-1-files-current-state";
 import { LineCode } from "@/trace-viewer-core/9-core-types";
+import { NOISE_ERROR_CODE } from "@/trace-viewer-core/3-format-error-line";
 import { currentFileSelectedThreadIdAtom, setCurrentFileShowOnlySelectedThreadAtom, syncCurrentFileThreadLinesCacheAtom } from "@/store/traces-store/0-4-thread-filter-cache";
+
+const appSettingsAtom = atomWithProxy(appSettings);
 
 export const currentFileErrorBaseIndicesAtom = atom(
     (get) => {
         const fileState = get(currentFileStateAtom);
         if (!fileState) return [];
 
+        const { excludeNoiseErrorsInSelectedFile } = get(appSettingsAtom);
         const viewLines = fileState.data.viewLines;
         const errors: number[] = [];
         for (let i = 0; i < viewLines.length; i++) {
-            if (viewLines[i]?.code === LineCode.Error) {
-                errors.push(i);
-            }
+            const line = viewLines[i];
+            if (!line || line.code !== LineCode.Error) continue;
+            if (excludeNoiseErrorsInSelectedFile && line.content.includes(NOISE_ERROR_CODE)) continue;
+            errors.push(i);
         }
         return errors;
     }
