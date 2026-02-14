@@ -15,6 +15,8 @@ import { dialogFileHeaderOpenAtom, dialogEditHighlightsOpenAtom } from "@/store/
 import { getFileLoadingAtom } from "@/store/traces-store/8-3-file-loading-atoms";
 import { highlightActions } from "@/store/5-highlight-rules";
 import { getOverlayKeyClasses } from "../ui/local-ui/color-picker-popup";
+import { excludeNoiseErrorsInSelectedFileAtom } from "@/store/8-errors-noise-setting";
+import { getErrorsCountForFileData } from "@/store/traces-store/4-3-errors-count";
 
 export const FileListRow = memo(
     function FileListRow({ fileState, currentFileStateAtom }: { fileState: Snapshot<FileState>; currentFileStateAtom: Atom<FileState | null>; }) {
@@ -25,7 +27,9 @@ export const FileListRow = memo(
         const isSelected = useAtomValue(isSelectedAtom);
 
         const isLoading = useAtomValue(getFileLoadingAtom(fileState.id));
-        const hasError = fileState.data.errorsInTraceCount > 0 || !!fileState.data.errorLoadingFile;
+        const excludeNoiseErrors = useAtomValue(excludeNoiseErrorsInSelectedFileAtom);
+        const errorsCount = getErrorsCountForFileData(fileState.data, excludeNoiseErrors);
+        const hasError = errorsCount > 0 || !!fileState.data.errorLoadingFile;
         const { highlightRules, highlightEnabled } = useSnapshot(appSettings);
         const { allTimes, allTimesSelectedTimestamp } = useSnapshot(allTimesStore);
         const setFileHeaderOpen = useSetAtom(dialogFileHeaderOpenAtom);
@@ -51,16 +55,16 @@ export const FileListRow = memo(
                         <div className="relative shrink-0 z-10">
                             <FileText className={cn("size-4", isSelected ? "text-primary" : "opacity-70", hasError && "text-red-600 dark:text-red-400")} />
 
-                            {fileState.data.errorsInTraceCount === 0 && !!fileState.data.errorLoadingFile && (
+                            {errorsCount === 0 && !!fileState.data.errorLoadingFile && (
                                 <div className="absolute -top-1 -right-1 bg-background rounded-full">
                                     <AlertCircle className="size-3 text-red-500 fill-background" />
                                 </div>
                             )}
 
                             {/* Error count badge */}
-                            {fileState.data.errorsInTraceCount > 0 && (
+                            {errorsCount > 0 && (
                                 <span className={localClasses.errorCountBadge}>
-                                    {fileState.data.errorsInTraceCount}
+                                    {errorsCount}
                                 </span>
                             )}
                         </div>
