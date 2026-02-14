@@ -12,8 +12,8 @@ import { allFilesErrorsTotalsAtom } from "@/store/traces-store/4-4-errors-totals
 export function ToggleThreadOnly() {
     const currentFileState = useAtomValue(currentFileStateAtom);
     const showOnlySelectedThread = useAtomValue(currentFileState?.showOnlySelectedThreadAtom ?? fallbackShowOnlySelectedThreadAtom);
-    const setShowOnlySelectedThread = useSetAtom(setCurrentFileShowOnlySelectedThreadAtom);
     const currentLineIndex = useAtomValue(currentFileState?.currentLineIdxAtom ?? fallbackLineIndexAtom);
+    const setShowOnlySelectedThread = useSetAtom(setCurrentFileShowOnlySelectedThreadAtom);
 
     const disabled = !currentFileState || currentLineIndex < 0;
 
@@ -27,6 +27,9 @@ export function ToggleThreadOnly() {
         />
     );
 }
+
+const fallbackShowOnlySelectedThreadAtom = atom(false);
+const fallbackLineIndexAtom = atom(-1);
 
 export function ToggleErrorsOnly() {
     const currentFileState = useAtomValue(currentFileStateAtom);
@@ -80,9 +83,6 @@ type ToggleLabelSwitchProps = {
     onCheckedChange: (checked: boolean) => void;
 };
 
-const fallbackShowOnlySelectedThreadAtom = atom(false);
-const fallbackLineIndexAtom = atom(-1);
-
 function ToggleLabelSwitch({ label, checked, disabled, title, onCheckedChange }: ToggleLabelSwitchProps) {
     return (
         <Label
@@ -100,4 +100,3 @@ function ToggleLabelSwitch({ label, checked, disabled, title, onCheckedChange }:
         </Label>
     );
 }
-
