@@ -4,6 +4,7 @@ import { selectAtom } from "jotai/utils";
 import type { PrimitiveAtom } from "jotai";
 import { classNames } from "@/utils";
 import { type TraceLine, LineCode } from "../../trace-viewer-core/9-core-types";
+import { formatErrorLineContent } from "../../trace-viewer-core/3-format-error-line";
 import { setCurrentLineIndex } from "../../store/traces-store/0-1-files-current-state";
 import { ITEM_HEIGHT } from "./9-trace-view-constants";
 import { columnLineNumberClasses, columnTimeClasses, columnThreadIdClasses, lineClasses, lineCurrentClasses, lineNotCurrentClasses, lineErrorClasses } from "./8-trace-view-classes";
@@ -108,37 +109,7 @@ const formatContent = (line: TraceLine, useIconsForEntryExit: boolean) => {
     }
 
     if (line.code === LineCode.Error) {
-        // Try to find hResult pattern (e.g. hResult=2147500037, hResult: 2147500037, hResult 2147500037) and convert to hex
-        // 2147500037 -> 0x80004005
-        let result = line.content.replace(/hResult([:=\s]+)(-?\d+)/g, (match, separator, p1) => {
-            try {
-                const dec = parseInt(p1, 10);
-                // Handle signed integer to unsigned hex conversion
-                const hex = (dec >>> 0).toString(16).toUpperCase();
-                // Preserve the separator (:, =, or space) in the output, normalize whitespace to single space
-                const normalizedSeparator = separator.includes(':') ? ': ' : separator.includes('=') ? '=' : ' ';
-                return `hResult${normalizedSeparator}0x${hex}`;
-            } catch {
-                return match;
-            }
-        });
-
-        // If no hResult pattern was found, check if the line contains only a single integer
-        if (result === line.content) {
-            // Check if the entire line is just a single integer (possibly with leading/trailing whitespace)
-            const singleIntMatch = line.content.match(/^\s*(-?\d+)\s*$/);
-            if (singleIntMatch) {
-                try {
-                    const dec = parseInt(singleIntMatch[1], 10);
-                    const hex = (dec >>> 0).toString(16).toUpperCase();
-                    return `0x${hex}`;
-                } catch {
-                    // If conversion fails, return original
-                }
-            }
-        }
-
-        return result;
+        return formatErrorLineContent(line.content);
     }
 
     return line.content;
