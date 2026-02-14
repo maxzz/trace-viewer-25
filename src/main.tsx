@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { App } from "@/components/0-all/0-app";
+import { App } from "@/components/0-all/0-app-layout";
 import './index.css';
 import { recomputeFilterMatches } from "@/store/4-file-filters";
 import { recomputeHighlightMatches } from "@/store/5-highlight-rules";

@@ -9,12 +9,12 @@ import { listenerToBuildAllTimesEffectAtom } from "@/store/traces-store/3-2-all-
 import { TopMenu } from "./2-top-menu";
 import { TraceMainView } from "./6-resizable-panels";
 import { TraceFooter } from "./7-footer";
-import { ErrorsNavControls } from "./3-btn-errors-nav";
-import { ButtonHighlightToggle } from "./3-btn-highlight-toggle";
-import { FileFilterDropdown } from "./3-btn-filters-select";
-import { ButtonThemeToggle } from "./3-btn-theme-toggle";
+import { ErrorsNavControls } from "./3-2-btn-errors-nav";
+import { ButtonHighlightToggle } from "./3-4-btn-highlight-toggle";
+import { FileFilterDropdown } from "./3-3-btn-filters-select";
+import { ButtonThemeToggle } from "./3-5-btn-theme-toggle";
 import { TimelineProgress } from "./4-loading-progress";
-import { ButtonHistoryBack, ButtonHistoryForward } from "./3-btn-history-nav";
+import { ButtonHistoryBack, ButtonHistoryForward } from "./3-1-btn-history-nav";
 import { filesCountAtom } from "@/store/6-filtered-files";
 import { currentFileStateAtom } from "@/store/traces-store/0-1-files-current-state";
 import { setCurrentFileShowOnlySelectedThreadAtom } from "@/store/traces-store/0-4-thread-filter-cache";
@@ -34,9 +34,9 @@ export function TraceViewerApp() {
             </div>
         
             <div className="flex-1 flex flex-col overflow-hidden relative">
-                {!!fileCount
-                    ? <TraceMainView />
-                    : <TraceEmptyView />
+                {!fileCount
+                    ? <NoFilesView />
+                    : <TraceMainView />
                 }
             </div>
 
@@ -55,8 +55,8 @@ function TopMenuToolbar() {
             </div>
             <div className="px-2 flex items-center gap-2">
                 <ErrorsNavControls />
-                <ErrorsOnlyToggle />
-                <ThreadOnlyToggle />
+                <ToggleErrorsOnly />
+                <ToggleThreadOnly />
                 <FileFilterDropdown />
                 <ButtonHighlightToggle />
                 <ButtonThemeToggle />
@@ -68,7 +68,7 @@ function TopMenuToolbar() {
 const fallbackShowOnlySelectedThreadAtom = atom(false);
 const fallbackLineIndexAtom = atom(-1);
 
-function ThreadOnlyToggle() {
+function ToggleThreadOnly() {
     const currentFileState = useAtomValue(currentFileStateAtom);
     const showOnlySelectedThread = useAtomValue(currentFileState?.showOnlySelectedThreadAtom ?? fallbackShowOnlySelectedThreadAtom);
     const setShowOnlySelectedThread = useSetAtom(setCurrentFileShowOnlySelectedThreadAtom);
@@ -93,7 +93,7 @@ function ThreadOnlyToggle() {
     );
 }
 
-function ErrorsOnlyToggle() {
+function ToggleErrorsOnly() {
     const currentFileState = useAtomValue(currentFileStateAtom);
     const showOnlyErrors = useAtomValue(showOnlyErrorsInSelectedFileAtom);
     const setShowOnlyErrorsInSelectedFile = useSetAtom(setShowOnlyErrorsInSelectedFileAtom);
@@ -125,7 +125,7 @@ function Footer({ hasFile }: { hasFile: boolean; }) {
     </>);
 }
 
-function TraceEmptyView() {
+function NoFilesView() {
     return (
         <div className="absolute inset-0 bg-foreground/5 flex flex-col items-center justify-center pointer-events-none">
             <IconBinocular className="size-8" />
