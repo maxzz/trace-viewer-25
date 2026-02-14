@@ -1,5 +1,17 @@
 import { type TraceLine } from "./9-core-types";
 
+/**
+ * Find the best index for a pending scroll timestamp.
+ * @param viewLines - The lines to search through.
+ * @param pendingScrollTimestamp - The timestamp to search for.
+ * @returns The best index for the pending scroll timestamp.
+ * @example
+ * findBestIndexForPendingScrollTimestamp([{ date: "2026-02-13", timestamp: "12:00:00" }], "2026-02-13 12:00:00") // 0
+ * findBestIndexForPendingScrollTimestamp([{ date: "2026-02-13", timestamp: "12:00:00" }], "12:00:00") // 0
+ * findBestIndexForPendingScrollTimestamp([{ date: "2026-02-13", timestamp: "12:00:00" }], "2026-02-13") // 0
+ * findBestIndexForPendingScrollTimestamp([{ date: "2026-02-13", timestamp: "12:00:00" }], "2026-02-13 12:00:00.123") // 0
+ * findBestIndexForPendingScrollTimestamp([{ date: "2026-02-13", timestamp: "12:00:00" }], "2026-02-13 12:00:00.123456") // 0
+ */
 export function findBestIndexForPendingScrollTimestamp(viewLines: readonly TraceLine[], pendingScrollTimestamp: string): number {
     const target = splitPendingTimestamp(pendingScrollTimestamp);
 
@@ -16,6 +28,17 @@ export function findBestIndexForPendingScrollTimestamp(viewLines: readonly Trace
     return -1;
 }
 
+/**
+ * Split a pending scroll timestamp into date and time parts.
+ * @param pendingScrollTimestamp - The timestamp to split into date and time parts.
+ * @returns An object with the date and time parts.
+ * @example
+ * splitPendingTimestamp("2026-02-13 12:00:00") // { date: "2026-02-13", time: "12:00:00" }
+ * splitPendingTimestamp("12:00:00") // { date: null, time: "12:00:00" }
+ * splitPendingTimestamp("2026-02-13") // { date: "2026-02-13", time: null }
+ * splitPendingTimestamp("2026-02-13 12:00:00.123") // { date: "2026-02-13", time: "12:00:00.123" }
+ * splitPendingTimestamp("2026-02-13 12:00:00.123456") // { date: "2026-02-13", time: "12:00:00.123456" }
+ */
 function splitPendingTimestamp(pendingScrollTimestamp: string): { date: string | null; time: string | null; } {
     const trimmed = pendingScrollTimestamp.trim();
     if (!trimmed) return { date: null, time: null };
@@ -35,6 +58,13 @@ function splitPendingTimestamp(pendingScrollTimestamp: string): { date: string |
     };
 }
 
+/**
+ * Find the best index for a pending scroll timestamp that includes both date and time.
+ * @param viewLines - The lines to search through.
+ * @param targetDate - The target date to search for.
+ * @param targetTimePrefix - The target time prefix to search for.
+ * @returns The best index for the pending scroll timestamp.
+ */
 function findBestIndexForDateTime(viewLines: readonly TraceLine[], targetDate: string, targetTimePrefix: string): number {
     const targetDateMsUtc = parseMdyToUtcMidnightMs(targetDate);
     if (targetDateMsUtc === null) {
@@ -120,6 +150,12 @@ function findBestIndexForDateTime(viewLines: readonly TraceLine[], targetDate: s
     return bestIndex;
 }
 
+/**
+ * Find the best index for a pending scroll timestamp that includes only time.
+ * @param viewLines - The lines to search through.
+ * @param targetTimestampStr - The target timestamp to search for.
+ * @returns The best index for the pending scroll timestamp.
+ */
 function findBestIndexForTimeOnly(viewLines: readonly TraceLine[], targetTimestampStr: string): number {
     // Parse target timestamp to ms for accurate comparison
     const targetTime = parseTimeMsWithinDay(targetTimestampStr);
@@ -179,6 +215,15 @@ function findBestIndexForTimeOnly(viewLines: readonly TraceLine[], targetTimesta
     return bestIndex;
 }
 
+/**
+ * Get the UTC milliseconds value of a line's date and time.
+ * @param line - The line to get the date and time value for.
+ * @returns The UTC milliseconds value of the line's date and time.
+ * @example
+ * getLineDateTimeValueMs({ date: "2026-02-13", timestamp: "12:00:00" }) // 1739412000000
+ * getLineDateTimeValueMs({ date: "2026-02-13", timestamp: "12:00:00.123" }) // 1739412000123
+ * getLineDateTimeValueMs({ date: "2026-02-13", timestamp: "12:00:00.123456" }) // 1739412000123
+ */
 function getLineDateTimeValueMs(line: TraceLine): number | null {
     if (!line.date || !line.timestamp) return null;
     const dateMsUtc = parseMdyToUtcMidnightMs(line.date);
@@ -186,6 +231,15 @@ function getLineDateTimeValueMs(line: TraceLine): number | null {
     return dateMsUtc + parseTimeMsWithinDay(line.timestamp);
 }
 
+/**
+ * Parse a time string into UTC milliseconds within a day.
+ * @param t - The time string to parse.
+ * @returns The UTC milliseconds value of the time string.
+ * @example
+ * parseTimeMsWithinDay("12:00:00") // 43200000
+ * parseTimeMsWithinDay("12:00:00.123") // 43200123
+ * parseTimeMsWithinDay("12:00:00.123456") // 43200123
+ */
 function parseTimeMsWithinDay(t: string): number {
     const [hms, msPart] = t.split('.');
     if (!hms) return 0;
@@ -195,6 +249,16 @@ function parseTimeMsWithinDay(t: string): number {
     return ((h || 0) * 3600 + (m || 0) * 60 + (s || 0)) * 1000 + (ms || 0);
 }
 
+/**
+ * Get the UTC milliseconds range within a day for a time prefix.
+ * @param timePrefix - The time prefix to get the range for.
+ * @returns The UTC milliseconds range within a day for the time prefix.
+ * @example
+ * getTimeRangeMsWithinDay("12:00") // { minMs: 43200000, maxMs: 43200999 }
+ * getTimeRangeMsWithinDay("12:00:00") // { minMs: 43200000, maxMs: 43200999 }
+ * getTimeRangeMsWithinDay("12:00:00.123") // { minMs: 43200123, maxMs: 43200123 }
+ * getTimeRangeMsWithinDay("12:00:00.123456") // { minMs: 43200123, maxMs: 43200123 }
+ */
 function getTimeRangeMsWithinDay(timePrefix: string): { minMs: number; maxMs: number; } | null {
     // Handles the same precision output as all-times worker:
     // - HH:MM
@@ -252,6 +316,14 @@ function getTimeRangeMsWithinDay(timePrefix: string): { minMs: number; maxMs: nu
     return { minMs, maxMs };
 }
 
+/**
+ * Parse a date string into UTC milliseconds at midnight.
+ * @param mdy - The date string to parse.
+ * @returns The UTC milliseconds value of the date string.
+ * @example
+ * parseMdyToUtcMidnightMs("02/13/26") // 1739412000000
+ * parseMdyToUtcMidnightMs("02/13/2026") // 1739412000000
+ */
 function parseMdyToUtcMidnightMs(mdy: string): number | null {
     // Trace format is documented as MDY.
     // Supports: M/D/YY, MM/DD/YY, M/D/YYYY, MM/DD/YYYY

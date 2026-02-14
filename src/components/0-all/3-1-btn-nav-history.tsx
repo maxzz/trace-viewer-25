@@ -1,7 +1,7 @@
 import { useAtomValue } from "jotai";
-import { canGoBackAtom, canGoForwardAtom, historyActions } from "@/store/traces-store/0-3-files-history";
 import { Button } from "@/components/ui/shadcn/button";
 import { IconL_ArrowLeft } from "@/components/ui/icons";
+import { canGoBackAtom, canGoForwardAtom, historyActions } from "@/store/traces-store/0-3-files-history";
 
 export function ButtonHistoryBack() {
     const canGoBack = useAtomValue(canGoBackAtom);

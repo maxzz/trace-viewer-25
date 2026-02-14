@@ -2,7 +2,6 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useSnapshot } from "valtio";
 import { classNames } from "@/utils";
 import { appSettings } from "@/store/1-ui-settings";
-import { ChevronDown, ChevronUp } from "lucide-react";
 import { IconL_ArrowLeft } from "@/components/ui/icons";
 import { Button } from "@/components/ui/shadcn/button";
 import { Label } from "@/components/ui/shadcn/label";
@@ -20,9 +19,13 @@ export function ErrorsNavControls() {
     const disabled = !currentFileState || total === 0;
 
     return (
-        <div className={classNames("h-6 border flex items-center rounded", disabled && "opacity-50")} data-disabled={disabled}>
+        <div className={classNames("h-6 border flex items-center rounded", disabled && "opacity-50")} data-disabled={disabled} title={disabled ? "No errors in this file" : `Error ${current} of ${total}`}>
+            <div className="px-1 h-6 text-[10px] font-mono tabular-nums text-muted-foreground border-y border-border select-none flex items-center justify-center">
+                {current}/{total}
+            </div>
+
             <Button
-                className="group size-6 rounded-r-none"
+                className="group size-6 rounded-r-none focus-visible:ring-0"
                 variant="ghost"
                 size="icon"
                 title="Previous error"
@@ -30,15 +33,10 @@ export function ErrorsNavControls() {
                 onClick={() => goPrev()}
             >
                 <IconL_ArrowLeft className="size-3.5 stroke-foreground/50 group-disabled:opacity-30 rotate-90" />
-                {/* <ChevronUp className="size-3.5 stroke-foreground/50 group-disabled:opacity-30" /> */}
             </Button>
 
-            <div className="px-1 h-6 text-[10px] font-mono tabular-nums text-muted-foreground border-y border-border select-none flex items-center justify-center">
-                {current}/{total}
-            </div>
-
             <Button
-                className="group size-6 rounded-l-none"
+                className="group size-6 rounded-l-none focus-visible:ring-0"
                 variant="ghost"
                 size="icon"
                 title="Next error"
@@ -46,7 +44,6 @@ export function ErrorsNavControls() {
                 onClick={() => goNext()}
             >
                 <IconL_ArrowLeft className="size-3.5 stroke-foreground/50 group-disabled:opacity-30 rotate-270" />
-                {/* <ChevronDown className="size-3.5 stroke-foreground/50 group-disabled:opacity-30" /> */}
             </Button>
         </div>
     );
