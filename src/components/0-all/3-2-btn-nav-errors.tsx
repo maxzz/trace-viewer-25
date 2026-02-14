@@ -3,6 +3,7 @@ import { useSnapshot } from "valtio";
 import { classNames } from "@/utils";
 import { appSettings } from "@/store/1-ui-settings";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { IconL_ArrowLeft } from "@/components/ui/icons";
 import { Button } from "@/components/ui/shadcn/button";
 import { Label } from "@/components/ui/shadcn/label";
 import { Switch } from "@/components/ui/shadcn/switch";
@@ -19,7 +20,7 @@ export function ErrorsNavControls() {
     const disabled = !currentFileState || total === 0;
 
     return (
-        <div className={classNames("h-6 flex items-center", disabled && "opacity-50")} data-disabled={disabled}>
+        <div className={classNames("h-6 border flex items-center rounded", disabled && "opacity-50")} data-disabled={disabled}>
             <Button
                 className="group size-6 rounded-r-none"
                 variant="ghost"
@@ -28,11 +29,14 @@ export function ErrorsNavControls() {
                 disabled={disabled}
                 onClick={() => goPrev()}
             >
-                <ChevronUp className="size-3.5 stroke-foreground/50 group-disabled:opacity-30" />
+                <IconL_ArrowLeft className="size-3.5 stroke-foreground/50 group-disabled:opacity-30 rotate-90" />
+                {/* <ChevronUp className="size-3.5 stroke-foreground/50 group-disabled:opacity-30" /> */}
             </Button>
+
             <div className="px-1 h-6 text-[10px] font-mono tabular-nums text-muted-foreground border-y border-border select-none flex items-center justify-center">
                 {current}/{total}
             </div>
+
             <Button
                 className="group size-6 rounded-l-none"
                 variant="ghost"
@@ -41,7 +45,8 @@ export function ErrorsNavControls() {
                 disabled={disabled}
                 onClick={() => goNext()}
             >
-                <ChevronDown className="size-3.5 stroke-foreground/50 group-disabled:opacity-30" />
+                <IconL_ArrowLeft className="size-3.5 stroke-foreground/50 group-disabled:opacity-30 rotate-270" />
+                {/* <ChevronDown className="size-3.5 stroke-foreground/50 group-disabled:opacity-30" /> */}
             </Button>
         </div>
     );
@@ -58,8 +63,7 @@ export function DialogErrorsNavWrap() {
     const dontShowAgain = !showErrorsNavigationWrapDialog;
 
     return (
-        <Dialog open={open} onOpenChange={(v) => { if (!v) { setState(null); } }}
-        >
+        <Dialog open={open} onOpenChange={(v) => { if (!v) { setState(null); } }}>
             <DialogContent className="max-w-[360px]!" aria-describedby={undefined}>
                 <DialogHeader>
                     <DialogTitle className="text-sm">
