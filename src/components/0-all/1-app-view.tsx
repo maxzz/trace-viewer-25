@@ -5,9 +5,6 @@ import { appSettings } from "../../store/1-ui-settings";
 import { Label } from "../ui/shadcn/label";
 import { Switch } from "../ui/shadcn/switch";
 import { IconBinocular } from "../ui/icons";
-import { listenerToBuildAllTimesEffectAtom } from "@/store/traces-store/3-2-all-times-listener";
-import { TopMenu } from "./2-top-menu";
-import { TraceMainView } from "./6-resizable-panels";
 import { TraceFooter } from "./7-footer";
 import { ErrorsNavControls } from "./3-2-btn-errors-nav";
 import { ButtonHighlightToggle } from "./3-4-btn-highlight-toggle";
@@ -15,37 +12,11 @@ import { FileFilterDropdown } from "./3-3-btn-filters-select";
 import { ButtonThemeToggle } from "./3-5-btn-theme-toggle";
 import { TimelineProgress } from "./4-loading-progress";
 import { ButtonHistoryBack, ButtonHistoryForward } from "./3-1-btn-history-nav";
-import { filesCountAtom } from "@/store/6-filtered-files";
 import { currentFileStateAtom } from "@/store/traces-store/0-1-files-current-state";
 import { setCurrentFileShowOnlySelectedThreadAtom } from "@/store/traces-store/0-4-thread-filter-cache";
 import { setShowOnlyErrorsInSelectedFileAtom, showOnlyErrorsInSelectedFileAtom } from "@/store/7-errors-only-setting";
 
-export function TraceViewerApp() {
-    useAtomValue(listenerToBuildAllTimesEffectAtom);
-
-    const fileCount = useAtomValue(filesCountAtom);
-    //const { error } = useSnapshot(traceStore);
-
-    return (
-        <div className="h-full text-xs flex flex-col overflow-hidden">
-            <div className="bg-background flex items-center justify-between">
-                <TopMenu />
-                <TopMenuToolbar />
-            </div>
-        
-            <div className="flex-1 flex flex-col overflow-hidden relative">
-                {!fileCount
-                    ? <NoFilesView />
-                    : <TraceMainView />
-                }
-            </div>
-
-            <Footer hasFile={!!fileCount} />
-        </div>
-    );
-}
-
-function TopMenuToolbar() {
+export function TopMenuToolbar() {
     return (
         <div className="flex-1 px-2 flex items-center justify-between gap-2">
             <div className="flex items-center">
@@ -118,14 +89,14 @@ function ToggleErrorsOnly() {
     );
 }
 
-function Footer({ hasFile }: { hasFile: boolean; }) {
+export function Footer({ hasFile }: { hasFile: boolean; }) {
     const { showFooter } = useSnapshot(appSettings);
     return (<>
         {showFooter && hasFile && <TraceFooter />}
     </>);
 }
 
-function NoFilesView() {
+export function NoFilesView() {
     return (
         <div className="absolute inset-0 bg-foreground/5 flex flex-col items-center justify-center pointer-events-none">
             <IconBinocular className="size-8" />
