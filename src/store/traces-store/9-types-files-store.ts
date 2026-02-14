@@ -10,6 +10,7 @@ export interface FileData  {
     uniqueThreadIds: number[];
     header: TraceHeader;
     errorsInTraceCount: number;                 // Count of lines with code === LineCode.Error.
+    errorsInTraceCountWithoutNoise: number;     // Count of error lines excluding NOISE_ERROR_CODE.
     
     isLoading: boolean;                         // This is non-reactive, but we use it to track if the file is loading.
     errorLoadingFile: string | null;            // Error message from loading the file.

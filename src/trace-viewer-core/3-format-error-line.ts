@@ -35,7 +35,8 @@ export function formatErrorLineContent(content: string): string {
             try {
                 const dec = parseInt(singleIntMatch[1], 10);
                 const hex = (dec >>> 0).toString(16).toUpperCase();
-                return `0x${hex}`;
+                const errorCode = `0x${hex}`;
+                return errorCode === NOISE_ERROR_CODE ? NOISE_ERROR_CODE : errorCode; // Return the same value if it's a noise error, so comparison will work on value without comparing the string.
             } catch {
                 // If conversion fails, return original
             }
@@ -44,3 +45,5 @@ export function formatErrorLineContent(content: string): string {
 
     return result;
 }
+
+export const NOISE_ERROR_CODE = "0x80070002";

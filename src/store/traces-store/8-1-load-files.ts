@@ -5,7 +5,8 @@ import { setAppTitle } from "@/store/3-ui-app-title";
 import { notice } from "@/components/ui/local-ui/7-toaster";
 import { filesStore, type FileData, type FileState } from "./9-types-files-store";
 import { asyncParseTraceFile } from "./8-2-parse-trace-file";
-import { emptyFileHeader, type TraceLine } from "@/trace-viewer-core/9-core-types";
+import { emptyFileHeader, LineCode, type TraceLine } from "@/trace-viewer-core/9-core-types";
+import { NOISE_ERROR_CODE } from "@/trace-viewer-core/3-format-error-line";
 import { recomputeFilterMatches } from "../4-file-filters";
 import { appSettings } from "../1-ui-settings";
 import { matchesFilePattern } from "../6-filtered-files";
@@ -142,6 +143,7 @@ function newTraceItemCreate(file: File): FileState {
             uniqueThreadIds: [],
             header: emptyFileHeader,
             errorsInTraceCount: 0,
+            errorsInTraceCountWithoutNoise: 0,
             isLoading: true,
             errorLoadingFile: null,
         };
@@ -174,6 +176,7 @@ async function newTraceItemLoad(fileState: FileState, file: File): Promise<void>
         data.uniqueThreadIds = parsed.uniqueThreadIds;
         data.header = parsed.header;
         data.errorsInTraceCount = parsed.errorCount;
+        data.errorsInTraceCountWithoutNoise = getErrorLinesCountWithoutNoise(parsed.viewLines);
         data.isLoading = false;
     } catch (e: any) {
         data.errorLoadingFile = e.message || "Unknown error";
@@ -189,4 +192,14 @@ async function newTraceItemLoad(fileState: FileState, file: File): Promise<void>
     if (currentState?.id === fileState.id) {
         setCurrentFileState(fileState, true);
     }
+}
+
+function getErrorLinesCountWithoutNoise(viewLines: readonly TraceLine[]) {
+    let count = 0;
+    for (const line of viewLines) {
+        if (line.code !== LineCode.Error) continue;
+        if (line.content.includes(NOISE_ERROR_CODE)) continue;
+        count++;
+    }
+    return count;
 }
