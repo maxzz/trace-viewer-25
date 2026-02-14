@@ -3,6 +3,7 @@ import { proxy } from 'valtio';
 // App title
 
 export const defaultTitle = 'Trace Viewer';
+export const defaultTitleShort = 'TV';
 
 export const appMainTitle = proxy<{ title: string; openFolderName?: string; }>({
     title: defaultTitle,
@@ -29,13 +30,13 @@ export function setAppTitle(files: File[], droppedFolderName?: string, filePaths
 
     let title = defaultTitle;
     if (folderName) {
-        title = `${defaultTitle} - ${folderName}`;
+        title = `${defaultTitleShort} - ${folderName}`;
     }
     else if (files.length === 1) {
-        title = `${defaultTitle} - ${files[0].name}`;
+        title = `${defaultTitleShort} - ${files[0].name}`;
     }
     else if (files.length > 1) {
-        title = `${defaultTitle} - ${files.length} files`;
+        title = `${defaultTitleShort} - ${files.length} files`;
     }
 
     appMainTitle.title = title;
