@@ -45,7 +45,7 @@
         "sonner": "^2.0.7",
         "tailwind-merge": "^3.5.0",
         "tailwindcss": "^4.2.1",
-        "valtio": "^2.3.0"
+        "valtio": "^2.3.1"
     },
     "scripts": {
         "tsc": "tsc -b tsconfig.app.json -w",
