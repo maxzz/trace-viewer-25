@@ -6,7 +6,17 @@
 				{
 					"line": 37,
 					"column": 2,
-					"label": ""
+					"label": "TODOs"
+				}
+			]
+		},
+		{
+			"path": "package.json",
+			"bookmarks": [
+				{
+					"line": 49,
+					"column": 7,
+					"label": "package.json"
 				}
 			]
 		}
